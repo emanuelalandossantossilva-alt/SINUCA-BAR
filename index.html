@@ -158,6 +158,12 @@
         #lan-card h2 { margin:0 36px 8px 0; color:#f0c579; }
         #lan-card p, #lan-card small { color:#bdc8ce; line-height:1.4; }
         #lan-card textarea { display:block; width:100%; min-height:90px; margin:7px 0; padding:9px; resize:vertical; border:1px solid #53636c; border-radius:8px; color:#eaf0f3; background:#091016; font:11px monospace; user-select:text; -webkit-user-select:text; touch-action:auto; }
+        /* ROLAGEM EM TODA A TELA: os filhos do card herdavam o touch-action:none
+           global, que travava o arrasto — só a beirada do card rolava. Agora
+           qualquer arraste vertical dentro do menu rola a lista. */
+        #lan-card * { touch-action:pan-y; }
+        #lan-card textarea, #lan-card input { touch-action:auto; }
+        #lan-card button { touch-action:manipulation; }
         #lan-card button { margin:4px 3px 4px 0; padding:10px; border:1px solid #e4bb71; border-radius:8px; color:#1c252b; background:linear-gradient(135deg,#f0ce8b,#d9a955); font-weight:bold; touch-action:manipulation; }
         #lan-close { position:absolute; top:9px; right:10px; padding:5px 10px !important; color:#fff !important; background:#26343d !important; }
         #lan-status { min-height:18px; margin:6px 0; color:#70d9ad !important; font-weight:bold; }
@@ -419,7 +425,7 @@
       <div id="lan-card">
         <button id="lan-close" type="button">FECHAR</button>
         <h2>PAR OU ÍMPAR · MULTIPLAYER</h2>
-        <p class="lan-hint" style="color:#ffd76a"><b>Aposta do duelo: 50 moedas por jogador — o vencedor leva 100!</b></p>
+        <p class="lan-hint" style="color:#ffd76a"><b>Duelo grátis: ninguém paga aposta — quem vencer leva 100 moedas de prêmio!</b></p>
         <div id="lan-mode-choice" class="lan-mode-choice">
           <p>Escolha o jogo para esta conexão:</p>
           <button id="lan-mode-parimpar" type="button" class="selected">PAR OU ÍMPAR</button>
@@ -442,7 +448,8 @@
         </section>
         <section id="lan-server-box">
           <h3>SERVIDOR LOCAL <span>RECOMENDADO</span></h3>
-          <p class="lan-hint">Um aparelho roda <b>servidor-sinuca.js</b> (ou INICIAR-SERVIDOR) e os dois jogadores abrem no navegador o endereço que ele mostra, conectados ao mesmo roteador. Sem copiar códigos e com reconexão automática.</p>
+          <p class="lan-hint">Um aparelho roda <b>servidor-sinuca.js</b> (ou INICIAR-SERVIDOR) e os dois jogadores abrem no navegador o endereço que ele mostra, conectados ao mesmo roteador. <b>Aberto pelo servidor, o jogo conecta sozinho</b> — sem digitar nada. Sem copiar códigos e com reconexão automática.</p>
+          <div class="lan-row"><button id="lan-quick-connect" type="button" style="background:#2fae44;flex:1">⚡ CONECTAR RÁPIDO</button></div>
           <div class="lan-row"><input id="lan-server-addr" inputmode="url" autocomplete="off" placeholder="IP do servidor, ex.: 192.168.0.10:8080"><button id="lan-server-connect" type="button">CONECTAR</button></div>
           <div id="lan-server-status">Desconectado.</div>
           <div class="lan-row"><input id="lan-player-name" maxlength="16" autocomplete="nickname" placeholder="Seu nome"><button id="lan-room-create" type="button">CRIAR SALA</button><button id="lan-room-leave" type="button" style="display:none">SAIR DA SALA</button></div>
@@ -878,12 +885,15 @@
         (document.getElementById('turn-msg')||{}).textContent=parImpar.oponente==='cpu'?(parImpar.turno===2?(parImpar.cpuNivel==='pro'?'CPU PRO JOGANDO':'CPU JOGANDO'):'SUA VEZ'):'JOGADOR '+parImpar.turno+(parImpar.oponente==='local'||parImpar.turno===parImpar.jogador?' · SUA VEZ':'');
     }
     function liquidarApostaParImpar(){
-        if(!parImpar.aposta||parImpar.apostaLiquidada||!parImpar.vencedor)return;
+        if(parImpar.apostaLiquidada||!parImpar.vencedor)return;
         parImpar.apostaLiquidada=true;
-        const ganhei=parImpar.vencedor===parImpar.jogador, pote=parImpar.aposta*2;
-        if(ganhei){gameState.moedas+=pote;atualizarHUD(true);}
+        // PRÊMIO GRÁTIS DO DUELO EM REDE: quem vencer leva 100 moedas —
+        // ninguém paga aposta, o prêmio sai "da casa". Partida no mesmo
+        // aparelho ou contra a CPU não dá prêmio.
+        const ganhei=parImpar.vencedor===parImpar.jogador, premio=parImpar.local?100:0;
+        if(ganhei&&premio){gameState.moedas+=premio;atualizarHUD(true);}
         const st=document.getElementById('lan-status');
-        if(st)st.textContent=ganhei?('🏆 Você ganhou a aposta: +'+pote+' moedas!'):('Você perdeu a aposta de '+parImpar.aposta+' moedas. Boa sorte na próxima!');
+        if(st)st.textContent=ganhei?('🏆 Você venceu o duelo'+(premio?(': +'+premio+' moedas de prêmio!'):'!')):('Você perdeu o duelo. Nada pago — boa sorte na próxima!');
     }
     function aplicarPlacarParImpar(){
         if(!parImpar.ativo)return;
@@ -966,12 +976,10 @@
     }
     function fecharSinalizacao(){const m=document.getElementById('lan-modal');m.style.display='none';m.setAttribute('aria-hidden','true');}
     function iniciarParImpar(jogador,redeLocal,modo=modoRedeEscolhido,oponente,nivelCpu){
-        // APOSTA DO DUELO (1 contra 1, cada um num aparelho): 50 moedas de cada
-        // lado; quem vencer leva o pote de 100. Partida no mesmo aparelho ou contra
-        // CPU não aposta nada.
-        if(redeLocal&&gameState.moedas<50){alert('Moedas insuficientes! O duelo em aparelhos separados aposta 50 moedas. Jogue as fases solo pra juntar moedas.');return;}
-        parImpar.aposta=redeLocal?50:0;parImpar.apostaLiquidada=false;
-        if(redeLocal){gameState.moedas-=50;atualizarHUD(true);}
+        // DUELO GRÁTIS: jogar online ou em aparelhos separados não custa mais
+        // moedas — nenhuma aposta é cobrada nem exigida. Partida no mesmo
+        // aparelho ou contra CPU também é livre.
+        parImpar.aposta=0;parImpar.apostaLiquidada=false;
         parImpar.oponente=oponente||(redeLocal?'rede':'local');parImpar.cpuPensando=false;parImpar.cpuNivel=nivelCpu==='pro'?'pro':'normal';parImpar.tacadaFinalizada=false;parImpar.ativo=true;parImpar.local=!!redeLocal;parImpar.jogador=jogador;parImpar.modo=modo==='bolinho'?'bolinho':'parimpar';parImpar.bolinhoFase=3;parImpar.historico=[];parImpar.turno=quebraProxima||(Math.random()<0.5?1:2);parImpar.grupos={1:null,2:null};parImpar.primeiroContato=null;parImpar.encaçapadasNestaTacada=[];parImpar.tacadaFinalizada=true;parImpar.vencedor=null;parImpar.falta=null;parImpar.quebraPendente=true;
         if(gameState.modo==='timer'&&timerInterval){clearInterval(timerInterval);timerInterval=null;}
         gameState.timerAtivo=false;gameState.modo='parimpar';gameState.idFase++;gameState.nivel=1;gameState.total=parImpar.modo==='bolinho'?3:15;gameState.encaixadas=0;gameState.aguardandoReset=false;gameState.jogadaAtiva=false;gameState.posicionandoBranca=false;gameState.brancaCaiu=false;gameState.faseConcluida=false;gameState.acertouBola=false;gameState.ghosts=VIDAS_INICIAIS;
@@ -3685,13 +3693,46 @@ function criarTexturaBolaMarmorizada(cor,num) {
         d.spinTop=wTop*RAIO/60; d.spinSide=-wSide*RAIO/60;
         limitarVelocidadeAngular(branca);
     }
-    // Colisão bola-bola LIMPA: só o impulso na linha do contato. A bola atingida
-    // sai na direção exata do contato, SEM pegar o giro da branca e sem desvio
-    // pro lado (throw) — o efeito de uma bola não passa pra outra.
+    // Colisão bola-bola: impulso na linha do contato + TRANSFERÊNCIA DE EFEITO.
+    // O giro da bola que bate esfrega o ponto de contato e passa parte do
+    // efeito para a bola atingida, no sentido OPOSTO (como engrenagens):
+    // a branca girando pra esquerda faz a bola atingida girar pra direita.
+    // O efeito transferido segue vivo na bola atingida — age no pano e nas
+    // tabelas quando ela quica. Continua sem desvio lateral (throw) na tacada.
     function colisaoBolas(b1,b2,nx,nz,vRel){
         const d1=b1.userData,d2=b2.userData;
         const J=(1+RESTITUICAO_BOLAS)*0.5*vRel;
         d1.vx-=J*nx; d1.vz-=J*nz; d2.vx+=J*nx; d2.vz+=J*nz;
+        transferirEfeitoContato(b1,b2,nx,nz,J);
+    }
+    // Atrito tangencial no instante do choque (efeito transferido): parte do
+    // giro da bola 1 nasce como giro CONTRÁRIO na bola 2.
+    function transferirEfeitoContato(b1,b2,nx,nz,impulsoNormal){
+        const d1=b1.userData,d2=b2.userData;
+        const R=RAIO;
+        // Deslize da superfície da bola 1 no ponto de contato (ω×r, r = n·R).
+        const s1x= d1.omegaY*nz*R, s1y=(d1.omegaZ*nx-d1.omegaX*nz)*R, s1z=-d1.omegaY*nx*R;
+        // Deslize da superfície da bola 2 no mesmo ponto (ω×r, r = -n·R).
+        const s2x=-d2.omegaY*nz*R, s2y=-(d2.omegaZ*nx-d2.omegaX*nz)*R, s2z= d2.omegaY*nx*R;
+        // Deslize relativo, só a componente tangencial (a normal não gera atrito).
+        let sx=s1x-s2x, sy=s1y-s2y, sz=s1z-s2z;
+        const sn=sx*nx+sz*nz; sx-=sn*nx; sz-=sn*nz;
+        const deslize=Math.hypot(sx,sy,sz);
+        if(deslize<0.02) return;
+        // Impulso de atrito limitado por μ · impulso normal (bolas de fenólico).
+        const f=Math.min(ATRITO_COLISAO_BOLAS*impulsoNormal*60, deslize*0.45);
+        const ux=sx/deslize, uy=sy/deslize, uz=sz/deslize;
+        // O atrito arrasta a superfície da bola 2 no sentido do deslize da bola 1.
+        const Fx=f*ux, Fy=f*uy, Fz=f*uz;
+        // Δω=(r×F)/(0.4·R²): o torque é igual nas duas bolas — freia o giro da
+        // bola que bate e faz a bola atingida girar pro lado contrário.
+        const kR=1/(0.4*R);
+        const dWx= nz*Fy*kR, dWy=(-nz*Fx+nx*Fz)*kR, dWz=-nx*Fy*kR;
+        d2.omegaX+=dWx; d2.omegaY+=dWy; d2.omegaZ+=dWz;
+        d1.omegaX+=dWx; d1.omegaY+=dWy; d1.omegaZ+=dWz;
+        // Parte do efeito da branca "queima" no contato.
+        d1.spinSide*=0.8; d1.spinTop*=0.85;
+        limitarVelocidadeAngular(b1); limitarVelocidadeAngular(b2);
     }
     function aplicarReboteTabela(b,eixo,lado) {
         const d=b.userData;
@@ -4361,7 +4402,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         s.querySelector('span').textContent=ok?(lan.pingMs===null?'Conectado':Math.round(lan.pingMs)+' ms'):'Reconectando…';
     }
     setInterval(atualizarSelo,1000);
-    function conectar(endereco){
+    function conectar(endereco,silencioso){
         endereco=normalizarEndereco(endereco);if(!endereco){statusSrv('Digite o endereço mostrado na tela do servidor (ex.: 192.168.0.10:8080).','erro');return;}
         lan.endereco=endereco;lan.manualFechou=false;try{localStorage.setItem('sinucaServidorLan',endereco);}catch(e){}
         try{if(lan.ws){lan.ws.onclose=null;lan.ws.close();}}catch(e){}
@@ -4402,6 +4443,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         };
         ws.onclose=()=>{clearInterval(lan.timerPing);lan.pingMs=null;if(lan.canal&&lan.canal.readyState==='open')lan.canal.readyState='connecting';
             if(lan.manualFechou){statusSrv('Desconectado do servidor.','');return;}
+            if(silencioso){lan.manualFechou=true;statusSrv('Servidor '+lan.endereco+' não encontrado agora. Toque em ⚡ CONECTAR RÁPIDO quando ele estiver ligado.','erro');return;}
             lan.tentativas++;const espera=Math.min(8000,700*lan.tentativas);
             statusSrv((lan.conectando&&lan.tentativas<2?'Não consegui alcançar '+lan.endereco+'. Confira se o servidor está ligado e se os aparelhos estão no mesmo Wi-Fi. ':'Conexão com o servidor caiu. ')+'Nova tentativa em '+Math.round(espera/1000)+' s…','erro');
             setTimeout(()=>{if(!lan.manualFechou&&(!lan.ws||lan.ws.readyState>1))conectar(lan.endereco);},espera);};
@@ -4413,6 +4455,22 @@ function criarTexturaBolaMarmorizada(cor,num) {
     const enderecoSalvo=(()=>{try{return localStorage.getItem('sinucaServidorLan')||'';}catch(e){return '';}})();
     $('lan-server-addr').value=servidoPorHttp?location.host:enderecoSalvo;
     $('lan-server-connect').addEventListener('click',()=>conectar($('lan-server-addr').value));
+    // ⚡ CONECTAR RÁPIDO: se o jogo foi aberto pelo servidor, conecta pelo próprio
+    // endereço da página (zero digitação); senão usa o endereço salvo/ digitado.
+    function conectarRapido(){
+        const alvo=(servidoPorHttp&&location.host)||($('lan-server-addr').value||'').trim()||enderecoSalvo;
+        if(!alvo){statusSrv('Digite o endereço do servidor uma vez (ex.: 192.168.0.10:8080) — depois eu lembro e conecto sozinho.','erro');$('lan-server-addr').focus();return;}
+        if(servidoPorHttp&&location.host===alvo){conectar(alvo);return;}
+        // Confirma que é o servidor de sinuca antes de colar o endereço salvo.
+        fetch('http://'+normalizarEndereco(alvo)+'/api/info').then(r=>r.json()).then(i=>{if(i&&i.app==='sinuca-lan')conectar(normalizarEndereco(alvo));else statusSrv('O endereço '+normalizarEndereco(alvo)+' não é um servidor de sinuca.','erro');}).catch(()=>statusSrv('Não encontrei o servidor. Confira o endereço ou toque em ⚡ depois de ligar o servidor.','erro'));
+    }
+    $('lan-quick-connect').addEventListener('click',conectarRapido);
+    // AUTO-CONEXÃO ao abrir o jogo: se a página foi servida pelo servidor local,
+    // conecta sozinho (silencioso: sem spam de tentativas se estiver desligado).
+    (function autoConectar(){
+        if(servidoPorHttp){fetch('/api/info').then(r=>r.json()).then(i=>{if(i&&i.app==='sinuca-lan'){statusSrv('Servidor local detectado — conectando automaticamente…','aguarde');conectar(location.host,true);}}).catch(()=>{});}
+        else if(enderecoSalvo){statusSrv('Tentando o último servidor usado ('+enderecoSalvo+')…','aguarde');conectar(enderecoSalvo,true);}
+    })();
     $('lan-room-create').addEventListener('click',()=>{if(!lan.ws||lan.ws.readyState!==1){statusSrv('Conecte-se ao servidor primeiro.','erro');return;}lan.sala=null;lan.token=null;enviar({t:'create',nome:nomeJogador(),modo:modoRedeEscolhido});});
     $('lan-room-list').addEventListener('click',e=>{const b=e.target.closest('button[data-room]');if(!b||b.disabled)return;lan.sala=null;lan.token=null;enviar({t:'join',room:b.dataset.room,nome:nomeJogador()});});
     $('lan-room-leave').addEventListener('click',()=>{enviar({t:'leave'});lan.sala=null;lan.token=null;if(lan.canal){lan.canal.readyState='closed';}if(parImpar.canal===lan.canal){parImpar.ativo=false;parImpar.local=false;parImpar.canal=null;exibirPlacarParImpar();}$('lan-room-leave').style.display='none';statusSrv('Você saiu da sala.','');});
