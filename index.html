@@ -318,21 +318,6 @@
             <button id="fim-parimpar-menu" type="button" style="margin-top:8px;width:100%">VOLTAR AO MENU</button>
         </div>
     </div>
-    <div id="registro-modal" class="game-modal" aria-hidden="true" style="display:none;z-index:190">
-        <div class="phase-card" style="max-width:430px;text-align:center">
-            <h2 style="color:#ffd76a">CRIE SEU ID DE JOGADOR</h2>
-            <p class="menu-subtitle" id="registro-aviso">Entre com sua conta do Google ou jogue sem conta. Com ID, seus amigos te encontram no jogo online pelo seu e-mail.</p>
-            <button id="registro-google" type="button" style="margin:10px 0 4px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:#202124;border:none;border-radius:12px;padding:13px;font-weight:800;font-size:16px;box-shadow:0 3px 8px rgba(0,0,0,.35)"><svg viewBox="0 0 48 48" width="21" height="21" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.5 30.2 0 24 0 14.6 0 6.4 5.4 2.5 13.3l7.8 6.1C12.2 13.5 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.15-3.2-.44-4.7H24v9h12.4c-.5 2.9-2.2 5.4-4.7 7l7.6 5.9c4.4-4.1 6.8-10.1 6.8-17.2z"/><path fill="#FBBC05" d="M10.3 28.6A14.6 14.6 0 0 1 9.5 24c0-1.6.3-3.2.8-4.6l-7.8-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.5 10.7l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.2-8.3 2.2-6.4 0-11.8-4-13.7-9.5l-7.8 6.1C6.4 42.6 14.6 48 24 48z"/></svg>ENTRAR COM GOOGLE</button>
-            <p id="registro-google-hint" style="display:none;margin:8px 0 0;font-size:12.5px;color:#ffd76a;text-shadow:0 1px 2px rgba(0,0,0,.5);line-height:1.5">O seletor de contas do Google aparece quando o jogo tem um <b>Client ID OAuth</b> registrado (linha GOOGLE_CLIENT_ID no topo do arquivo) e está hospedado num endereço autorizado no Google Cloud. Enquanto isso, entre com seu e-mail abaixo — no celular ele aparece sugerido em um toque.</p>
-            <div id="registro-email-fallback" style="display:none;margin-top:10px">
-                <div class="lan-row" style="flex-direction:column;gap:8px">
-                    <input id="registro-email" maxlength="60" autocomplete="email" inputmode="email" placeholder="Seu e-mail — vira seu ID online" style="text-align:center;font-size:17px;padding:14px">
-                </div>
-                <button id="registro-criar" class="primary-action" type="button" style="margin-top:10px;width:100%">ENTRAR COM ESTE E-MAIL</button>
-            </div>
-            <button id="registro-depois" type="button" style="margin-top:10px;width:100%">JOGAR SEM CONTA</button>
-        </div>
-    </div>
 <div id="phase-menu" class="game-modal initial-menu" aria-hidden="false" style="display:flex">
         <div class="phase-card">
             <div class="menu-kicker">MODO SOLO</div>
@@ -432,60 +417,21 @@
         </div>
         <section id="online-box" style="border:2px solid rgba(126,217,87,.45);border-radius:14px;padding:12px;margin:12px 0;">
           <h3>JOGO ONLINE <span style="background:#4ecb5d">DE QUALQUER LUGAR</span></h3>
-          <p class="lan-hint">Com seu <b>ID</b>, o jogo <b>reconhece sozinho</b> os amigos que já jogaram com você: quando os dois tocam em ESTOU ONLINE, o duelo começa automático. Na primeira vez, desafie pelo e-mail do amigo.</p>
-          <div id="online-id-box" style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(196,211,219,.18);border-radius:10px;padding:8px 10px;margin:8px 0">
+          <p class="lan-hint">Cada jogador tem um <b>ID de 6 números</b> que funciona em qualquer lugar. Troquem os IDs uma vez: depois, com os dois online, o duelo começa <b>sozinho</b>.</p>
+          <div id="online-id-box" style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(196,211,219,.18);border-radius:10px;padding:8px 10px;margin:8px 0;flex-wrap:wrap">
             <div style="min-width:0">
-              <small style="color:#93a4ad;letter-spacing:.08em">SEU ID DE JOGADOR</small>
-              <p id="online-id-nome" style="margin:2px 0 0;font-weight:800;color:#ffd76a">—</p>
-              <small id="online-id-email" style="color:#93a4ad;word-break:break-all">cadastre-se para jogar online</small>
+              <small style="color:#93a4ad;letter-spacing:.08em">SEU ID DE JOGADOR — MANDE PRO SEU AMIGO</small>
+              <p id="online-id-numero" style="margin:2px 0 0;font-weight:800;color:#ffd76a;font-size:22px;letter-spacing:.14em">—</p>
+              <small id="online-id-nome" style="color:#93a4ad"></small>
             </div>
-            <button id="online-trocar-id" type="button" style="padding:8px 10px;flex:0 0 auto">TROCAR ID</button>
+            <button id="online-copy-id" type="button" style="padding:8px 12px;flex:0 0 auto">COPIAR ID</button>
           </div>
           <div class="lan-row"><button id="online-create" type="button" style="background:#2fae44">ESTOU ONLINE — QUERO JOGAR</button></div>
-          <div class="lan-row"><input id="online-code-in" maxlength="60" autocomplete="off" inputmode="email" placeholder="E-mail do jogador que você quer desafiar"><button id="online-join" type="button" style="background:#2a77c2">DESAFIAR</button></div>
+          <div class="lan-row"><input id="online-code-in" maxlength="6" inputmode="numeric" autocomplete="off" placeholder="ID do amigo (6 números)"><button id="online-join" type="button" style="background:#2a77c2">DESAFIAR</button></div>
           <div id="online-status">Toque em ESTOU ONLINE — com um amigo conhecido online, o duelo começa sozinho.</div>
         </section>
-        <section id="lan-server-box">
-          <h3>SERVIDOR LOCAL <span>RECOMENDADO</span></h3>
-          <p class="lan-hint">Um aparelho roda <b>servidor-sinuca.js</b> (ou INICIAR-SERVIDOR) e os dois jogadores abrem o endereço que ele mostra. <b>Aberto pelo servidor, o jogo conecta sozinho</b> — e entra automático na partida de qualquer amigo reconhecido.</p>
-          <div class="lan-row"><button id="lan-quick-connect" type="button" style="background:#2fae44;flex:1">⚡ CONECTAR RÁPIDO</button></div>
-          <div class="lan-row"><input id="lan-server-addr" inputmode="url" autocomplete="off" placeholder="IP do servidor, ex.: 192.168.0.10:8080"><button id="lan-server-connect" type="button">CONECTAR</button></div>
-          <div id="lan-server-status">Desconectado.</div>
-          <div class="lan-mode-choice" style="margin:8px 0 2px">
-            <button id="lan-srv-mode-parimpar" type="button" class="selected">PAR OU ÍMPAR</button>
-            <button id="lan-srv-mode-bolinho" type="button">JOGO DE BOLINHO · 3 BOLAS</button>
-          </div>
-          <div id="lan-code-box" style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(196,211,219,.18);border-radius:10px;padding:8px 10px;margin:8px 0">
-            <div style="min-width:0">
-              <small style="color:#93a4ad;letter-spacing:.08em">SEU CÓDIGO — MANDE PRO SEU AMIGO</small>
-              <p id="lan-my-code" style="margin:2px 0 0;font-weight:800;color:#ffd76a;font-size:20px;letter-spacing:.12em">—</p>
-            </div>
-            <button id="lan-copy-code" type="button" style="padding:8px 12px;flex:0 0 auto">COPIAR</button>
-          </div>
-          <div class="lan-row"><input id="lan-pair-code" maxlength="6" inputmode="numeric" autocomplete="off" placeholder="Código do amigo"><button id="lan-pair-connect" type="button" style="background:#2a77c2">CONECTAR</button></div>
-          <button id="lan-room-leave" type="button" style="display:none;margin-top:6px">ENCERRAR PARTIDA</button>
-          <div id="lan-server-urls"></div>
-        </section>
-        <details id="lan-direct">
-        <summary>Conexão direta sem servidor (troca de códigos)</summary>
-        <p>Conexão direta entre dois aparelhos na mesma rede Wi‑Fi. Sem servidor externo. Troquem os códigos de conexão: primeiro a oferta, depois a resposta.</p>
-        <div id="lan-status">Escolha quem cria a partida.</div>
-        <button id="lan-reset-codes" type="button">RESETAR CONEXÃO E APAGAR CÓDIGOS</button>
-        <button id="lan-create" type="button">CRIAR PARTIDA (JOGADOR 1)</button>
-        <p><small>Oferta criada no aparelho do jogador 1 — copie e envie ao jogador 2:</small></p>
-        <textarea id="lan-offer-out" readonly placeholder="A oferta aparecerá aqui"></textarea>
-        <button id="lan-copy-offer" type="button">COPIAR OFERTA</button>
-        <p><small>Jogador 1: cole aqui a resposta enviada pelo jogador 2:</small></p>
-        <textarea id="lan-answer-in" placeholder="Cole a resposta do jogador 2"></textarea>
-        <button id="lan-accept-answer" type="button">CONECTAR</button>
-        <hr class="lan-divider">
-        <p><small>Jogador 2: cole a oferta recebida do jogador 1:</small></p>
-        <textarea id="lan-offer-in" placeholder="Cole a oferta do jogador 1"></textarea>
-        <button id="lan-answer-create" type="button">GERAR RESPOSTA</button>
-        <p><small>Envie esta resposta de volta ao jogador 1:</small></p>
-        <textarea id="lan-answer-out" readonly placeholder="A resposta aparecerá aqui"></textarea>
-        <button id="lan-copy-answer" type="button">COPIAR RESPOSTA</button>
-        </details>
+        
+        
       </div>
     </div>
     <div id="lan-score"></div>
@@ -902,7 +848,7 @@
         // aparelho ou contra a CPU não dá prêmio.
         const ganhei=parImpar.vencedor===parImpar.jogador, premio=parImpar.local?100:0;
         if(ganhei&&premio){gameState.moedas+=premio;atualizarHUD(true);}
-        const st=document.getElementById('lan-status');
+        const st=document.getElementById('online-status');
         if(st)st.textContent=ganhei?('🏆 Você venceu o duelo'+(premio?(': +'+premio+' moedas de prêmio!'):'!')):('Você perdeu o duelo. Nada pago — boa sorte na próxima!');
     }
     function aplicarPlacarParImpar(){
@@ -943,8 +889,8 @@
             document.getElementById('lan-modal').style.display='none';document.getElementById('lan-modal').setAttribute('aria-hidden','true');
             if(host)enviarParImpar({type:'state',state:estadoParImpar()});else enviarParImpar({type:'sync'});
             const pfApresenta=(typeof lePerfil==='function')?lePerfil():null;
-            if(pfApresenta&&pfApresenta.email){try{channel.send(JSON.stringify({type:'apresenta',email:pfApresenta.email,nome:pfApresenta.nome}));}catch(e){}}
-            document.getElementById('lan-status').textContent='Conectado pela rede local. Jogo iniciado!';
+            if(pfApresenta&&pfApresenta.id){try{channel.send(JSON.stringify({type:'apresenta',id:String(pfApresenta.id),nome:pfApresenta.nome||'Jogador'}));}catch(e){}}
+            const elAberto=document.getElementById('online-status');if(elAberto)elAberto.textContent='Conexão aberta! Começando o duelo…';
         };
         channel.onmessage=event=>{let msg;try{msg=JSON.parse(event.data);}catch(e){return;}
             if(msg.type==='shot'&&host){if(parImpar.turno===2&&!gameState.jogadaAtiva&&!mesaMovendo){executarTacadaParImpar(msg.shot);zerarPuxadaRemota();}}
@@ -965,9 +911,9 @@
             }
             else if(msg.type==='sync'&&host)enviarParImpar({type:'state',state:estadoParImpar()});
             else if(msg.type==='denovo'){fecharFimParImpar();if(host)reiniciarDueloRede();}
-            else if(msg.type==='apresenta'&&msg.email&&typeof sinucaSalvarAmigo==='function')sinucaSalvarAmigo(msg.email,msg.nome);
+            else if(msg.type==='apresenta'&&msg.id&&typeof sinucaSalvarAmigo==='function')sinucaSalvarAmigo(msg.id,msg.nome);
         };
-        channel.onclose=()=>{document.getElementById('lan-status').textContent='Conexão local encerrada.';};
+        channel.onclose=()=>{const elFim=document.getElementById('online-status');if(elFim)elFim.textContent='A conexão com o outro jogador caiu.';};
     }
     function zerarPuxadaRemota(){rawForca=0;resetCuePullVisual();document.getElementById('power-meter').style.width='0%';document.getElementById('power-pct').textContent='';}
     function novaPeerConnection(){
@@ -982,10 +928,12 @@
         pc.oniceconnectionstatechange=()=>{
             const estado=pc.iceConnectionState;
             const textos={checking:'Procurando uma rota direta entre os aparelhos…',connected:'Rota direta encontrada; finalizando conexão…',completed:'Jogadores conectados pela rede!',failed:'Não foi possível achar uma rota. Confirme que os dois aparelhos estão na mesma rede Wi-Fi e que o roteador permite comunicação entre eles.',disconnected:'Conexão interrompida; tentando restabelecer…',closed:'Conexão encerrada.'};
-            if(textos[estado])document.getElementById('lan-status').textContent=textos[estado];
+            const stRota=document.getElementById('online-status');
+            if(textos[estado]&&stRota)stRota.textContent=textos[estado];
         };
         pc.onconnectionstatechange=()=>{
-            if(pc.connectionState==='failed')document.getElementById('lan-status').textContent='Conexão falhou. Toque em RESETAR CONEXÃO nos dois aparelhos e gere códigos novos.';
+            const stFalha=document.getElementById('online-status');
+            if(pc.connectionState==='failed'&&stFalha)stFalha.textContent='A conexão falhou. Toque em ESTOU ONLINE e conectem de novo.';
         };
         return pc;
     }
@@ -1197,7 +1145,7 @@
 
         function lePerfil(){try{return JSON.parse(localStorage.getItem(CHAVE_PERFIL)||'null');}catch(e){return null;}}
         function salvarPerfil(p){try{localStorage.setItem(CHAVE_PERFIL,JSON.stringify(p));}catch(e){}}
-        function perfilValido(p){return !!(p&&p.email&&p.nome);}
+        function perfilValido(p){return !!(p&&/^\d{6}$/.test(String(p.id||'')));}
         function hashId(texto){
             // FNV-1a: determinístico entre aparelhos — mesmo e-mail, mesmo ID de rede.
             let h=0x811c9dc5;
@@ -1205,90 +1153,54 @@
             for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}
             return h.toString(36);
         }
-        function idDeEmail(email){return PREFIXO_USUARIO+hashId(email);}
+        // ID DE JOGADOR: 6 números gerados do e-mail — mesmo ID em qualquer
+        // aparelho, e dá pra desafiar só pelos números.
+        function codigoNumerico(texto){
+            let h=0x811c9dc5;
+            const t=String(texto||'').trim().toLowerCase();
+            for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}
+            return String(100000+(h%900000));
+        }
+        function idDeJogador(p){return PREFIXO_USUARIO+'id'+String((p&&p.id)||'');}
         function emailOk(e){return /^\S+@\S+\.\S+$/.test((e||'').trim());}
         function onlineStatus(t){const el=document.getElementById('online-status');if(el)el.textContent=t;}
         // AMIGOS: quem já jogou com você fica salvo no aparelho — quando os
         // dois estiverem conectados, o duelo começa sozinho, sem digitar nada.
         window.lePerfil=lePerfil; window.emailOk=emailOk;
         const CHAVE_AMIGOS='sinucaAmigos50';
-        function leAmigos(){try{return JSON.parse(localStorage.getItem(CHAVE_AMIGOS)||'[]');}catch(e){return [];}}
-        function salvarAmigo(email,nome){
-            if(!emailOk(email))return;
-            const e=String(email).trim().toLowerCase();
-            const pf=lePerfil();if(pf&&pf.email&&e===String(pf.email).trim().toLowerCase())return;
-            const lista=leAmigos().filter(a=>a.email!==e);
-            lista.unshift({email:e,nome:String(nome||e.split('@')[0]).slice(0,20)});
+        function leAmigos(){
+            let lista=[];try{lista=JSON.parse(localStorage.getItem(CHAVE_AMIGOS)||'[]');}catch(e){return [];}
+            lista=lista.map(a=>a.id?a:{id:codigoNumerico(a.email),nome:a.nome}); // antigos por e-mail → número
+            return lista.filter(a=>/^\d{6}$/.test(String(a.id||'')));
+        }
+        function salvarAmigo(id,nome){
+            const cod=String(id||'').replace(/\D/g,'');
+            if(!/^\d{6}$/.test(cod))return;
+            const pf=lePerfil();if(pf&&String(pf.id)===cod)return;
+            const lista=leAmigos().filter(a=>String(a.id)!==cod);
+            lista.unshift({id:cod,nome:String(nome||('Amigo '+cod)).slice(0,20)});
             try{localStorage.setItem(CHAVE_AMIGOS,JSON.stringify(lista.slice(0,20)));}catch(err){}
         }
         window.sinucaSalvarAmigo=salvarAmigo;
 
-        // ---------- Cadastro do ID (inicio do jogo) ----------
-        const regModal=document.getElementById('registro-modal');
-        function abrirRegistro(msg){
-            if(msg)document.getElementById('registro-aviso').textContent=msg;
-            regModal.style.display='flex';regModal.setAttribute('aria-hidden','false');
-            const campo=document.getElementById('registro-email');
-            if(campo)setTimeout(()=>{try{campo.focus();}catch(e){}},250);
-        }
-        function fecharRegistro(){regModal.style.display='none';regModal.setAttribute('aria-hidden','true');}
-        // Client ID OAuth do Google (console.cloud.google.com → APIs e Serviços →
-        // Credenciais → Criar credencial → ID do cliente OAuth → Aplicativo da Web,
-        // com a origem do site onde o jogo estiver hospedado em "Origens JavaScript").
-        // Preencha esta linha para o clique em ENTRAR COM GOOGLE abrir o seletor
-        // de contas do Google de verdade, igual aos sites grandes.
-        const GOOGLE_CLIENT_ID='';
-        function entrarComGoogle(){
-            if(GOOGLE_CLIENT_ID){
-                // Login Google REAL: o popup do Google mostra as contas do aparelho.
-                const usar=(cred)=>{
-                    try{
-                        const b64=cred.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
-                        const p=JSON.parse(decodeURIComponent(b64.split('').map(c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0')).join('')));
-                        if(p.email){
-                            const bruto=p.email.split('@')[0].replace(/[._\-0-9]+/g,' ').trim().split(/\s+/).filter(Boolean).join(' ')||'Jogador';
-                            salvarPerfil({nome:(p.name||p.given_name||bruto.charAt(0).toUpperCase()+bruto.slice(1)),email:p.email,criadoEm:Date.now()});
-                            fecharRegistro();atualizarIdNaTela();
-                        }
-                    }catch(e){}
-                };
-                const iniciar=()=>{
-                    google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:r=>usar(r.credential),auto_select:true});
-                    google.accounts.id.renderButton(document.getElementById('registro-google'),{theme:'outline',size:'large',text:'signin_with',shape:'pill'});
-                    google.accounts.id.prompt();
-                };
-                if(window.google&&google.accounts&&google.accounts.id)iniciar();
-                else{const sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';sc.onload=iniciar;document.head.appendChild(sc);}
-                return;
-            }
-            // Sem Client ID ainda: mostra o caminho e abre a entrada por e-mail,
-            // que o celular sugere em um toque.
-            const hintEl=document.getElementById('registro-google-hint');if(hintEl)hintEl.style.display='block';
-            const fb=document.getElementById('registro-email-fallback');if(fb)fb.style.display='block';
-            const campo=document.getElementById('registro-email');
-            if(campo)setTimeout(()=>{try{campo.focus();}catch(e){}},250);
-        }
-        document.getElementById('registro-google').addEventListener('click',entrarComGoogle);
-        document.getElementById('registro-criar').addEventListener('click',()=>{
-            const email=(document.getElementById('registro-email').value||'').trim();
-            if(!emailOk(email)){alert('Toque no campo e escolha o e-mail que o celular sugerir — ele vira seu ID online.');return;}
-            // O nome sai do proprio e-mail (parte antes do @): so o e-mail basta.
-            const bruto=email.split('@')[0].replace(/[._\-0-9]+/g,' ').trim().split(/\s+/).filter(Boolean).join(' ');
-            const nome=(bruto||'Jogador');
-            const nomeFinal=nome.charAt(0).toUpperCase()+nome.slice(1);
-            salvarPerfil({nome:nomeFinal,email,criadoEm:Date.now()});
-            fecharRegistro();
-            atualizarIdNaTela();
-            onlineStatus('ID criado! Toque em ESTOU ONLINE para poder ser desafiado.');
-        });
-        document.getElementById('registro-depois').addEventListener('click',fecharRegistro);
+        // ---------- ID DE JOGADOR: criado sozinho, sem cadastro ----------
+        // Sem conta, sem e-mail, sem janela: na primeira vez o jogo gera um
+        // ID de 6 números aleatório e guarda no aparelho — é seu pra sempre.
+        // Quem já tinha um ID criado pelo e-mail continua com o mesmo número.
+        (function garantirPerfil(){
+            const pf=lePerfil();
+            if(pf&&pf.email&&!pf.id){pf.id=codigoNumerico(pf.email);salvarPerfil(pf);return;}
+            if(pf&&pf.id)return;
+            salvarPerfil({nome:'Jogador',id:String(Math.floor(100000+Math.random()*900000)),criadoEm:Date.now()});
+        })();
         function atualizarIdNaTela(){
             const pf=lePerfil();
-            document.getElementById('online-id-nome').textContent=pf?pf.nome:'— sem ID —';
-            document.getElementById('online-id-email').textContent=pf?pf.email:'cadastre-se para jogar online';
+            const num=document.getElementById('online-id-numero');
+            if(num)num.textContent=perfilValido(pf)?String(pf.id):'—';
+            const nome=document.getElementById('online-id-nome');
+            if(nome)nome.textContent=pf&&pf.id?('Jogador '+(pf.nome&&pf.nome!=='Jogador'?pf.nome:'#'+String(pf.id).slice(0,3))):'—';
         }
         atualizarIdNaTela();
-        if(!perfilValido(lePerfil()))abrirRegistro('Toque no campo abaixo e escolha o e-mail do seu celular — um toque e seu ID fica pronto.');
 
         // ---------- Conexao online (mesma interface de canal do jogo) ----------
         function adaptarConexaoOnline(conn){
@@ -1308,28 +1220,23 @@
             return new Peer(idSala||undefined,config);
         }
         function destruirPeer(){if(peerOnline){try{peerOnline.destroy();}catch(e){}peerOnline=null;disponivel=false;}}
-        function exigirPerfil(){
-            const pf=lePerfil();
-            if(!perfilValido(pf)){abrirRegistro('Você precisa de um ID para jogar online. Cadastre-se:');return null;}
-            return pf;
-        }
         let varredura=null;
         // AUTOMÁTICO: ao ficar ONLINE, o jogo varre os amigos conhecidos.
         // Quem tem o e-mail "maior" dispara o desafio; quem tem o "menor"
         // aguarda a ligação — assim os dois nunca se conectam cruzado.
         function autoDesafiarAmigos(pf){
-            const meu=String(pf.email).trim().toLowerCase();
-            const alvos=leAmigos().filter(a=>String(a.email).trim().toLowerCase()<meu);
+            const meu=String(pf.id);
+            const alvos=leAmigos().filter(a=>Number(a.id)<Number(meu));
             if(!alvos.length){onlineStatus('ONLINE como '+pf.nome+' — amigos conhecidos entram em duelo com você sozinhos. Aguardando desafios…');return;}
             varredura={ativos:alvos.length,conectou:false};
             onlineStatus('ONLINE como '+pf.nome+' — procurando seus amigos na internet…');
             alvos.forEach(a=>{
-                let conn;try{conn=peerOnline.connect(idDeEmail(a.email),{reliable:true});}catch(e){varredura.ativos--;return;}
+                let conn;try{conn=peerOnline.connect(idDeJogador(a),{reliable:true});}catch(e){varredura.ativos--;return;}
                 conn.on('open',()=>{
                     if(!varredura||varredura.conectou)return;
-                    varredura.conectou=true;desafioPendente=a.email;
-                    salvarAmigo(a.email,a.nome);
-                    try{conn.send(JSON.stringify({type:'apresenta',email:pf.email,nome:pf.nome}));}catch(e){}
+                    varredura.conectou=true;desafioPendente='ID '+a.id;
+                    salvarAmigo(a.id,a.nome);
+                    try{conn.send(JSON.stringify({type:'apresenta',id:String(pf.id),nome:pf.nome}));}catch(e){}
                     onlineStatus('Seu amigo '+(a.nome||a.email)+' está online! Começando o duelo…');
                     configurarCanalParImpar(adaptarConexaoOnline(conn),false);
                     const m=document.getElementById('lan-modal');m.style.display='none';m.setAttribute('aria-hidden','true');
@@ -1341,11 +1248,11 @@
         // Fica visível na internet com o ID do e-mail e aceita desafios (anfitrião).
         function ficarOnline(quandoAbrir){
             const pf=lePerfil();
-            if(!perfilValido(pf)){abrirRegistro('Você precisa de um ID para jogar online. Cadastre-se:');return;}
+            if(!perfilValido(pf))return;
             if(peerOnline&&disponivel){quandoAbrir&&quandoAbrir();return;}
             destruirPeer();
-            onlineStatus('Entrando na internet como '+pf.nome+'…');
-            peerOnline=criarPeerOnline(idDeEmail(pf.email));
+            onlineStatus('Entrando na internet…');
+            peerOnline=criarPeerOnline(idDeJogador(pf));
             peerOnline.on('open',()=>{
                 disponivel=true;
                 quandoAbrir&&quandoAbrir();
@@ -1368,7 +1275,7 @@
             peerOnline.on('connection',conn=>{
                 if(conexaoAceita){try{conn.close();}catch(e){}return;}
                 conexaoAceita=true;
-                conn.on('data',d=>{let m=null;if(typeof d==='string'){try{m=JSON.parse(d);}catch(e){}}else m=d;if(m&&m.type==='apresenta')salvarAmigo(m.email,m.nome);});
+                conn.on('data',d=>{let m=null;if(typeof d==='string'){try{m=JSON.parse(d);}catch(e){}}else m=d;if(m&&m.type==='apresenta')salvarAmigo(m.id,m.nome);});
                 const canal=adaptarConexaoOnline(conn);
                 configurarCanalParImpar(canal,true);
                 conn.on('open',()=>{
@@ -1378,29 +1285,35 @@
             });
         }
         document.getElementById('online-create').addEventListener('click',()=>ficarOnline(null));
-        document.getElementById('online-trocar-id').addEventListener('click',()=>{
+        document.getElementById('online-copy-id').addEventListener('click',()=>{
             const pf=lePerfil();
-            abrirRegistro('Troque o e-mail do seu ID.');
-            document.getElementById('registro-email').value=pf?pf.email:'';
+            if(!perfilValido(pf))return;
+            const num=String(pf.id);
+            const txt='Meu ID do SinucaPro: '+num;
+            const done=()=>onlineStatus('ID copiado: '+num+'. Mande pro seu amigo!');
+            const alternativo=()=>{const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();ta.setSelectionRange(0,txt.length);try{document.execCommand('copy');done();}catch(e){onlineStatus('Não deu pra copiar. Seu ID: '+num);}document.body.removeChild(ta);};
+            if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(done).catch(alternativo);
+            else alternativo();
         });
         // Busca de jogador pelo e-mail: conecta direto no ID de rede dele.
         document.getElementById('online-join').addEventListener('click',()=>{
-            const pf=exigirPerfil();if(!pf)return;
-            const emailBusca=(document.getElementById('online-code-in').value||'').trim();
-            if(!emailOk(emailBusca)){onlineStatus('Digite o e-mail do jogador que você quer desafiar.');return;}
-            if(emailBusca.toLowerCase()===pf.email.trim().toLowerCase()){onlineStatus('Esse é o seu próprio e-mail! Convide um amigo.');return;}
+            const pf=lePerfil();if(!perfilValido(pf))return;
+            const soDigitos=(document.getElementById('online-code-in').value||'').replace(/\D/g,'');
+            if(soDigitos.length<6){onlineStatus('Digite os 6 números do ID do seu amigo.');return;}
+            if(soDigitos===String(pf.id)){onlineStatus('Esse é o SEU ID! Mande ele pro seu amigo digitar.');return;}
+            const rotulo='ID '+soDigitos, alvoId=PREFIXO_USUARIO+'id'+soDigitos;
             ficarOnline(()=>{
-                desafioPendente=emailBusca;
-                const alvo=idDeEmail(emailBusca);
-                onlineStatus('Procurando '+emailBusca+' na internet…');
+                desafioPendente=rotulo;
+                const alvo=alvoId;
+                onlineStatus('Procurando o '+rotulo+' na internet…');
                 let conn;
                 try{conn=peerOnline.connect(alvo,{reliable:true});}catch(e){onlineStatus('Não deu para iniciar o desafio. Tente de novo.');return;}
                 const canal=adaptarConexaoOnline(conn);
                 configurarCanalParImpar(canal,false);
                 conn.on('open',()=>{
                     desafioPendente=null;
-                    salvarAmigo(emailBusca);
-                    try{conn.send(JSON.stringify({type:'apresenta',email:pf.email,nome:pf.nome}));}catch(e){}
+                    salvarAmigo(soDigitos);
+                    try{conn.send(JSON.stringify({type:'apresenta',id:String(pf.id),nome:pf.nome}));}catch(e){}
                     onlineStatus('Jogador encontrado! Começando o duelo…');
                     const m=document.getElementById('lan-modal');m.style.display='none';m.setAttribute('aria-hidden','true');
                 });
@@ -1408,11 +1321,9 @@
         });
     })();
     document.getElementById('lan-menu-entry').addEventListener('click',()=>{const m=document.getElementById('lan-modal');m.style.display='flex';m.setAttribute('aria-hidden','false');});
-    function selecionarModoRede(modo){modoRedeEscolhido=modo==='bolinho'?'bolinho':'parimpar';['parimpar','bolinho'].forEach(m=>{const on=modoRedeEscolhido===m;['lan-mode-'+m,'lan-srv-mode-'+m].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('selected',on);});});document.getElementById('lan-status').textContent=modoRedeEscolhido==='bolinho'?'Jogo de Bolinho: 3 bolas; quem encaçapar a última vence.':'Par ou Ímpar: monte de 14 bolas (7 pares x 7 ímpares) encostado na tabela, e o castigo (bola 1) colado no outro extremo; limpe o grupo e derrube a 1 para vencer. Derrubá-la antes da hora = derrota.';}
+    function selecionarModoRede(modo){modoRedeEscolhido=modo==='bolinho'?'bolinho':'parimpar';['parimpar','bolinho'].forEach(m=>{const on=modoRedeEscolhido===m;['lan-mode-'+m,'lan-srv-mode-'+m].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('selected',on);});});const elDesc=document.getElementById('online-status');if(elDesc&&elDesc.textContent.indexOf('ONLINE')!==0)elDesc.textContent=modoRedeEscolhido==='bolinho'?'Jogo de Bolinho: 3 bolas; quem encaçapar a última vence.':'Par ou Ímpar: limpe seu grupo e derrube a bola 1 para vencer. Derrubá-la antes da hora = derrota.';}
     document.getElementById('lan-mode-parimpar').addEventListener('click',()=>selecionarModoRede('parimpar'));
     document.getElementById('lan-mode-bolinho').addEventListener('click',()=>selecionarModoRede('bolinho'));
-    document.getElementById('lan-srv-mode-parimpar').addEventListener('click',()=>selecionarModoRede('parimpar'));
-    document.getElementById('lan-srv-mode-bolinho').addEventListener('click',()=>selecionarModoRede('bolinho'));
     function cpuAlvosLegais(){
         const ativas=bolas.filter(b=>!b.userData.isBranca&&b.userData.ativa&&!b.userData.caindo);
         if(parImpar.modo==='bolinho')return ativas;
@@ -1890,31 +1801,6 @@
     document.getElementById('cpu-bolinho').addEventListener('click',()=>iniciarParImpar(1,false,'bolinho','cpu','pro'));
     document.getElementById('lan-close').addEventListener('click',()=>{const m=document.getElementById('lan-modal');m.style.display='none';m.setAttribute('aria-hidden','true');});
     ['phase-menu','lan-modal'].forEach(id=>{const m=document.getElementById(id);if(!m)return;const sync=()=>{const aberto=m.style.display&&m.style.display!=='none';m.setAttribute('aria-hidden',aberto?'false':'true');};new MutationObserver(sync).observe(m,{attributes:true,attributeFilter:['style']});});
-    document.getElementById('lan-reset-codes').addEventListener('click',()=>{
-        try { if(parImpar.canal){parImpar.canal.onclose=null;parImpar.canal.close();} } catch(e) {}
-        try { if(parImpar.pc){parImpar.pc.ondatachannel=null;parImpar.pc.close();} } catch(e) {}
-        if(parImpar.aposta&&!parImpar.apostaLiquidada){gameState.moedas+=parImpar.aposta;atualizarHUD(true);}
-        parImpar.aposta=0;parImpar.apostaLiquidada=false;
-        parImpar.pc=null;parImpar.canal=null;parImpar.ativo=false;parImpar.local=false;parImpar.host=false;parImpar.vencedor=null;parImpar.turno=1;parImpar.grupos={1:null,2:null};
-        ['lan-offer-out','lan-answer-in','lan-offer-in','lan-answer-out'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-        document.getElementById('lan-status').textContent='Conexão encerrada e todos os códigos apagados. Crie uma nova partida para começar de novo.';
-        exibirPlacarParImpar();
-    });
-    document.getElementById('lan-create').addEventListener('click',async()=>{try{
-        if(parImpar.pc)parImpar.pc.close();const pc=novaPeerConnection();parImpar.pc=pc;parImpar.host=true;parImpar.jogador=1;const ch=pc.createDataChannel('sinuca-par-impar',{ordered:true});configurarCanalParImpar(ch,true);
-        const offer=await pc.createOffer();await pc.setLocalDescription(offer);document.getElementById('lan-status').textContent='Buscando endereços diretos da rede (pode levar alguns segundos)…';await aguardarCandidatosLocais(pc);const candidatos=validarDescricaoComCandidatos(pc);document.getElementById('lan-offer-out').value=JSON.stringify(pc.localDescription);document.getElementById('lan-status').textContent='Oferta pronta ('+candidatos+' rotas encontradas). Envie-a ao jogador 2.';
-    }catch(e){document.getElementById('lan-status').textContent='Não foi possível criar oferta: '+e.message;}});
-    document.getElementById('lan-answer-create').addEventListener('click',async()=>{try{
-        const offer=JSON.parse(document.getElementById('lan-offer-in').value);if(!offer||offer.type!=='offer')throw new Error('Oferta inválida.');
-        if(parImpar.pc)parImpar.pc.close();const pc=novaPeerConnection();parImpar.pc=pc;parImpar.host=false;parImpar.jogador=2;pc.ondatachannel=e=>configurarCanalParImpar(e.channel,false);
-        await pc.setRemoteDescription(offer);const answer=await pc.createAnswer();await pc.setLocalDescription(answer);document.getElementById('lan-status').textContent='Buscando endereços diretos da rede (pode levar alguns segundos)…';await aguardarCandidatosLocais(pc);const candidatos=validarDescricaoComCandidatos(pc);document.getElementById('lan-answer-out').value=JSON.stringify(pc.localDescription);document.getElementById('lan-status').textContent='Resposta pronta ('+candidatos+' rotas encontradas). Envie-a de volta ao jogador 1.';
-    }catch(e){document.getElementById('lan-status').textContent='Não foi possível gerar resposta: '+e.message;}});
-    document.getElementById('lan-accept-answer').addEventListener('click',async()=>{try{
-        if(!parImpar.pc||!parImpar.host)throw new Error('Crie primeiro uma partida como jogador 1.');const answer=JSON.parse(document.getElementById('lan-answer-in').value);if(!answer||answer.type!=='answer')throw new Error('Resposta inválida.');await parImpar.pc.setRemoteDescription(answer);document.getElementById('lan-status').textContent='Conectando ao aparelho do jogador 2…';
-    }catch(e){document.getElementById('lan-status').textContent='Não foi possível conectar: '+e.message;}});
-    async function copiarCampo(id){const e=document.getElementById(id);e.focus();e.select();try{await navigator.clipboard.writeText(e.value);}catch(err){document.execCommand('copy');}}
-    document.getElementById('lan-copy-offer').addEventListener('click',()=>copiarCampo('lan-offer-out'));
-    document.getElementById('lan-copy-answer').addEventListener('click',()=>copiarCampo('lan-answer-out'));
     function salvarProgresso() {
         try {
             localStorage.setItem('sinucaBarDoBairro', JSON.stringify({
@@ -4460,239 +4346,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
 })();
 </script>
 
-<script id="sinuca-servidor-local">
-// Cliente do servidor local (WebSocket): salas, retransmissão das jogadas e reconexão automática.
-(function(){
-    const $=id=>document.getElementById(id);
-    const lan={ws:null,endereco:'',sala:null,token:null,host:false,canal:null,conectando:false,tentativas:0,pingMs:null,timerPing:null,manualFechou:false,parNome:null};
-    window.__lanServidor=lan;
-    const statusSrv=(t,cor)=>{const e=$('lan-server-status');if(e){e.textContent=t;e.dataset.estado=cor||'';}};
-    function nomeJogador(){const pf=(typeof lePerfil==='function')?lePerfil():null;if(pf&&pf.email)return String(pf.email).trim();return 'Jogador '+(1+Math.floor(Math.random()*90));}
-    function normalizarEndereco(v){v=(v||'').trim().replace(/^https?:\/\//,'').replace(/^wss?:\/\//,'').replace(/\/.*$/,'');if(v&&!/:\d+$/.test(v))v+=':8080';return v;}
-    function enviar(o){if(lan.ws&&lan.ws.readyState===1)lan.ws.send(JSON.stringify(o));}
-    // CONEXÃO POR CÓDIGO: o e-mail do ID do jogador gera um CÓDIGO de 6
-    // números, sempre o mesmo pro mesmo e-mail. Quem recebe o código só
-    // digita os números e conecta — sem e-mail, sem sala, sem nome.
-    const pareamento={alvo:'',ativo:false};
-    function codigoDeEmail(email){
-        // FNV-1a do e-mail (mesma família do ID online) → 6 dígitos.
-        let h=0x811c9dc5;const t=String(email||'').trim().toLowerCase();
-        for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}
-        return String(100000+(h%900000)); // sempre 6 dígitos (100000 a 999999)
-    }
-    function codigoDoId(){
-        const pf=(typeof lePerfil==='function')?lePerfil():null;
-        if(!pf||!pf.email)return null;
-        return codigoDeEmail(pf.email);
-    }
-    // AUTOMÁTICO: quando um amigo conhecido entra no mesmo servidor, o jogo
-    // reconhece o código dele e entra na partida sozinho.
-    function autoConectarAmigosLocais(salas){
-        if(pareamento.ativo||!lan.ws||lan.ws.readyState!==1)return;
-        if(parImpar.ativo&&parImpar.local&&lan.canal&&parImpar.canal===lan.canal)return;
-        const pf=(typeof lePerfil==='function')?lePerfil():null;
-        if(!pf||!pf.email)return;
-        const meuCod=codigoDeEmail(pf.email);
-        let lista=[];try{lista=JSON.parse(localStorage.getItem('sinucaAmigos50')||'[]');}catch(e){}
-        const codigos=new Set(lista.map(a=>codigoDeEmail(a.email)));
-        const s=(salas||[]).find(r=>r.vagas&&String(r.nome).trim()!==meuCod&&codigos.has(String(r.nome).trim()));
-        if(s){enviar({t:'leave'});lan.sala=null;lan.token=null;enviar({t:'join',room:s.id,nome:nomeJogador()});statusSrv('Seu amigo está no servidor! Entrando na partida…','aguarde');}
-    }
-    function atualizarCodigoNaTela(){
-        const el=$('lan-my-code');if(!el)return;
-        const cod=codigoDoId();
-        el.textContent=cod||'cadastre seu ID';
-        if(!cod)el.style.color='#93a4ad';
-    }
-    function aguardarDesafio(){
-        const cod=codigoDoId();
-        if(!cod||!lan.ws||lan.ws.readyState!==1||lan.sala)return;
-        lan.sala=null;lan.token=null;
-        enviar({t:'create',nome:cod,modo:modoRedeEscolhido});
-        statusSrv('Aguardando alguém conectar com o seu código…','aguarde');
-    }
-    function copiarCodigo(){
-        const cod=codigoDoId();
-        if(!cod){if(typeof abrirRegistro==='function')abrirRegistro('Cadastre seu e-mail no ID para gerar seu código de jogo.');return;}
-        const txt='Meu código no SinucaPro: '+cod;
-        const done=()=>statusSrv('Código copiado: '+cod+'. Mande pro seu amigo!','ok');
-        if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>copiarCodigoAlternativo(txt,done));}
-        else copiarCodigoAlternativo(txt,done);
-    }
-    function copiarCodigoAlternativo(txt,done){
-        const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
-        document.body.appendChild(ta);ta.focus();ta.select();ta.setSelectionRange(0,txt.length);
-        try{document.execCommand('copy');done();}catch(e){statusSrv('Não deu pra copiar. Seu código: '+codigoDoId(),'erro');}
-        document.body.removeChild(ta);
-    }
-    function tentarEntrarSalaAlvo(salas){
-        if(!pareamento.ativo||lan.sala||!lan.ws||lan.ws.readyState!==1)return;
-        const s=(salas||[]).find(r=>String(r.nome).trim()===pareamento.alvo&&r.vagas);
-        if(s){enviar({t:'leave'});lan.sala=null;lan.token=null;enviar({t:'join',room:s.id,nome:nomeJogador()});statusSrv('Código '+pareamento.alvo+' encontrado! Entrando na partida…','aguarde');}
-    }
-    function conectarPorCodigo(){
-        if(!lan.ws||lan.ws.readyState!==1){statusSrv('Conecte-se ao servidor primeiro (⚡ CONECTAR RÁPIDO).','erro');return;}
-        const pf=(typeof lePerfil==='function')?lePerfil():null;
-        if(!pf||!pf.email){if(typeof abrirRegistro==='function')abrirRegistro('Você precisa de um ID (e-mail) para jogar no servidor local.');return;}
-        const cod=($('lan-pair-code').value||'').replace(/\D/g,'');
-        const meu=codigoDoId();
-        if(cod.length<6){statusSrv('Digite o código de 6 números do seu amigo.','erro');return;}
-        if(meu&&cod===meu){statusSrv('Esse é o SEU código! Mande ele pro seu amigo digitar.','erro');return;}
-        pareamento.alvo=cod;pareamento.ativo=true;
-        statusSrv('Procurando o código '+cod+' no servidor…','aguarde');
-        tentarEntrarSalaAlvo();
-    }
-    function desenharSalas(salas){
-        const box=$('lan-room-list');if(!box)return;
-        if(!salas.length){box.innerHTML='<div class="lan-room-empty">Nenhuma mesa aberta. Crie uma sala e peça ao outro jogador para entrar.</div>';return;}
-        box.innerHTML=salas.map(s=>'<div class="lan-room"><div><strong>'+s.nome.replace(/[<>&]/g,'')+'</strong><small>Sala '+s.id+' · '+(s.modo==='bolinho'?'Jogo de Bolinho':'Par ou Ímpar')+' · '+s.jogadores+'/2</small></div><button type="button" data-room="'+s.id+'" '+(s.vagas?'':'disabled')+'>'+(s.vagas?'ENTRAR':'CHEIA')+'</button></div>').join('');
-    }
-    function criarCanal(){
-        const canal={readyState:'connecting',onopen:null,onmessage:null,onclose:null,
-            send(d){enviar({t:'relay',data:d});},
-            close(){this.readyState='closed';}};
-        lan.canal=canal;return canal;
-    }
-    function iniciarPing(){clearInterval(lan.timerPing);lan.timerPing=setInterval(()=>enviar({t:'ping',ts:performance.now()}),2000);}
-    function atualizarSelo(){
-        const s=$('lan-net-badge');if(!s)return;
-        const ativo=parImpar.ativo&&parImpar.local&&lan.canal&&parImpar.canal===lan.canal;
-        s.style.display=ativo?'flex':'none';if(!ativo)return;
-        const ok=lan.canal.readyState==='open';
-        s.className=ok?(lan.pingMs!==null&&lan.pingMs>120?'medio':'bom'):'ruim';
-        s.querySelector('span').textContent=ok?(lan.pingMs===null?'Conectado':Math.round(lan.pingMs)+' ms'):'Reconectando…';
-    }
-    setInterval(atualizarSelo,1000);
-    function conectar(endereco,silencioso){
-        endereco=normalizarEndereco(endereco);if(!endereco){statusSrv('Digite o endereço mostrado na tela do servidor (ex.: 192.168.0.10:8080).','erro');return;}
-        lan.endereco=endereco;lan.manualFechou=false;try{localStorage.setItem('sinucaServidorLan',endereco);}catch(e){}
-        try{if(lan.ws){lan.ws.onclose=null;lan.ws.close();}}catch(e){}
-        statusSrv(silencioso?'Procurando o servidor ('+endereco+')…':'Conectando a '+endereco+'…','aguarde');lan.conectando=true;
-        let ws;try{ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+endereco+'/ws');}catch(e){statusSrv('Endereço inválido: '+e.message,'erro');return;}
-        lan.ws=ws;
-        ws.onopen=()=>{lan.conectando=false;lan.tentativas=0;statusSrv('Conectado ao servidor '+endereco+'.','ok');enviar({t:'hello',nome:nomeJogador()});iniciarPing();
-            if(lan.sala&&lan.token)enviar({t:'join',room:lan.sala,token:lan.token,nome:nomeJogador()});
-            atualizarCodigoNaTela();if(!lan.sala)setTimeout(aguardarDesafio,400);
-            fetch('http://'+endereco+'/api/info').then(r=>r.json()).then(info=>{const u=$('lan-server-urls');if(u&&info.ips)u.innerHTML='Endereço para o outro aparelho: '+info.ips.map(i=>'<b>http://'+i.ip+':'+info.porta+'</b>').join(' ou ');}).catch(()=>{});};
-        ws.onmessage=ev=>{let m;try{m=JSON.parse(ev.data);}catch(e){return;}
-            if(m.t==='rooms'){autoConectarAmigosLocais(m.rooms||[]);tentarEntrarSalaAlvo(m.rooms||[]);desenharSalas(m.rooms||[]);}
-            else if(m.t==='pong'){const ms=performance.now()-m.ts;lan.pingMs=lan.pingMs===null?ms:lan.pingMs*0.7+ms*0.3;}
-            else if(m.t==='error')statusSrv(m.msg,'erro');
-            else if(m.t==='joined'){pareamento.ativo=false;
-                const reconexao=lan.sala===m.room&&lan.canal&&parImpar.canal===lan.canal&&parImpar.ativo;
-                lan.sala=m.room;lan.token=m.token;lan.host=m.host;
-                if(!reconexao){
-                    if(typeof selecionarModoRede==='function'&&m.modo)selecionarModoRede(m.modo);
-                    try{if(parImpar.pc){parImpar.pc.close();parImpar.pc=null;}}catch(e){}
-                    parImpar.jogador=m.host?1:2;configurarCanalParImpar(criarCanal(),m.host);
-                    statusSrv(m.host?'Aguardando o outro jogador conectar…':'Entrando na partida…','aguarde');
-                } else statusSrv('Reconectado à partida.','ok');
-                $('lan-room-leave').style.display='inline-block';
-            }
-            else if(m.t==='peer-joined'){
-                lan.parNome=m.nome;const c=lan.canal;if(!c)return;
-                if(c.readyState!=='open'){c.readyState='open';
-                    if(parImpar.ativo&&parImpar.canal===c){if(lan.host)enviarParImpar({type:'state',state:estadoParImpar()});else enviarParImpar({type:'sync'});document.getElementById('status-text').innerText='Conexão restabelecida com '+m.nome+'.';}
-                    else if(c.onopen)c.onopen();}
-                statusSrv('Jogando contra '+m.nome+'.','ok');
-            }
-            else if(m.t==='peer-left'){
-                if(lan.canal){lan.canal.readyState='connecting';}
-                document.getElementById('status-text').innerText=m.temporario?'O outro jogador perdeu a conexão. Aguardando ele voltar…':'O outro jogador saiu da mesa.';
-                statusSrv(m.temporario?'Adversário desconectado — a mesa fica reservada por 90 s.':'O adversário saiu da sala.','aguarde');
-            }
-            else if(m.t==='relay'&&lan.canal&&lan.canal.onmessage)lan.canal.onmessage({data:m.data});
-        };
-        ws.onclose=()=>{clearInterval(lan.timerPing);lan.pingMs=null;if(lan.canal&&lan.canal.readyState==='open')lan.canal.readyState='connecting';
-            if(lan.manualFechou){statusSrv('Desconectado do servidor.','');return;}
-            if(silencioso){statusSrv('Aguardando o servidor '+(lan.endereco||'local')+'… conecto sozinho quando ele ligar.','aguarde');agendarAutoReconexao();return;}
-            lan.tentativas++;const espera=Math.min(8000,700*lan.tentativas);
-            statusSrv((lan.conectando&&lan.tentativas<2?'Não consegui alcançar '+lan.endereco+'. Confira se o servidor está ligado e se os aparelhos estão no mesmo Wi-Fi. ':'Conexão com o servidor caiu. ')+'Nova tentativa em '+Math.round(espera/1000)+' s…','erro');
-            setTimeout(()=>{if(!lan.manualFechou&&(!lan.ws||lan.ws.readyState>1))conectar(lan.endereco);},espera);};
-    }
-    document.addEventListener('DOMContentLoaded',()=>{});
-    const servidoPorHttp=/^https?:$/.test(location.protocol)&&location.host;
-    const enderecoSalvo=(()=>{try{return localStorage.getItem('sinucaServidorLan')||'';}catch(e){return '';}})();
-    $('lan-server-addr').value=servidoPorHttp?location.host:enderecoSalvo;
-    $('lan-server-connect').addEventListener('click',()=>conectar($('lan-server-addr').value));
-    // ===== AUTOMÁTICO: achar o servidor sozinho e ficar conectado =====
-    // Sonda um endereço com um WebSocket de verdade (funciona mesmo sem CORS,
-    // inclusive abrindo o jogo como arquivo): abriu = achou o servidor.
-    function sondarServidorWS(endereco,timeout){
-        return new Promise(res=>{
-            let ws=null,fechado=false;
-            const fim=ok=>{if(fechado)return;fechado=true;try{if(ws){ws.onopen=null;ws.onclose=null;ws.onerror=null;ws.close();}}catch(e){}res(ok);};
-            const t=setTimeout(()=>fim(false),timeout||450);
-            try{ws=new WebSocket('ws://'+endereco+'/ws');}catch(e){clearTimeout(t);fim(false);return;}
-            ws.onopen=()=>{clearTimeout(t);fim(true);};
-            ws.onclose=()=>{clearTimeout(t);fim(false);};
-            ws.onerror=()=>{clearTimeout(t);fim(false);};
-        });
-    }
-    // Varre os IPs comuns de roteador (porta 8080 do servidor-sinuca) até achar
-    // um servidor de sinuca. Rápido: 30 sondas por vez, para na primeira certa.
-    let varrendoRede=false;
-    function descobrirServidorRede(){
-        if(varrendoRede||(lan.ws&&lan.ws.readyState===1))return Promise.resolve(false);
-        if(servidoPorHttp)return Promise.resolve(false);
-        varrendoRede=true;
-        const alvos=[];
-        ['192.168.0.','192.168.1.','192.168.15.'].forEach(b=>{for(let i=2;i<255;i++)alvos.push(b+i+':8080');});
-        return new Promise(res=>{
-            let achou=false,idx=0,pend=0;
-            const lote=()=>{
-                if(achou||idx>=alvos.length){if(pend===0){varrendoRede=false;res(achou);}return;}
-                while(pend<30&&idx<alvos.length&&!achou){
-                    const endereco=alvos[idx++];pend++;
-                    sondarServidorWS(endereco,450).then(ok=>{
-                        pend--;
-                        if(ok&&!achou){achou=true;statusSrv('Encontrei o servidor de sinuca ('+endereco+')! Conectando…','aguarde');conectar(endereco,true);}
-                        lote();
-                    });
-                }
-            };
-            lote();
-        });
-    }
-    // Reconexão automática: enquanto o servidor estiver desligado, tenta de novo
-    // sozinho (endereço salvo + varredura da rede) — quando ligar, conecta.
-    let timerAutoReconectar=null, tentativaAuto=0;
-    function agendarAutoReconexao(ms){
-        clearTimeout(timerAutoReconectar);
-        timerAutoReconectar=setTimeout(()=>{
-            timerAutoReconectar=null;
-            if(lan.manualFechou||(lan.ws&&lan.ws.readyState===1))return;
-            tentativaAuto++;
-            if(lan.endereco&&tentativaAuto%3!==0)conectar(lan.endereco,true);
-            else descobrirServidorRede().then(achou=>{if(!achou&&!lan.manualFechou&&(!lan.ws||lan.ws.readyState>1))agendarAutoReconexao();});
-        },ms||12000);
-    }
-    // ⚡ CONECTAR RÁPIDO: se o jogo foi aberto pelo servidor, conecta pelo próprio
-    // endereço da página (zero digitação); senão usa o endereço salvo/ digitado.
-    function conectarRapido(){
-        const alvo=(servidoPorHttp&&location.host)||($('lan-server-addr').value||'').trim()||enderecoSalvo;
-        if(!alvo){statusSrv('Digite o endereço do servidor uma vez (ex.: 192.168.0.10:8080) — depois eu lembro e conecto sozinho.','erro');$('lan-server-addr').focus();return;}
-        if(servidoPorHttp&&location.host===alvo){conectar(alvo);return;}
-        // Confirma que é o servidor de sinuca antes de colar o endereço salvo.
-        fetch('http://'+normalizarEndereco(alvo)+'/api/info').then(r=>r.json()).then(i=>{if(i&&i.app==='sinuca-lan')conectar(normalizarEndereco(alvo));else statusSrv('O endereço '+normalizarEndereco(alvo)+' não é um servidor de sinuca.','erro');}).catch(()=>statusSrv('Não encontrei o servidor. Confira o endereço ou toque em ⚡ depois de ligar o servidor.','erro'));
-    }
-    $('lan-quick-connect').addEventListener('click',conectarRapido);
-    // AUTO-CONEXÃO ao abrir o jogo: se a página foi servida pelo servidor local,
-    // conecta sozinho (silencioso: sem spam de tentativas se estiver desligado).
-    (function autoConectar(){
-        if(servidoPorHttp){fetch('/api/info').then(r=>r.json()).then(i=>{if(i&&i.app==='sinuca-lan'){statusSrv('Servidor local detectado — conectando automaticamente…','aguarde');conectar(location.host,true);}}).catch(()=>agendarAutoReconexao());}
-        else if(enderecoSalvo){statusSrv('Tentando o último servidor usado ('+enderecoSalvo+')…','aguarde');conectar(enderecoSalvo,true);}
-        else{statusSrv('Procurando o servidor de sinuca na rede…','aguarde');descobrirServidorRede().then(achou=>{if(!achou)agendarAutoReconexao(15000);});}
-    })();
-    $('lan-pair-connect').addEventListener('click',conectarPorCodigo);
-    $('lan-pair-code').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();conectarPorCodigo();}});
-    $('lan-copy-code').addEventListener('click',copiarCodigo);
-    $('lan-room-leave').addEventListener('click',()=>{enviar({t:'leave'});lan.sala=null;lan.token=null;pareamento.ativo=false;if(lan.canal){lan.canal.readyState='closed';}if(parImpar.canal===lan.canal){parImpar.ativo=false;parImpar.local=false;parImpar.canal=null;exibirPlacarParImpar();}$('lan-room-leave').style.display='none';statusSrv('Partida encerrada. Aguardando novo desafio com seu código…','');setTimeout(aguardarDesafio,400);});
-    atualizarCodigoNaTela();
-    $('lan-menu-entry').addEventListener('click',()=>{if(lan.ws&&lan.ws.readyState===1)return;if(lan.endereco||enderecoSalvo)conectar(lan.endereco||enderecoSalvo,true);else descobrirServidorRede().then(achou=>{if(!achou)agendarAutoReconexao();});});
-    const selo=document.createElement('div');selo.id='lan-net-badge';selo.innerHTML='<i></i><span>Conectado</span>';document.body.appendChild(selo);
-})();
-</script>
+
 
 </body> 
 </html>
