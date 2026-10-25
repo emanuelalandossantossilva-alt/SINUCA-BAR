@@ -48,8 +48,8 @@
         .spin-course-item.unlocked { border-left-color:#4bd48a; } .spin-course-item.locked { opacity:.62; }
         #spin-value { min-height:12px; color:#ffd28a; font-size:9px; }
         #spin-reset { margin-top:4px; padding:3px 9px; border:1px solid #b38b54; border-radius:5px; color:#fff; background:#51402d; font:bold 10px Arial,sans-serif; }
-        #phase-menu-btn { position:absolute; top:max(26px,calc(env(safe-area-inset-top) + 22px)); right:max(10px,env(safe-area-inset-right)); z-index:110; width:42px; height:38px; padding:9px 10px; border:1px solid rgba(212,161,94,.8); border-radius:9px; background:rgba(25,15,9,.92); display:flex; flex-direction:column; justify-content:space-between; align-items:center; cursor:pointer; }
-        .barra-menu { display:block; width:100%; height:3px; border-radius:2px; background:#e9b56b; box-shadow:0 1px 2px rgba(0,0,0,.55); }
+        #phase-menu-btn { position:absolute; top:max(22px,calc(env(safe-area-inset-top) + 18px)); right:max(8px,env(safe-area-inset-right)); z-index:110; width:30px; height:25px; padding:5px 6px; border:1px solid rgba(212,161,94,.8); border-radius:8px; background:rgba(25,15,9,.92); display:flex; flex-direction:column; justify-content:space-between; align-items:center; cursor:pointer; }
+        .barra-menu { display:block; width:100%; height:2px; border-radius:2px; background:#e9b56b; box-shadow:0 1px 1px rgba(0,0,0,.55); }
         .game-modal { display:none; position:absolute; inset:0; z-index:145; padding:16px; align-items:center; justify-content:center; background:rgba(0,0,0,.8); pointer-events:auto; }
         #victory-panel { z-index:150; }
         .phase-card { width:min(440px,96vw); max-height:84vh; overflow:auto; padding:22px 18px 18px; border:2px solid #b87a3e; border-radius:14px; color:#f8e4bd; background:linear-gradient(145deg,#3b2415,#17100b); box-shadow:0 12px 40px rgba(0,0,0,.65); font-family:Arial,sans-serif; }
@@ -209,7 +209,7 @@
         .life-heart.perdendo { color:#ffed68; animation:life-heart-blink .18s steps(2,end) 4; }
         @keyframes life-heart-blink { 50% { opacity:.12; transform:scale(.72); filter:brightness(2); } }
         @media(max-width:380px) { #life-hud { left:max(8px,env(safe-area-inset-left)); top:max(8px,env(safe-area-inset-top)); gap:4px; padding:6px 5px; } .life-heart { font-size:17px; } }
-        #phase-menu-btn { width:38px; height:34px; padding:8px 9px; }
+        #phase-menu-btn { width:26px; height:21px; padding:4px 5px; }
         #spin-widget { position:fixed; top:auto; bottom:max(12px,env(safe-area-inset-bottom)); left:max(12px,env(safe-area-inset-left)); width:46px; min-width:0; padding:4px; z-index:105; border-radius:9px; }
         #spin-ball { width:36px; height:36px; margin:0 auto; }
         #spin-dot { width:8px; height:8px; border-width:1px; }
@@ -321,7 +321,7 @@
 <div id="phase-menu" class="game-modal initial-menu" aria-hidden="false" style="display:flex">
         <div class="phase-card">
             <div class="menu-kicker">MODO SOLO</div>
-            <div class="menu-tools"><button id="sound-btn" type="button" aria-label="Ativar som do jogo">🔇 SOM OFF</button><button id="fullscreen-menu-btn" type="button" aria-label="Ativar tela cheia">⛶ TELA CHEIA</button><button class="menu-shop-shortcut" type="button" data-tab="shop">🛒 ABRIR LOJA</button></div>
+            <div class="menu-tools"><button id="sound-btn" type="button" aria-label="Desativar som do jogo">🔊 SOM ON</button><button id="fullscreen-menu-btn" type="button" aria-label="Ativar tela cheia">⛶ TELA CHEIA</button><button class="menu-shop-shortcut" type="button" data-tab="shop">🛒 ABRIR LOJA</button></div>
             <h2>DESAFIO DE SINUCA</h2>
             <p class="menu-subtitle">Escolha como quer jogar. Seu progresso da campanha fica salvo.</p>
             <nav id="solo-tabs" class="solo-tabs" aria-label="Modos de jogo">
@@ -392,7 +392,7 @@
                 <p class="table-color-help">Personalize o pano, a tabela e a madeira externa. Cada cor nova custa 500 moedas por acabamento; cores compradas podem ser equipadas de novo sem custo.</p>
                 <div id="shop-table-colors"></div>
                 <div class="custom-finish-row"><label for="custom-table-color">Pano</label><input id="custom-table-color" type="color" value="#022817" aria-label="Escolher a cor do pano"><span id="custom-table-color-value">#0B563B</span><button id="apply-custom-table-color" type="button">COMPRAR · 500 🪙</button></div>
-                <div class="custom-finish-row"><label for="custom-rail-color">Tabela / borracha</label><input id="custom-rail-color" type="color" value="#032b1b" aria-label="Escolher a cor da tabela"><span id="custom-rail-color-value">#032B1B</span><button id="apply-custom-rail-color" type="button">COMPRAR · 500 🪙</button></div>
+                <div class="custom-finish-row"><label for="custom-rail-color">Tabela / borracha</label><input id="custom-rail-color" type="color" value="#09203e" aria-label="Escolher a cor da tabela"><span id="custom-rail-color-value">#09203E</span><button id="apply-custom-rail-color" type="button">COMPRAR · 500 🪙</button></div>
                 <div class="custom-finish-row"><label for="custom-wood-color">Pintura completa da sinuca</label><input id="custom-wood-color" type="color" value="#11151a" aria-label="Escolher a cor completa da madeira da sinuca: base, bordas e pernas"><span id="custom-wood-color-value">#11151A</span><button id="apply-custom-wood-color" type="button">COMPRAR · 500 🪙</button></div>
                 <div class="custom-finish-row"><label for="custom-arc-color">Arco das caçapas</label><input id="custom-arc-color" type="color" value="#898f95" aria-label="Escolher a cor dos arcos das caçapas"><span id="custom-arc-color-value">#898F95</span><button id="apply-custom-arc-color" type="button">COMPRAR · 500 🪙</button></div>
             </section>
@@ -495,10 +495,38 @@
         t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy()); if(srgb)t.encoding=THREE.sRGBEncoding; return t;
     }
     function criarCanvasPano(){
-        const c=document.createElement('canvas');c.width=256;c.height=256;const x=c.getContext('2d');
-        x.fillStyle='#c5c9c6';x.fillRect(0,0,256,256);
-        for(let i=0;i<14500;i++){const v=155+Math.floor(rndRealismo()*85),a=.10+rndRealismo()*.22;x.fillStyle=`rgba(${v},${v},${v},${a})`;const px=rndRealismo()*256,py=rndRealismo()*256;x.fillRect(px,py,.45+rndRealismo()*.8,1+rndRealismo()*3.2);}
-        for(let i=0;i<150;i++){const px=rndRealismo()*256;x.strokeStyle=`rgba(255,255,255,${.018+rndRealismo()*.025})`;x.lineWidth=.35;x.beginPath();x.moveTo(px,0);x.lineTo(px+rndRealismo()*5-2.5,256);x.stroke();}
+        // PANO DE FELTRO 512: manchas suaves de tingimento, fibra penteada
+        // (nap numa direção dominante), tufos de fiapo e a trama do tecido.
+        // Sob a luz da luminária o pano ganha corpo de feltro de verdade.
+        const S=512,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');
+        const base=232;x.fillStyle=`rgb(${base},${base},${base})`;x.fillRect(0,0,S,S);
+        for(let i=0;i<30;i++){ // manchas grandes: nap/tingimento irregular
+            const px=rndRealismo()*S,py=rndRealismo()*S,r=60+rndRealismo()*160,claro=rndRealismo()<.5;
+            const g=x.createRadialGradient(px,py,0,px,py,r);
+            g.addColorStop(0,`rgba(${claro?248:198},${claro?248:198},${claro?248:198},.12)`);
+            g.addColorStop(1,'rgba(232,232,232,0)');
+            x.fillStyle=g;x.beginPath();x.arc(px,py,r,0,Math.PI*2);x.fill();
+        }
+        for(let i=0;i<40000;i++){ // fibra do feltro: riscos curtos penteados
+            const v=150+Math.floor(rndRealismo()*105),a=.05+rndRealismo()*.15;
+            const px=rndRealismo()*S,py=rndRealismo()*S,len=.8+rndRealismo()*2.6;
+            const ang=Math.PI/2+rndRealismo()*.5-.25;
+            x.strokeStyle=`rgba(${v},${v},${v},${a})`;x.lineWidth=.5;
+            x.beginPath();x.moveTo(px,py);x.lineTo(px+Math.cos(ang)*len,py+Math.sin(ang)*len);x.stroke();
+        }
+        for(let i=0;i<900;i++){ // tufos claros/escuros de fiapo
+            const claro=rndRealismo()<.5,v=claro?236+Math.floor(rndRealismo()*19):132+Math.floor(rndRealismo()*22);
+            x.fillStyle=`rgba(${v},${v},${v},${.06+rndRealismo()*.10})`;
+            x.fillRect(rndRealismo()*S,rndRealismo()*S,1+rndRealismo()*1.4,1+rndRealismo()*1.4);
+        }
+        for(let i=0;i<56;i++){ // trama do tecido: fios fracos no urdume
+            const px=rndRealismo()*S;x.strokeStyle='rgba(246,246,246,.030)';x.lineWidth=1;
+            x.beginPath();x.moveTo(px,0);x.lineTo(px+rndRealismo()*5-2.5,S);x.stroke();
+        }
+        for(let i=0;i<56;i++){ // fios fracos na trama horizontal
+            const py=rndRealismo()*S;x.strokeStyle='rgba(246,246,246,.024)';x.lineWidth=1;
+            x.beginPath();x.moveTo(0,py);x.lineTo(S,py+rndRealismo()*5-2.5);x.stroke();
+        }
         return c;
     }
     function criarCanvasMadeira(){
@@ -734,6 +762,10 @@
         estalo(0.115,0.009,260,'lowpass',0.48,0.12);
     }
     function somDeCopo() {}
+    // SOM ATIVO DESDE O INÍCIO: o jogo já abre com som ligado.
+    ligarSomAoComecar();
+    // Navegadores só liberam áudio após o 1º toque: retoma na hora.
+    ['pointerdown','touchstart','keydown'].forEach(ev=>window.addEventListener(ev,()=>{if(audioCtx&&audioCtx.state==='suspended'&&somLigado)audioCtx.resume().catch(()=>{});},{passive:true}));
     btnSom.addEventListener('click', () => {
         usuarioControlouSom=true; prepararAudio();
         if(!audioCtx) return;
@@ -856,7 +888,7 @@
         liquidarApostaParImpar();
         if(parImpar.vencedor){document.getElementById('status-text').innerText='Jogador '+parImpar.vencedor+' venceu a partida de '+rotuloGrupo(parImpar.grupos[parImpar.vencedor])+'.';}
         else if(parImpar.falta){document.getElementById('status-text').innerText=parImpar.falta;}
-        else document.getElementById('status-text').innerText=parImpar.modo==='bolinho'?'J'+parImpar.turno+' joga · quem encaçapar a última bola vence o Jogo de Bolinho.':'J'+parImpar.turno+' na mesa · Limpe seu grupo PRIMEIRO para vencer na hora (fim de jogo imediato) · Derrubar o castigo (bola 1) antes do grupo = derrota · Falta: adversário ganha bolas.';
+        else document.getElementById('status-text').innerText=parImpar.modo==='bolinho'?'J'+parImpar.turno+' joga · quem encaçapar a última bola vence o Jogo de Bolinho.':'J'+parImpar.turno+' na mesa · Limpe seu grupo e depois DERRUBE O CASTIGO (bola 1) para vencer · Derrubá-la antes do grupo = derrota · Falta: adversário ganha bolas.';
         if(parImpar.oponente==='cpu'){const st=document.getElementById('status-text');const rot=parImpar.cpuNivel==='pro'?'A CPU PRO':'A CPU';st.innerText=st.innerText.replace(/\bJogador 2\b/g,rot).replace(/\bJ2\b/g,parImpar.cpuNivel==='pro'?'CPU PRO':'CPU').replace(/\bJogador 1\b/g,'Você').replace(/\bJ1\b/g,'Você');}
         exibirPlacarParImpar();
     }
@@ -865,6 +897,7 @@
     }
     function aplicarEstadoParImpar(e){
         if(!e||!Array.isArray(e.balls))return;
+        miraRemota={ang:null,f:0};
         e.balls.forEach((d,i)=>{const b=bolas[i];if(!b)return;b.position.set(d.x,d.y,d.z);Object.assign(b.userData,{vx:d.vx,vz:d.vz,ativa:d.ativa,caindo:d.caindo,encaçapada:d.encaçapada,spinSide:d.spinSide,spinTop:d.spinTop,omegaX:d.omegaX,omegaY:d.omegaY,omegaZ:d.omegaZ,spinAxisX:d.spinAxisX,spinAxisZ:d.spinAxisZ});if(d.ativa){if(!b.parent)scene.add(b);}else if(b.parent)scene.remove(b);});
         parImpar.turno=e.turno;if(e.modo)parImpar.modo=e.modo;parImpar.grupos=e.grupos;parImpar.vencedor=e.vencedor;if(e.vencedor){quebraProxima=e.vencedor;salvarQuebra();}parImpar.falta=e.falta;gameState.encaixadas=e.encaixadas;if(e.corMesa)aplicarCorMesa(e.corMesa,false);gameState.jogadaAtiva=false;gameState.aguardandoReset=false;gameState.posicionandoBranca=false;
         atualizarListaBolasEncaixadas();atualizarHUD(false);aplicarPlacarParImpar();
@@ -875,10 +908,13 @@
     // o taco, envia direção + força carregada (~20 msg/s) — o taco mexe na tela
     // do adversário junto, em tempo real.
     let ultimoEnvioAim=0;
+    // ALVO DA MIRA REMOTA: guardamos o último valor recebido e o taco desliza
+    // até ele a cada quadro — sem saltos, mesmo com a rede atrasando um pouco.
+    let miraRemota={ang:null,f:0};
     function enviarAimRede(){
         if(!(parImpar.ativo&&parImpar.local)||parImpar.turno!==parImpar.jogador)return;
         const agora=performance.now();
-        if(agora-ultimoEnvioAim<50)return;
+        if(agora-ultimoEnvioAim<25)return;
         ultimoEnvioAim=agora;
         enviarParImpar({type:'aim',ang:angH,f:rawForca});
     }
@@ -897,11 +933,7 @@
             else if(msg.type==='shot'&&!host){executarTacadaParImpar(msg.shot);zerarPuxadaRemota();}
             // TACO AO VIVO: espelha a mira e a puxada do adversário na minha tela.
             else if(msg.type==='aim'&&parImpar.ativo&&!parImpar.vencedor&&parImpar.turno!==parImpar.jogador&&!gameState.jogadaAtiva&&!mesaMovendo&&!gameState.aguardandoReset){
-                angH=Number(msg.ang)||angH;
-                rawForca=Math.max(0,Math.min(1,Number(msg.f)||0));
-                document.getElementById('power-meter').style.width=(rawForca*100)+'%';
-                document.getElementById('power-pct').textContent=rawForca>0?Math.round(rawForca*100)+'%':'';
-                atualizarCuePullVisual(rawForca);
+                miraRemota={ang:Number(msg.ang)||angH,f:Math.max(0,Math.min(1,Number(msg.f)||0))};
             }
             else if(msg.type==='state'&&!host)aplicarEstadoParImpar(msg.state);
             else if(msg.type==='color'&&!host)aplicarCorMesa(msg.color,false);
@@ -1077,13 +1109,9 @@
             }
         }
         if(punicao>0)punirAdversarioRecebeBolas(punicao,grupoAdversario);
-        // REGRA: quem LIMPA O GRUPO PRIMEIRO vence na hora. A partida encerra
-        // no instante em que cai a última bola do grupo — não precisa do castigo.
-        const restamDoGrupoDele=grupoAdversario&&bolas.some(b=>!b.userData.isBranca&&b.userData.numero!==1&&b.userData.ativa&&!b.userData.caindo&&classificar(b.userData.numero)===grupoAdversario);
-        if(!parImpar.vencedor){
-            if(meuGrupo&&!restamDoMeuGrupo){parImpar.vencedor=jogador;quebraProxima=jogador;salvarQuebra();parImpar.falta='J'+jogador+' limpou o grupo '+(grupoAtual==='par'?'PARES':'ÍMPARES')+' primeiro — VITÓRIA! A partida encerra na hora.';}
-            else if(grupoAdversario&&!restamDoGrupoDele){parImpar.vencedor=jogador===1?2:1;quebraProxima=parImpar.vencedor;salvarQuebra();parImpar.falta='A punição limpou o grupo do adversário primeiro — vitória do Jogador '+parImpar.vencedor+'.';}
-        }
+        // REGRA: limpar o grupo NÃO encerra o jogo. Quem limpou entra na
+        // fase do CASTIGO: a partida só acaba quando a bola 1 cair —
+        // derrubar o castigo vale como encaçapar qualquer bola do grupo.
         if(!parImpar.vencedor){if(falta){parImpar.turno=jogador===1?2:1;parImpar.falta=falta;gameState.posicionandoBranca=arranhou;}
         else if(parImpar.oitoEncaçapada){
             if(meuGrupo&&!restamDoMeuGrupo){parImpar.vencedor=jogador;quebraProxima=jogador;salvarQuebra();parImpar.falta='CASTIGO derrubado depois de limpar seu grupo: vitória!';}
@@ -1101,7 +1129,7 @@
         if(parImpar.host&&parImpar.local)enviarParImpar({type:'state',state:estadoParImpar()});
         if(parImpar.vencedor)setTimeout(mostrarFimParImpar,1200);
     }
-    // ===== FIM DE JOGO do duelo: vitória de quem limpou o grupo primeiro. =====
+    // ===== FIM DE JOGO do duelo: vence quem limpa o grupo E derruba a bola 1. =====
     function mostrarFimParImpar(){
         if(!parImpar.ativo||!parImpar.vencedor)return;
         const painel=document.getElementById('fim-parimpar');
@@ -1111,7 +1139,7 @@
         if(parImpar.oponente==='local')titulo.textContent='JOGADOR '+parImpar.vencedor+' VENCEU!';
         else{titulo.textContent=meu?'VOCÊ VENCEU!':'VOCÊ PERDEU';titulo.style.color=meu?'#7fe07f':'#ff8a8a';}
         const motivo=parImpar.falta||'';
-        msg.textContent=(parImpar.modo==='parimpar'?motivo+' Grupo limpo primeiro: fim de jogo.':motivo);
+        msg.textContent=motivo;
         painel.style.display='flex';painel.setAttribute('aria-hidden','false');
     }
     function fecharFimParImpar(){const painel=document.getElementById('fim-parimpar');if(painel){painel.style.display='none';painel.setAttribute('aria-hidden','true');}}
@@ -1391,7 +1419,7 @@
             const raizResto=Math.sqrt(dTot)-Math.sqrt(dG+0.5);
             const fImp=f*Math.sqrt(Math.max(0,raizResto*raizResto)/(dTot||1));
             const dBola=calcularDistanciaParadaEstimada(Math.max(0.06,fImp*cos),0,0);
-            if(dBola>=dP*1.12)return Math.max(0.55,Math.min(4.4,f));
+            if(dBola>=dP*1.3)return Math.max(0.55,Math.min(4.4,f)); // folga p/ bola MORRER dentro, não na boca
         }
         return 4.4;
     }
@@ -1418,7 +1446,7 @@
             const raizResto=Math.sqrt(dTot)-Math.sqrt(dG+0.5);
             const fImp=f*Math.sqrt(Math.max(0,raizResto*raizResto)/(dTot||1));
             const dBola=calcularDistanciaParadaEstimada(Math.max(0.06,fImp*cos),0,0);
-            if(dBola>=dP*1.15)return f;
+            if(dBola>=dP*1.32)return f; // folga maior também quando usa efeito
         }
         return 4.4;
     }
@@ -1452,7 +1480,7 @@
                 sx+=fx*fwdDist;sz+=fz*fwdDist;
                 sx=Math.max(-LIMITE_X+RAIO,Math.min(LIMITE_X-RAIO,sx));
                 sz=Math.max(-LIMITE_Z+RAIO,Math.min(LIMITE_Z-RAIO,sz));
-                let nota=cpuNotaPosicao(sx,sz,alvos,m.t,problemas)-f*0.012-Math.abs(sy)*0.008;
+                let nota=cpuNotaPosicao(sx,sz,alvos,m.t,problemas)-f*0.009-Math.abs(sy)*0.008;
                 if(sy===0&&f>fBase+0.5)nota-=0.02; // força extra só se valer posição
                 if(nota>melhor.nota)melhor={forca:f,spinY:sy,nota,forte:f>fBase+0.45};
             }
@@ -2110,16 +2138,16 @@
     // com o limite físico aqui, TODA bola encosta na borracha sem entrar dentro.
     const CORTE_NARIZ = 0.16;
     const canvasPanoRealista=criarCanvasPano();
-    const feltroMat = new THREE.MeshStandardMaterial({ color:0x063f2c, map:texturaCanvasRealismo(canvasPanoRealista,5,10,true), bumpMap:texturaCanvasRealismo(canvasPanoRealista,5,10,false), bumpScale:0.032, roughness:0.96, metalness:0, emissive:0x022817, emissiveIntensity:0.012, envMapIntensity:0.18 });
+    const feltroMat = new THREE.MeshStandardMaterial({ color:0x063f2c, map:texturaCanvasRealismo(canvasPanoRealista,6,12,true), bumpMap:texturaCanvasRealismo(canvasPanoRealista,6,12,false), bumpScale:0.05, roughnessMap:texturaCanvasRealismo(canvasPanoRealista,6,12,false), roughness:0.98, metalness:0, emissive:0x022817, emissiveIntensity:0.012, envMapIntensity:0.24 });
     const PALETAS_PANO=['#063f2a','#176447','#174c85','#9d2538','#41464b','#641f4c','#0b655d','#a45a28','#111316'];
-    let corPanoEscolhida='#0f3a6b';
+    let corPanoEscolhida='#081f3d';
     const migracaoMesaV2=(()=>{try{return !localStorage.getItem('sinucaMesaV2');}catch(e){return false;}})();
     try { const c=localStorage.getItem('sinucaMesaPano'); if(c && /^#[0-9a-fA-F]{6}$/.test(c))corPanoEscolhida=c.toLowerCase(); } catch(e) {}
-    if(migracaoMesaV2&&corPanoEscolhida==='#022817')corPanoEscolhida='#0f3a6b';
+    if(migracaoMesaV2&&corPanoEscolhida==='#022817')corPanoEscolhida='#081f3d';
     let coresMesaCompradas=['#0f3a6b','#022817'];
     try { const saved=JSON.parse(localStorage.getItem('sinucaMesasCompradas')||'[]'); if(Array.isArray(saved))coresMesaCompradas=[...new Set([...coresMesaCompradas,...saved.filter(c=>/^#[0-9a-fA-F]{6}$/.test(c)).map(c=>c.toLowerCase())])]; } catch(e) {}
-    if(corPanoEscolhida==='#063f2a')corPanoEscolhida='#0f3a6b';
-    if(!coresMesaCompradas.includes(corPanoEscolhida)) corPanoEscolhida='#0f3a6b';
+    if(corPanoEscolhida==='#063f2a'||corPanoEscolhida==='#0f3a6b'||corPanoEscolhida==='#0a2a4d')corPanoEscolhida='#081f3d';
+    if(!coresMesaCompradas.includes(corPanoEscolhida)) corPanoEscolhida='#081f3d';
     function atualizarOpcoesCoresMesa(){
         const configuracoes=[['pano','custom-table-color','apply-custom-table-color'],['tabela','custom-rail-color','apply-custom-rail-color'],['madeira','custom-wood-color','apply-custom-wood-color'],['arco','custom-arc-color','apply-custom-arc-color']];
         configuracoes.forEach(([tipo,inputId,buttonId])=>{
@@ -2187,9 +2215,11 @@
         g.position.set(x, ALTURA_MESA + 0.75, z); parent.add(g); return g;
     }
     const protetorVermelho=new THREE.MeshStandardMaterial({color:0xc5272d,roughness:0.4,metalness:0.18});
-    let corTabelaEscolhida='#032b1b',corMadeiraEscolhida='#141414';
+    let corTabelaEscolhida='#09203e',corMadeiraEscolhida='#141414';
     try{const c=localStorage.getItem('sinucaCorTabela');if(c&&/^#[0-9a-fA-F]{6}$/.test(c))corTabelaEscolhida=c.toLowerCase();}catch(e){}
-    if(corTabelaEscolhida==='#0b203b')corTabelaEscolhida='#032b1b';
+    // TABELA COM O MESMO AZUL DO PANO (#081f3d), só 1% mais clara:
+    // literalmente o tom do pano com um fio de luz a mais por canal.
+    if(corTabelaEscolhida==='#0b203b'||corTabelaEscolhida==='#032b1b'||corTabelaEscolhida==='#0d5f36'||corTabelaEscolhida==='#2e6fae'||corTabelaEscolhida==='#4b8fca'||corTabelaEscolhida==='#0d3258'||corTabelaEscolhida==='#0a2848')corTabelaEscolhida='#09203e';
     try{const c=localStorage.getItem('sinucaCorMadeira');if(c&&/^#[0-9a-fA-F]{6}$/.test(c))corMadeiraEscolhida=c.toLowerCase();}catch(e){}
     if((migracaoMesaV2&&corMadeiraEscolhida==='#11151a')||corMadeiraEscolhida==='#7a2c18')corMadeiraEscolhida='#141414';
     try{localStorage.setItem('sinucaMesaV2','1');}catch(e){}
@@ -2198,7 +2228,7 @@
     if(corArcoEscolhida==='#d5dce2')corArcoEscolhida='#dfe2e5';
     let coresAcabamento={
         pano:coresMesaCompradas,
-        tabela:(()=>{try{const a=JSON.parse(localStorage.getItem('sinucaCoresTabela')||'[]');return [...new Set(['#032b1b',...(Array.isArray(a)?a.filter(c=>/^#[0-9a-fA-F]{6}$/.test(c)):[]),corTabelaEscolhida])];}catch(e){return ['#032b1b',corTabelaEscolhida];}})(),
+        tabela:(()=>{try{const a=JSON.parse(localStorage.getItem('sinucaCoresTabela')||'[]');return [...new Set(['#09203e',...(Array.isArray(a)?a.filter(c=>/^#[0-9a-fA-F]{6}$/.test(c)):[]),corTabelaEscolhida])];}catch(e){return ['#09203e',corTabelaEscolhida];}})(),
         madeira:(()=>{try{const a=JSON.parse(localStorage.getItem('sinucaCoresMadeira')||'[]');return [...new Set(['#141414','#6a2412','#11151a',...(Array.isArray(a)?a.filter(c=>/^#[0-9a-fA-F]{6}$/.test(c)):[]),corMadeiraEscolhida])];}catch(e){return ['#6a2412',corMadeiraEscolhida];}})(),
         arco:(()=>{try{const a=JSON.parse(localStorage.getItem('sinucaCoresArco')||'[]');return [...new Set(['#dfe2e5',...(Array.isArray(a)?a.filter(c=>/^#[0-9a-fA-F]{6}$/.test(c)):[]),corArcoEscolhida])];}catch(e){return ['#dfe2e5',corArcoEscolhida];}})()
     };
@@ -2229,7 +2259,7 @@
     }
     const RAIL_EXT_X=15.2,RAIL_EXT_Z=25.3,RAIL_INT_X=13.45,RAIL_INT_Z=23.55,Y_RAIL_BASE=ALTURA_MESA+0.7,ESP_RAIL=0.92,Y_PANO=ALTURA_MESA+1.0;
     // Geometria oficial das caçapas: bico (ponta da tabela) -> corredor -> buraco recuado dentro da borda.
-    const GEO_MESA={narizX:LIMITE_X+RAIO,narizZ:LIMITE_Z+RAIO,bocaCanto:1.1,bocaMeio:0.95,gargantaMeio:0.8,
+    const GEO_MESA={narizX:LIMITE_X+RAIO,narizZ:LIMITE_Z+RAIO,bocaCanto:1.22,bocaMeio:0.95,gargantaMeio:0.8,
         canto:{x:LIMITE_X+RAIO+0.95,z:LIMITE_Z+RAIO+0.95,r:0.8},meio:{x:12.75,r:0.8}};
     const furosMesa=[];
     for(const sx of [-1,1]){furosMesa.push([sx*GEO_MESA.meio.x,0,GEO_MESA.meio.r+0.05]);for(const sz of [-1,1])furosMesa.push([sx*GEO_MESA.canto.x,sz*GEO_MESA.canto.z,GEO_MESA.canto.r+0.05]);}
@@ -2749,19 +2779,43 @@ function criarTexturaBolaMarmorizada(cor,num) {
         // formato — só as bolas sorteiam qual posição ocupam, a cada partida.
         const rackFase=objetos.slice(0,fase.bolas);
         for(let k=rackFase.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[rackFase[k],rackFase[j]]=[rackFase[j],rackFase[k]];}
-        rackFase.forEach((b,i)=>{
-            let x,z;
-            if(fase.bolas===5){
-                // Montinho compacto 1+2+2: a ponta fica voltada para a branca.
-                const arranjo=[[0,0],[-0.5*dx,-dz],[0.5*dx,-dz],[-0.5*dx,-2*dz],[0.5*dx,-2*dz]];
-                x=arranjo[i][0];z=-13.4+arranjo[i][1];
-            } else {
-                const row=Math.floor((Math.sqrt(8*i+1)-1)/2),col=i-row*(row+1)/2;
-                x=(col-row/2)*dx;z=-13.4-row*dz;
+        // TRIÂNGULO PERFEITO e o que falta FICA NA FRENTE: as fileiras de trás
+        // vêm sempre COMPLETAS nas laterais (ex.: 14 bolas = 2+3+4+5, sem a
+        // ponta); as bolas ausentes saem da ponta da frente, que encara a
+        // branca, e a fileira parcial desce centrada nos vales — toda bola
+        // continua encostada em pelo menos duas vizinhas, sempre.
+        const pos=[];
+        {const qtd=fase.bolas;
+            const R=Math.ceil((Math.sqrt(8*qtd+1)-1)/2); // fileiras do triângulo cheio
+            const falta=(R*(R+1))/2-qtd;                  // ausentes, tiradas da frente
+            let rest=falta;
+            const cnts=[];
+            for(let r=0;r<R;r++){const cap=r+1;const tira=rest>0?Math.min(rest,cap):0;cnts.push(cap-tira);rest-=tira;}
+            // Caso pontual (ex.: 4 bolas): se a fileira de trás vier completa
+            // com só 1 bola na frente dela, uma ponta traseira fica exposta.
+            // Aí a bola ausente sai da ponta traseira em vez de esvaziar a frente.
+            if(R>=3&&cnts[R-1]===R&&cnts[R-2]===1){cnts[R-1]-=1;}
+            let k=0;while(k<R&&cnts[k]===0)k++;           // pula fileiras vazias da frente
+            for(let r=k;r<R;r++){
+                const cap=r+1,cnt=cnts[r];
+                const start=cnt===cap?0:Math.floor((cap-cnt)/2);
+                for(let c=0;c<cnt;c++)pos.push([(start+c-r/2)*dx,-13.4-(r-k)*dz]);
             }
+        }
+        rackFase.forEach((b,i)=>{
+            const [x,z]=pos[i];
             b.userData.ativa=true;b.position.set(x,Y_BOLAS,z);if(!b.parent)scene.add(b);
         });
         branca.position.set(0,Y_BOLAS,16);branca.userData.ativa=true;branca.userData.caindo=false;branca.userData.encaçapada=false;branca.userData.vx=0;branca.userData.vz=0;zerarRotacaoBola(branca);if(!branca.parent)scene.add(branca);
+        // TACO VOLTA APONTANDO PRO MONTE: toda vez que o montinho (re)começa,
+        // a mira renasce alinhada ao centro das bolas, pronta pra estourar.
+        {let somaX=0,somaZ=0,qtd=0;
+            rackFase.forEach(b=>{somaX+=b.position.x;somaZ+=b.position.z;qtd++;});
+            if(qtd>0){const cx=somaX/qtd,cz=somaZ/qtd;
+                angH=Math.atan2(-(cx-branca.position.x),-(cz-branca.position.z));
+                try{ajustarMiraComGiz();}catch(e){}
+            }
+        }
         gameState.saidaBranca=[0,16];gameState.encaixadas=0;gameState.total=fase.bolas;gameState.brancaCaiu=false;gameState.posicionandoBranca=false;gameState.aguardandoReset=false;gameState.jogadaAtiva=false;gameState.bossArranhou=false;gameState.bossTentativaAtiva=false;gameState.bossQuebraConcluida=false;gameState.encaixadasInicioJogada=0;atualizarListaBolasEncaixadas();
     }
     function resolverBossSolo(){
@@ -2859,7 +2913,10 @@ function criarTexturaBolaMarmorizada(cor,num) {
         const lifeHud=document.getElementById('life-hud');
         const mostraVidas=gameState.modo==='niveis'||gameState.modo==='gameOver';
         lifeHud.style.display=mostraVidas?'flex':'none';
-        if(mostraVidas)lifeHud.innerHTML=Array.from({length:VIDAS_MAXIMAS},(_,i)=>'<span class="life-heart '+(i<gameState.ghosts?'':'empty')+'" data-life-index="'+i+'">'+(i<gameState.ghosts?'♥':'♡')+'</span>').join('');
+        // FASE MONTINHO: só UM coração no visor — é a vida da tentativa do
+        // montinho. Fases normais continuam mostrando a fileira completa.
+        if(mostraVidas){const qtdVidas=(typeof isBossSolo==='function'&&isBossSolo())?1:VIDAS_MAXIMAS;
+            lifeHud.innerHTML=Array.from({length:qtdVidas},(_,i)=>'<span class="life-heart '+(i<gameState.ghosts?'':'empty')+'" data-life-index="'+i+'">'+(i<gameState.ghosts?'♥':'♡')+'</span>').join('');}
         document.getElementById('wallet-hud').innerText='🪙 '+gameState.moedas;
         if(typeof atualizarOpcoesCoresMesa==='function') atualizarOpcoesCoresMesa();
         const lojaMoedas=document.getElementById('shop-coins'); if(lojaMoedas) lojaMoedas.innerText='Moedas: '+gameState.moedas;
@@ -3526,6 +3583,17 @@ function criarTexturaBolaMarmorizada(cor,num) {
     }
     function resetCuePullVisual(){const e=document.getElementById('cue-pull-svg');if(e)e.style.transform='translateY(0px)';}
     function atualizarCuePullVisual(f){const e=document.getElementById('cue-pull-svg');if(e)e.style.transform='translateY('+(f*110).toFixed(1)+'px)';}
+    // PUXADA EM DUAS PORCENTAGENS: rawForcaContatoAtual guarda o ponto da
+    // puxada em que a branca fantasma ALCANÇA a bola de contato — até ali a
+    // porcentagem conta "chegar na bola" (0–100%); depois, começa OUTRA
+    // porcentagem do zero (+0–100% de força extra).
+    let rawForcaContatoAtual=null;
+    function textoPuxada(f){
+        const c=rawForcaContatoAtual;
+        if(c&&f>c){const extra=Math.min(1,(f-c)/(1-c));return '+'+Math.round(extra*100)+'%';}
+        if(c)return Math.min(100,Math.round(f/c*100))+'%';
+        return Math.round(f*100)+'%';
+    }
     function comecarGesto(x,y,id=null,target=null,evento=null) {
         if(pointerAtivo || (target && target.closest && target.closest(seletoresUI))) return false;
         if(parImpar.ativo && (parImpar.vencedor || (parImpar.oponente==='local'?false:parImpar.turno!==parImpar.jogador))) return false;
@@ -3541,12 +3609,12 @@ function criarTexturaBolaMarmorizada(cor,num) {
         if(gameState.modo==='timerFim' || gameState.modo==='gameOver') return false;
         if(gameState.aguardandoReset && x>window.innerWidth*0.7) return false;
         if(evento && evento.cancelable) evento.preventDefault();
-        // PUXADA SÓ NO TACO: a força só carrega quando o dedo começa em cima do
-        // taco desenhado na lateral direita (com uma margem amigável pro dedo).
-        // Qualquer outro arrasto na tela é mira, sem exceção.
+        // PUXADA LIVRE: a força carrega começando em cima do taco desenhado OU
+        // em qualquer ponto da direita da tela — puxe de onde for confortável.
+        // Arrastos na esquerda continuam sendo mira.
         const cpEl=document.getElementById('cue-pull-strip');
         const cp=cpEl?cpEl.getBoundingClientRect():null;
-        const sobreTaco=!!cp&&cp.width>0&&x>=cp.left-26&&x<=cp.right+26&&y>=cp.top-34&&y<=cp.bottom+34;
+        const sobreTaco=(!!cp&&cp.width>0&&x>=cp.left-26&&x<=cp.right+26&&y>=cp.top-34&&y<=cp.bottom+34)||x>window.innerWidth*0.62;
         pointerAtivo=true; pointerIdAtivo=id; modoGesto=sobreTaco?'tacada':'mira';
         isCharging=modoGesto==='tacada'; rawForca=0;document.getElementById('power-pct').textContent='';resetCuePullVisual();
         inicioGesto={x,y}; ultimoGesto={x,y};
@@ -3563,7 +3631,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         } else if(modoGesto==='tacada') {
             rawForca=Math.max(0,Math.min(1,totalY/330));
             document.getElementById('power-meter').style.width=(rawForca*100)+'%';
-            document.getElementById('power-pct').textContent=Math.round(rawForca*100)+'%';
+            document.getElementById('power-pct').textContent=textoPuxada(rawForca);
             atualizarCuePullVisual(rawForca);
             enviarAimRede();
         } else if(modoGesto==='mira' && !mesaMovendo) {
@@ -3960,6 +4028,25 @@ function criarTexturaBolaMarmorizada(cor,num) {
                     if(Math.hypot(b.userData.vx,b.userData.vz)<0.0002 && Math.hypot(b.userData.omegaX,b.userData.omegaZ)*RAIO/60<0.0002) {
                         b.userData.vx=0; b.userData.vz=0; b.userData.omegaX=0; b.userData.omegaZ=0;
                     }
+                    // IMÃ LEVE NAS CAÇAPAS DO MEIO (arrumado): só age MUITO
+                    // rente à boca (pouco além do raio de captura), apenas em
+                    // bola indo quase reta pro buraco, e puxa uma fração da
+                    // própria velocidade — não suga bola de longe nem curva
+                    // trajetória de bola passando pela tabela.
+                    if(!b.userData.caindo){
+                        for(const cI of cacapas){
+                            if(!cI.isMiddle)continue;
+                            const imx=cI.x-b.position.x, imz=cI.z-b.position.z, imd=Math.hypot(imx,imz);
+                            if(imd<1.05&&imd>0.01){
+                                const vsp=Math.hypot(b.userData.vx,b.userData.vz);
+                                if(vsp>0.01&&(b.userData.vx*imx+b.userData.vz*imz)/(vsp*imd)>0.9){
+                                    const puxao=vsp*0.05*(1-imd/1.05);
+                                    b.userData.vx+=imx/imd*puxao;
+                                    b.userData.vz+=imz/imd*puxao;
+                                }
+                            }
+                        }
+                    }
                     // A boca da caçapa é testada antes da tabela. Só o círculo real do bolso e seu vão imediato ficam abertos.
                     let dentroDaBoca=false;
                     cacapas.forEach((c,ic)=>{
@@ -4098,6 +4185,23 @@ function criarTexturaBolaMarmorizada(cor,num) {
             let forcaPrevista=Math.pow(rawForca,1.6)*1.9*statsTaco().forca*tacoForcaMultiplicador*limiteForca*(parImpar.ativo?2:1);if(parImpar.ativo)forcaPrevista=Math.max(0.15,Math.min(4.5,forcaPrevista));
             const distMax=calcularDistanciaParadaEstimada(forcaPrevista,gameState.spinY,gameState.spinX);
             ghostStopBall.position.set(branca.position.x+dMovX*Math.min(distColisao,distMax),Y_BOLAS+0.01,branca.position.z+dMovZ*Math.min(distColisao,distMax));
+            // Marca onde a puxada faz a branca CHEGAR no ponto de contato.
+            if(rawForca>0.005){
+                const distDe=r=>{let fp=Math.pow(r,1.6)*1.9*statsTaco().forca*tacoForcaMultiplicador*limiteForca*(parImpar.ativo?2:1);if(parImpar.ativo)fp=Math.max(0.15,Math.min(4.5,fp));return calcularDistanciaParadaEstimada(fp,gameState.spinY,gameState.spinX);};
+                if(distDe(1)<distColisao)rawForcaContatoAtual=null;
+                else if(distDe(0.02)>=distColisao)rawForcaContatoAtual=0.02;
+                else{let lo=0.02,hi=1;for(let k=0;k<8;k++){const mid=(lo+hi)/2;if(distDe(mid)>=distColisao)hi=mid;else lo=mid;}rawForcaContatoAtual=(lo+hi)/2;}
+            } else rawForcaContatoAtual=null;
+        }
+        // SINCRONIA SUAVE: enquanto o adversário mira ou puxa, o taco dele
+        // desliza na minha tela até o último alvo recebido (25 msg/s).
+        if(parImpar.ativo&&parImpar.turno!==parImpar.jogador&&miraRemota.ang!==null&&!mesaMovendo&&!gameState.jogadaAtiva&&!gameState.aguardandoReset){
+            let dif=miraRemota.ang-angH;dif=Math.atan2(Math.sin(dif),Math.cos(dif));
+            angH+=dif*0.42;
+            rawForca+=((miraRemota.f||0)-rawForca)*0.42;
+            document.getElementById('power-meter').style.width=(rawForca*100)+'%';
+            const pctR=document.getElementById('power-pct');if(pctR)pctR.textContent=rawForca>0.005?textoPuxada(rawForca):'';
+            atualizarCuePullVisual(rawForca);
         }
         let animandoTaco=false, recuoTaco=rawForca*6;
         let centroTacoX=branca.position.x, centroTacoZ=branca.position.z, direcaoTacoX=dX, direcaoTacoZ=dZ;
@@ -4226,7 +4330,6 @@ function criarTexturaBolaMarmorizada(cor,num) {
   @media(max-width:600px){#quality-btn{bottom:48px}#keyboard-hint{display:none}}
 </style>
 <div id="realism-vignette" aria-hidden="true"></div>
-<button id="quality-btn" type="button" aria-label="Alterar qualidade gráfica">GRÁFICOS · ALTO</button>
 <div id="keyboard-hint">← → mira · ↑ ↓ câmera · Espaço tacada · M som</div>
 <script>
 (function(){
@@ -4258,7 +4361,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
     for(const z of [-8,0,8]){const moldura=new THREE.Mesh(new THREE.BoxGeometry(10.8,0.35,5.6),aroLuz);moldura.position.set(0,33,z);luminaria.add(moldura);const luz=new THREE.Mesh(new THREE.BoxGeometry(9.9,0.08,4.8),difusor);luz.position.set(0,32.79,z);luminaria.add(luz);}
     scene.add(luminaria);
 
-    const qualityButton=document.getElementById('quality-btn');
+    const qualityButton=null; // botão de qualidade saiu da tela; fica só no menu
     const menuQuality=document.createElement('button');menuQuality.type='button';menuQuality.id='quality-menu-btn';menuQuality.textContent='GRÁFICOS · ALTO';
     const tools=document.querySelector('#phase-menu .menu-tools');if(tools)tools.appendChild(menuQuality);
     const qualityNames={alto:'ALTO',equilibrado:'EQUILIBRADO',desempenho:'DESEMPENHO'};
@@ -4270,12 +4373,13 @@ function criarTexturaBolaMarmorizada(cor,num) {
         if(luzPrincipalMesa.shadow.mapSize.x!==tam){luzPrincipalMesa.shadow.mapSize.set(tam,tam);if(luzPrincipalMesa.shadow.map){luzPrincipalMesa.shadow.map.dispose();luzPrincipalMesa.shadow.map=null;}}
         feltroMat.bumpScale=q==='desempenho'?0.018:0.032;
         bolas.forEach(grupo=>{const sombra=grupo.children.find(x=>x.material&&x.material.map===texturaSombraBola);if(sombra)sombra.visible=q==='desempenho';});
-        qualityButton.textContent='GRÁFICOS · '+qualityNames[q];menuQuality.textContent='GRÁFICOS · '+qualityNames[q];
-        qualityButton.setAttribute('aria-label','Qualidade gráfica '+qualityNames[q]+'. Clique para alterar.');
+        if(qualityButton)qualityButton.textContent='GRÁFICOS · '+qualityNames[q];
+        menuQuality.textContent='GRÁFICOS · '+qualityNames[q];
+        if(qualityButton)qualityButton.setAttribute('aria-label','Qualidade gráfica '+qualityNames[q]+'. Clique para alterar.');
         if(salvar)try{localStorage.setItem('sinucaQualidadeGrafica',q);}catch(e){}
     }
     function proximaQualidade(){const q=['alto','equilibrado','desempenho'];aplicarQualidade(q[(q.indexOf(REALISMO.qualidade)+1)%q.length]);}
-    qualityButton.addEventListener('click',proximaQualidade);menuQuality.addEventListener('click',proximaQualidade);aplicarQualidade(REALISMO.qualidade,false);
+    menuQuality.addEventListener('click',proximaQualidade);aplicarQualidade(REALISMO.qualidade,false);
 
     // Teclado complementar para desktop; os gestos originais continuam intactos.
     window.addEventListener('keydown',e=>{
