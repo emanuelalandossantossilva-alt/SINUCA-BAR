@@ -4478,7 +4478,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         // FNV-1a do e-mail (mesma família do ID online) → 6 dígitos.
         let h=0x811c9dc5;const t=String(email||'').trim().toLowerCase();
         for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}
-        return String(1000000+(h%9000000));
+        return String(100000+(h%900000)); // sempre 6 dígitos (100000 a 999999)
     }
     function codigoDoId(){
         const pf=(typeof lePerfil==='function')?lePerfil():null;
@@ -4567,7 +4567,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         endereco=normalizarEndereco(endereco);if(!endereco){statusSrv('Digite o endereço mostrado na tela do servidor (ex.: 192.168.0.10:8080).','erro');return;}
         lan.endereco=endereco;lan.manualFechou=false;try{localStorage.setItem('sinucaServidorLan',endereco);}catch(e){}
         try{if(lan.ws){lan.ws.onclose=null;lan.ws.close();}}catch(e){}
-        statusSrv('Conectando a '+endereco+'…','aguarde');lan.conectando=true;
+        statusSrv(silencioso?'Procurando o servidor ('+endereco+')…':'Conectando a '+endereco+'…','aguarde');lan.conectando=true;
         let ws;try{ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+endereco+'/ws');}catch(e){statusSrv('Endereço inválido: '+e.message,'erro');return;}
         lan.ws=ws;
         ws.onopen=()=>{lan.conectando=false;lan.tentativas=0;statusSrv('Conectado ao servidor '+endereco+'.','ok');enviar({t:'hello',nome:nomeJogador()});iniciarPing();
@@ -4605,7 +4605,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         };
         ws.onclose=()=>{clearInterval(lan.timerPing);lan.pingMs=null;if(lan.canal&&lan.canal.readyState==='open')lan.canal.readyState='connecting';
             if(lan.manualFechou){statusSrv('Desconectado do servidor.','');return;}
-            if(silencioso){lan.manualFechou=true;statusSrv('Servidor '+lan.endereco+' não encontrado agora. Toque em ⚡ CONECTAR RÁPIDO quando ele estiver ligado.','erro');return;}
+            if(silencioso){statusSrv('Aguardando o servidor '+(lan.endereco||'local')+'… conecto sozinho quando ele ligar.','aguarde');agendarAutoReconexao();return;}
             lan.tentativas++;const espera=Math.min(8000,700*lan.tentativas);
             statusSrv((lan.conectando&&lan.tentativas<2?'Não consegui alcançar '+lan.endereco+'. Confira se o servidor está ligado e se os aparelhos estão no mesmo Wi-Fi. ':'Conexão com o servidor caiu. ')+'Nova tentativa em '+Math.round(espera/1000)+' s…','erro');
             setTimeout(()=>{if(!lan.manualFechou&&(!lan.ws||lan.ws.readyState>1))conectar(lan.endereco);},espera);};
@@ -4615,6 +4615,58 @@ function criarTexturaBolaMarmorizada(cor,num) {
     const enderecoSalvo=(()=>{try{return localStorage.getItem('sinucaServidorLan')||'';}catch(e){return '';}})();
     $('lan-server-addr').value=servidoPorHttp?location.host:enderecoSalvo;
     $('lan-server-connect').addEventListener('click',()=>conectar($('lan-server-addr').value));
+    // ===== AUTOMÁTICO: achar o servidor sozinho e ficar conectado =====
+    // Sonda um endereço com um WebSocket de verdade (funciona mesmo sem CORS,
+    // inclusive abrindo o jogo como arquivo): abriu = achou o servidor.
+    function sondarServidorWS(endereco,timeout){
+        return new Promise(res=>{
+            let ws=null,fechado=false;
+            const fim=ok=>{if(fechado)return;fechado=true;try{if(ws){ws.onopen=null;ws.onclose=null;ws.onerror=null;ws.close();}}catch(e){}res(ok);};
+            const t=setTimeout(()=>fim(false),timeout||450);
+            try{ws=new WebSocket('ws://'+endereco+'/ws');}catch(e){clearTimeout(t);fim(false);return;}
+            ws.onopen=()=>{clearTimeout(t);fim(true);};
+            ws.onclose=()=>{clearTimeout(t);fim(false);};
+            ws.onerror=()=>{clearTimeout(t);fim(false);};
+        });
+    }
+    // Varre os IPs comuns de roteador (porta 8080 do servidor-sinuca) até achar
+    // um servidor de sinuca. Rápido: 30 sondas por vez, para na primeira certa.
+    let varrendoRede=false;
+    function descobrirServidorRede(){
+        if(varrendoRede||(lan.ws&&lan.ws.readyState===1))return Promise.resolve(false);
+        if(servidoPorHttp)return Promise.resolve(false);
+        varrendoRede=true;
+        const alvos=[];
+        ['192.168.0.','192.168.1.','192.168.15.'].forEach(b=>{for(let i=2;i<255;i++)alvos.push(b+i+':8080');});
+        return new Promise(res=>{
+            let achou=false,idx=0,pend=0;
+            const lote=()=>{
+                if(achou||idx>=alvos.length){if(pend===0){varrendoRede=false;res(achou);}return;}
+                while(pend<30&&idx<alvos.length&&!achou){
+                    const endereco=alvos[idx++];pend++;
+                    sondarServidorWS(endereco,450).then(ok=>{
+                        pend--;
+                        if(ok&&!achou){achou=true;statusSrv('Encontrei o servidor de sinuca ('+endereco+')! Conectando…','aguarde');conectar(endereco,true);}
+                        lote();
+                    });
+                }
+            };
+            lote();
+        });
+    }
+    // Reconexão automática: enquanto o servidor estiver desligado, tenta de novo
+    // sozinho (endereço salvo + varredura da rede) — quando ligar, conecta.
+    let timerAutoReconectar=null, tentativaAuto=0;
+    function agendarAutoReconexao(ms){
+        clearTimeout(timerAutoReconectar);
+        timerAutoReconectar=setTimeout(()=>{
+            timerAutoReconectar=null;
+            if(lan.manualFechou||(lan.ws&&lan.ws.readyState===1))return;
+            tentativaAuto++;
+            if(lan.endereco&&tentativaAuto%3!==0)conectar(lan.endereco,true);
+            else descobrirServidorRede().then(achou=>{if(!achou&&!lan.manualFechou&&(!lan.ws||lan.ws.readyState>1))agendarAutoReconexao();});
+        },ms||12000);
+    }
     // ⚡ CONECTAR RÁPIDO: se o jogo foi aberto pelo servidor, conecta pelo próprio
     // endereço da página (zero digitação); senão usa o endereço salvo/ digitado.
     function conectarRapido(){
@@ -4628,15 +4680,16 @@ function criarTexturaBolaMarmorizada(cor,num) {
     // AUTO-CONEXÃO ao abrir o jogo: se a página foi servida pelo servidor local,
     // conecta sozinho (silencioso: sem spam de tentativas se estiver desligado).
     (function autoConectar(){
-        if(servidoPorHttp){fetch('/api/info').then(r=>r.json()).then(i=>{if(i&&i.app==='sinuca-lan'){statusSrv('Servidor local detectado — conectando automaticamente…','aguarde');conectar(location.host,true);}}).catch(()=>{});}
+        if(servidoPorHttp){fetch('/api/info').then(r=>r.json()).then(i=>{if(i&&i.app==='sinuca-lan'){statusSrv('Servidor local detectado — conectando automaticamente…','aguarde');conectar(location.host,true);}}).catch(()=>agendarAutoReconexao());}
         else if(enderecoSalvo){statusSrv('Tentando o último servidor usado ('+enderecoSalvo+')…','aguarde');conectar(enderecoSalvo,true);}
+        else{statusSrv('Procurando o servidor de sinuca na rede…','aguarde');descobrirServidorRede().then(achou=>{if(!achou)agendarAutoReconexao(15000);});}
     })();
     $('lan-pair-connect').addEventListener('click',conectarPorCodigo);
     $('lan-pair-code').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();conectarPorCodigo();}});
     $('lan-copy-code').addEventListener('click',copiarCodigo);
     $('lan-room-leave').addEventListener('click',()=>{enviar({t:'leave'});lan.sala=null;lan.token=null;pareamento.ativo=false;if(lan.canal){lan.canal.readyState='closed';}if(parImpar.canal===lan.canal){parImpar.ativo=false;parImpar.local=false;parImpar.canal=null;exibirPlacarParImpar();}$('lan-room-leave').style.display='none';statusSrv('Partida encerrada. Aguardando novo desafio com seu código…','');setTimeout(aguardarDesafio,400);});
     atualizarCodigoNaTela();
-    $('lan-menu-entry').addEventListener('click',()=>{if(servidoPorHttp&&(!lan.ws||lan.ws.readyState>1))fetch('/api/info').then(r=>r.json()).then(i=>{if(i&&i.app==='sinuca-lan')conectar(location.host);}).catch(()=>{});});
+    $('lan-menu-entry').addEventListener('click',()=>{if(lan.ws&&lan.ws.readyState===1)return;if(lan.endereco||enderecoSalvo)conectar(lan.endereco||enderecoSalvo,true);else descobrirServidorRede().then(achou=>{if(!achou)agendarAutoReconexao();});});
     const selo=document.createElement('div');selo.id='lan-net-badge';selo.innerHTML='<i></i><span>Conectado</span>';document.body.appendChild(selo);
 })();
 </script>
