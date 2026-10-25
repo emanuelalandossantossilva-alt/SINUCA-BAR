@@ -425,15 +425,14 @@
       <div id="lan-card">
         <button id="lan-close" type="button">FECHAR</button>
         <h2>PAR OU ÍMPAR · MULTIPLAYER</h2>
-        <p class="lan-hint" style="color:#ffd76a"><b>Duelo grátis: ninguém paga aposta — quem vencer leva 100 moedas de prêmio!</b></p>
-        <div id="lan-mode-choice" class="lan-mode-choice">
+                <div id="lan-mode-choice" class="lan-mode-choice">
           <p>Escolha o jogo para esta conexão:</p>
           <button id="lan-mode-parimpar" type="button" class="selected">PAR OU ÍMPAR</button>
           <button id="lan-mode-bolinho" type="button">JOGO DE BOLINHO · 3 BOLAS</button>
         </div>
         <section id="online-box" style="border:2px solid rgba(126,217,87,.45);border-radius:14px;padding:12px;margin:12px 0;">
           <h3>JOGO ONLINE <span style="background:#4ecb5d">DE QUALQUER LUGAR</span></h3>
-          <p class="lan-hint">Com seu <b>ID criado no cadastro</b>, seus amigos te acham pelo seu e-mail. Um fica ONLINE aguardando o desafio, o outro pesquisa o e-mail e desafia.</p>
+          <p class="lan-hint">Com seu <b>ID</b>, o jogo <b>reconhece sozinho</b> os amigos que já jogaram com você: quando os dois tocam em ESTOU ONLINE, o duelo começa automático. Na primeira vez, desafie pelo e-mail do amigo.</p>
           <div id="online-id-box" style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(196,211,219,.18);border-radius:10px;padding:8px 10px;margin:8px 0">
             <div style="min-width:0">
               <small style="color:#93a4ad;letter-spacing:.08em">SEU ID DE JOGADOR</small>
@@ -444,16 +443,27 @@
           </div>
           <div class="lan-row"><button id="online-create" type="button" style="background:#2fae44">ESTOU ONLINE — QUERO JOGAR</button></div>
           <div class="lan-row"><input id="online-code-in" maxlength="60" autocomplete="off" inputmode="email" placeholder="E-mail do jogador que você quer desafiar"><button id="online-join" type="button" style="background:#2a77c2">DESAFIAR</button></div>
-          <div id="online-status">Toque em ESTOU ONLINE e mande seu e-mail pro seu amigo te desafiar.</div>
+          <div id="online-status">Toque em ESTOU ONLINE — com um amigo conhecido online, o duelo começa sozinho.</div>
         </section>
         <section id="lan-server-box">
           <h3>SERVIDOR LOCAL <span>RECOMENDADO</span></h3>
-          <p class="lan-hint">Um aparelho roda <b>servidor-sinuca.js</b> (ou INICIAR-SERVIDOR) e os dois jogadores abrem no navegador o endereço que ele mostra, conectados ao mesmo roteador. <b>Aberto pelo servidor, o jogo conecta sozinho</b> — sem digitar nada. Sem copiar códigos e com reconexão automática.</p>
+          <p class="lan-hint">Um aparelho roda <b>servidor-sinuca.js</b> (ou INICIAR-SERVIDOR) e os dois jogadores abrem o endereço que ele mostra. <b>Aberto pelo servidor, o jogo conecta sozinho</b> — e entra automático na partida de qualquer amigo reconhecido.</p>
           <div class="lan-row"><button id="lan-quick-connect" type="button" style="background:#2fae44;flex:1">⚡ CONECTAR RÁPIDO</button></div>
           <div class="lan-row"><input id="lan-server-addr" inputmode="url" autocomplete="off" placeholder="IP do servidor, ex.: 192.168.0.10:8080"><button id="lan-server-connect" type="button">CONECTAR</button></div>
           <div id="lan-server-status">Desconectado.</div>
-          <div class="lan-row"><input id="lan-player-name" maxlength="16" autocomplete="nickname" placeholder="Seu nome"><button id="lan-room-create" type="button">CRIAR SALA</button><button id="lan-room-leave" type="button" style="display:none">SAIR DA SALA</button></div>
-          <div id="lan-room-list"><div class="lan-room-empty">Conecte-se ao servidor para ver as mesas abertas.</div></div>
+          <div class="lan-mode-choice" style="margin:8px 0 2px">
+            <button id="lan-srv-mode-parimpar" type="button" class="selected">PAR OU ÍMPAR</button>
+            <button id="lan-srv-mode-bolinho" type="button">JOGO DE BOLINHO · 3 BOLAS</button>
+          </div>
+          <div id="lan-code-box" style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(196,211,219,.18);border-radius:10px;padding:8px 10px;margin:8px 0">
+            <div style="min-width:0">
+              <small style="color:#93a4ad;letter-spacing:.08em">SEU CÓDIGO — MANDE PRO SEU AMIGO</small>
+              <p id="lan-my-code" style="margin:2px 0 0;font-weight:800;color:#ffd76a;font-size:20px;letter-spacing:.12em">—</p>
+            </div>
+            <button id="lan-copy-code" type="button" style="padding:8px 12px;flex:0 0 auto">COPIAR</button>
+          </div>
+          <div class="lan-row"><input id="lan-pair-code" maxlength="6" inputmode="numeric" autocomplete="off" placeholder="Código do amigo"><button id="lan-pair-connect" type="button" style="background:#2a77c2">CONECTAR</button></div>
+          <button id="lan-room-leave" type="button" style="display:none;margin-top:6px">ENCERRAR PARTIDA</button>
           <div id="lan-server-urls"></div>
         </section>
         <details id="lan-direct">
@@ -915,17 +925,38 @@
         if(parImpar.vencedor)setTimeout(mostrarFimParImpar,1200);
     }
     function enviarParImpar(msg){if(parImpar.canal&&parImpar.canal.readyState==='open')parImpar.canal.send(JSON.stringify(msg));}
+    // MIRA EM TEMPO REAL NO DUELO EM REDE: enquanto o jogador da vez mira ou puxa
+    // o taco, envia direção + força carregada (~20 msg/s) — o taco mexe na tela
+    // do adversário junto, em tempo real.
+    let ultimoEnvioAim=0;
+    function enviarAimRede(){
+        if(!(parImpar.ativo&&parImpar.local)||parImpar.turno!==parImpar.jogador)return;
+        const agora=performance.now();
+        if(agora-ultimoEnvioAim<50)return;
+        ultimoEnvioAim=agora;
+        enviarParImpar({type:'aim',ang:angH,f:rawForca});
+    }
     function configurarCanalParImpar(channel,host){
         parImpar.canal=channel;parImpar.host=host;parImpar.local=true;
         channel.onopen=()=>{
             iniciarParImpar(host?1:2,true,modoRedeEscolhido);
             document.getElementById('lan-modal').style.display='none';document.getElementById('lan-modal').setAttribute('aria-hidden','true');
             if(host)enviarParImpar({type:'state',state:estadoParImpar()});else enviarParImpar({type:'sync'});
+            const pfApresenta=(typeof lePerfil==='function')?lePerfil():null;
+            if(pfApresenta&&pfApresenta.email){try{channel.send(JSON.stringify({type:'apresenta',email:pfApresenta.email,nome:pfApresenta.nome}));}catch(e){}}
             document.getElementById('lan-status').textContent='Conectado pela rede local. Jogo iniciado!';
         };
         channel.onmessage=event=>{let msg;try{msg=JSON.parse(event.data);}catch(e){return;}
-            if(msg.type==='shot'&&host){if(parImpar.turno===2&&!gameState.jogadaAtiva&&!mesaMovendo)executarTacadaParImpar(msg.shot);}
-            else if(msg.type==='shot'&&!host){executarTacadaParImpar(msg.shot);}
+            if(msg.type==='shot'&&host){if(parImpar.turno===2&&!gameState.jogadaAtiva&&!mesaMovendo){executarTacadaParImpar(msg.shot);zerarPuxadaRemota();}}
+            else if(msg.type==='shot'&&!host){executarTacadaParImpar(msg.shot);zerarPuxadaRemota();}
+            // TACO AO VIVO: espelha a mira e a puxada do adversário na minha tela.
+            else if(msg.type==='aim'&&parImpar.ativo&&!parImpar.vencedor&&parImpar.turno!==parImpar.jogador&&!gameState.jogadaAtiva&&!mesaMovendo&&!gameState.aguardandoReset){
+                angH=Number(msg.ang)||angH;
+                rawForca=Math.max(0,Math.min(1,Number(msg.f)||0));
+                document.getElementById('power-meter').style.width=(rawForca*100)+'%';
+                document.getElementById('power-pct').textContent=rawForca>0?Math.round(rawForca*100)+'%':'';
+                atualizarCuePullVisual(rawForca);
+            }
             else if(msg.type==='state'&&!host)aplicarEstadoParImpar(msg.state);
             else if(msg.type==='color'&&!host)aplicarCorMesa(msg.color,false);
             else if(msg.type==='place'){
@@ -934,9 +965,11 @@
             }
             else if(msg.type==='sync'&&host)enviarParImpar({type:'state',state:estadoParImpar()});
             else if(msg.type==='denovo'){fecharFimParImpar();if(host)reiniciarDueloRede();}
+            else if(msg.type==='apresenta'&&msg.email&&typeof sinucaSalvarAmigo==='function')sinucaSalvarAmigo(msg.email,msg.nome);
         };
         channel.onclose=()=>{document.getElementById('lan-status').textContent='Conexão local encerrada.';};
     }
+    function zerarPuxadaRemota(){rawForca=0;resetCuePullVisual();document.getElementById('power-meter').style.width='0%';document.getElementById('power-pct').textContent='';}
     function novaPeerConnection(){
         if(!window.RTCPeerConnection)throw new Error('Este navegador não oferece WebRTC. Abra o jogo em um navegador atualizado.');
         // STUN ajuda os aparelhos a descobrir rotas diretas; não retransmite o jogo.
@@ -1175,6 +1208,20 @@
         function idDeEmail(email){return PREFIXO_USUARIO+hashId(email);}
         function emailOk(e){return /^\S+@\S+\.\S+$/.test((e||'').trim());}
         function onlineStatus(t){const el=document.getElementById('online-status');if(el)el.textContent=t;}
+        // AMIGOS: quem já jogou com você fica salvo no aparelho — quando os
+        // dois estiverem conectados, o duelo começa sozinho, sem digitar nada.
+        window.lePerfil=lePerfil; window.emailOk=emailOk;
+        const CHAVE_AMIGOS='sinucaAmigos50';
+        function leAmigos(){try{return JSON.parse(localStorage.getItem(CHAVE_AMIGOS)||'[]');}catch(e){return [];}}
+        function salvarAmigo(email,nome){
+            if(!emailOk(email))return;
+            const e=String(email).trim().toLowerCase();
+            const pf=lePerfil();if(pf&&pf.email&&e===String(pf.email).trim().toLowerCase())return;
+            const lista=leAmigos().filter(a=>a.email!==e);
+            lista.unshift({email:e,nome:String(nome||e.split('@')[0]).slice(0,20)});
+            try{localStorage.setItem(CHAVE_AMIGOS,JSON.stringify(lista.slice(0,20)));}catch(err){}
+        }
+        window.sinucaSalvarAmigo=salvarAmigo;
 
         // ---------- Cadastro do ID (inicio do jogo) ----------
         const regModal=document.getElementById('registro-modal');
@@ -1266,6 +1313,31 @@
             if(!perfilValido(pf)){abrirRegistro('Você precisa de um ID para jogar online. Cadastre-se:');return null;}
             return pf;
         }
+        let varredura=null;
+        // AUTOMÁTICO: ao ficar ONLINE, o jogo varre os amigos conhecidos.
+        // Quem tem o e-mail "maior" dispara o desafio; quem tem o "menor"
+        // aguarda a ligação — assim os dois nunca se conectam cruzado.
+        function autoDesafiarAmigos(pf){
+            const meu=String(pf.email).trim().toLowerCase();
+            const alvos=leAmigos().filter(a=>String(a.email).trim().toLowerCase()<meu);
+            if(!alvos.length){onlineStatus('ONLINE como '+pf.nome+' — amigos conhecidos entram em duelo com você sozinhos. Aguardando desafios…');return;}
+            varredura={ativos:alvos.length,conectou:false};
+            onlineStatus('ONLINE como '+pf.nome+' — procurando seus amigos na internet…');
+            alvos.forEach(a=>{
+                let conn;try{conn=peerOnline.connect(idDeEmail(a.email),{reliable:true});}catch(e){varredura.ativos--;return;}
+                conn.on('open',()=>{
+                    if(!varredura||varredura.conectou)return;
+                    varredura.conectou=true;desafioPendente=a.email;
+                    salvarAmigo(a.email,a.nome);
+                    try{conn.send(JSON.stringify({type:'apresenta',email:pf.email,nome:pf.nome}));}catch(e){}
+                    onlineStatus('Seu amigo '+(a.nome||a.email)+' está online! Começando o duelo…');
+                    configurarCanalParImpar(adaptarConexaoOnline(conn),false);
+                    const m=document.getElementById('lan-modal');m.style.display='none';m.setAttribute('aria-hidden','true');
+                });
+                conn.on('error',()=>{});
+                setTimeout(()=>{if(varredura&&!varredura.conectou){varredura.ativos--;if(varredura.ativos<=0&&!desafioPendente)onlineStatus('ONLINE como '+pf.nome+' — nenhum amigo online agora. Aguardando desafios…');}},9000);
+            });
+        }
         // Fica visível na internet com o ID do e-mail e aceita desafios (anfitrião).
         function ficarOnline(quandoAbrir){
             const pf=lePerfil();
@@ -1276,18 +1348,27 @@
             peerOnline=criarPeerOnline(idDeEmail(pf.email));
             peerOnline.on('open',()=>{
                 disponivel=true;
-                onlineStatus('ONLINE como '+pf.nome+' — mande seu e-mail ('+pf.email+') pro seu amigo te desafiar. Aguardando…');
                 quandoAbrir&&quandoAbrir();
+                autoDesafiarAmigos(pf);
             });
             peerOnline.on('error',err=>{
                 if(err&&err.type==='unavailable-id')onlineStatus('Seu ID já está em uso em outro aparelho — feche o jogo lá e tente de novo.');
-                else if(err&&err.type==='peer-unavailable'&&desafioPendente)onlineStatus('O jogador '+desafioPendente+' não está online agora. Peça pra ele abrir o jogo e tocar em ESTOU ONLINE.');
+                else if(err&&err.type==='peer-unavailable'){
+                    if(varredura&&!desafioPendente){ // varredura automática: só um amigo offline, sem alarme
+                        varredura.ativos--;
+                        if(varredura.ativos<=0&&!varredura.conectou)onlineStatus('ONLINE como '+pf.nome+' — nenhum amigo online agora. Aguardando desafios…');
+                        return;
+                    }
+                    if(desafioPendente)onlineStatus('O jogador '+desafioPendente+' não está online agora. Peça pra ele abrir o jogo e tocar em ESTOU ONLINE.');
+                    return;
+                }
                 else onlineStatus('Erro da conexão online ('+((err&&err.type)||'desconhecido')+'). Tente de novo.');
             });
             let conexaoAceita=false;
             peerOnline.on('connection',conn=>{
                 if(conexaoAceita){try{conn.close();}catch(e){}return;}
                 conexaoAceita=true;
+                conn.on('data',d=>{let m=null;if(typeof d==='string'){try{m=JSON.parse(d);}catch(e){}}else m=d;if(m&&m.type==='apresenta')salvarAmigo(m.email,m.nome);});
                 const canal=adaptarConexaoOnline(conn);
                 configurarCanalParImpar(canal,true);
                 conn.on('open',()=>{
@@ -1318,6 +1399,8 @@
                 configurarCanalParImpar(canal,false);
                 conn.on('open',()=>{
                     desafioPendente=null;
+                    salvarAmigo(emailBusca);
+                    try{conn.send(JSON.stringify({type:'apresenta',email:pf.email,nome:pf.nome}));}catch(e){}
                     onlineStatus('Jogador encontrado! Começando o duelo…');
                     const m=document.getElementById('lan-modal');m.style.display='none';m.setAttribute('aria-hidden','true');
                 });
@@ -1325,9 +1408,11 @@
         });
     })();
     document.getElementById('lan-menu-entry').addEventListener('click',()=>{const m=document.getElementById('lan-modal');m.style.display='flex';m.setAttribute('aria-hidden','false');});
-    function selecionarModoRede(modo){modoRedeEscolhido=modo==='bolinho'?'bolinho':'parimpar';document.getElementById('lan-mode-parimpar').classList.toggle('selected',modoRedeEscolhido==='parimpar');document.getElementById('lan-mode-bolinho').classList.toggle('selected',modoRedeEscolhido==='bolinho');document.getElementById('lan-status').textContent=modoRedeEscolhido==='bolinho'?'Jogo de Bolinho: 3 bolas; quem encaçapar a última vence.':'Par ou Ímpar: monte de 14 bolas (7 pares x 7 ímpares) encostado na tabela, e o castigo (bola 1) colado no outro extremo; limpe o grupo e derrube a 1 para vencer. Derrubá-la antes da hora = derrota.';}
+    function selecionarModoRede(modo){modoRedeEscolhido=modo==='bolinho'?'bolinho':'parimpar';['parimpar','bolinho'].forEach(m=>{const on=modoRedeEscolhido===m;['lan-mode-'+m,'lan-srv-mode-'+m].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('selected',on);});});document.getElementById('lan-status').textContent=modoRedeEscolhido==='bolinho'?'Jogo de Bolinho: 3 bolas; quem encaçapar a última vence.':'Par ou Ímpar: monte de 14 bolas (7 pares x 7 ímpares) encostado na tabela, e o castigo (bola 1) colado no outro extremo; limpe o grupo e derrube a 1 para vencer. Derrubá-la antes da hora = derrota.';}
     document.getElementById('lan-mode-parimpar').addEventListener('click',()=>selecionarModoRede('parimpar'));
     document.getElementById('lan-mode-bolinho').addEventListener('click',()=>selecionarModoRede('bolinho'));
+    document.getElementById('lan-srv-mode-parimpar').addEventListener('click',()=>selecionarModoRede('parimpar'));
+    document.getElementById('lan-srv-mode-bolinho').addEventListener('click',()=>selecionarModoRede('bolinho'));
     function cpuAlvosLegais(){
         const ativas=bolas.filter(b=>!b.userData.isBranca&&b.userData.ativa&&!b.userData.caindo);
         if(parImpar.modo==='bolinho')return ativas;
@@ -3594,10 +3679,12 @@ function criarTexturaBolaMarmorizada(cor,num) {
             document.getElementById('power-meter').style.width=(rawForca*100)+'%';
             document.getElementById('power-pct').textContent=Math.round(rawForca*100)+'%';
             atualizarCuePullVisual(rawForca);
+            enviarAimRede();
         } else if(modoGesto==='mira' && !mesaMovendo) {
             angH-=dx*0.009*multiplicadorPrecisao();
             altCam=Math.max(9,Math.min(72,altCam+dy*0.2));
             ajustarMiraComGiz();
+            enviarAimRede();
         }
         ultimoGesto={x,y};
     }
@@ -3644,6 +3731,8 @@ function criarTexturaBolaMarmorizada(cor,num) {
         }
         pointerAtivo=false; pointerIdAtivo=null; modoGesto=null; isCharging=false; rawForca=0;document.getElementById('power-pct').textContent='';resetCuePullVisual();
         document.getElementById('power-meter').style.width='0%';
+        // Soltei o taco sem tacar: avisa o adversário pra soltar o taco na tela dele.
+        if(parImpar.ativo&&parImpar.local&&parImpar.turno===parImpar.jogador&&!mesaMovendo)enviarParImpar({type:'aim',ang:angH,f:0});
     }
     window.addEventListener('pointerdown',e=>comecarGesto(e.clientX,e.clientY,e.pointerId,e.target,e),{passive:false});
     window.addEventListener('pointermove',e=>moverGesto(e.clientX,e.clientY,e.pointerId,e),{passive:false});
@@ -4378,9 +4467,81 @@ function criarTexturaBolaMarmorizada(cor,num) {
     const lan={ws:null,endereco:'',sala:null,token:null,host:false,canal:null,conectando:false,tentativas:0,pingMs:null,timerPing:null,manualFechou:false,parNome:null};
     window.__lanServidor=lan;
     const statusSrv=(t,cor)=>{const e=$('lan-server-status');if(e){e.textContent=t;e.dataset.estado=cor||'';}};
-    function nomeJogador(){const v=($('lan-player-name').value||'').trim().slice(0,16)||('Jogador '+(1+Math.floor(Math.random()*90)));try{localStorage.setItem('sinucaNomeRede',v);}catch(e){}return v;}
+    function nomeJogador(){const pf=(typeof lePerfil==='function')?lePerfil():null;if(pf&&pf.email)return String(pf.email).trim();return 'Jogador '+(1+Math.floor(Math.random()*90));}
     function normalizarEndereco(v){v=(v||'').trim().replace(/^https?:\/\//,'').replace(/^wss?:\/\//,'').replace(/\/.*$/,'');if(v&&!/:\d+$/.test(v))v+=':8080';return v;}
     function enviar(o){if(lan.ws&&lan.ws.readyState===1)lan.ws.send(JSON.stringify(o));}
+    // CONEXÃO POR CÓDIGO: o e-mail do ID do jogador gera um CÓDIGO de 6
+    // números, sempre o mesmo pro mesmo e-mail. Quem recebe o código só
+    // digita os números e conecta — sem e-mail, sem sala, sem nome.
+    const pareamento={alvo:'',ativo:false};
+    function codigoDeEmail(email){
+        // FNV-1a do e-mail (mesma família do ID online) → 6 dígitos.
+        let h=0x811c9dc5;const t=String(email||'').trim().toLowerCase();
+        for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}
+        return String(1000000+(h%9000000));
+    }
+    function codigoDoId(){
+        const pf=(typeof lePerfil==='function')?lePerfil():null;
+        if(!pf||!pf.email)return null;
+        return codigoDeEmail(pf.email);
+    }
+    // AUTOMÁTICO: quando um amigo conhecido entra no mesmo servidor, o jogo
+    // reconhece o código dele e entra na partida sozinho.
+    function autoConectarAmigosLocais(salas){
+        if(pareamento.ativo||!lan.ws||lan.ws.readyState!==1)return;
+        if(parImpar.ativo&&parImpar.local&&lan.canal&&parImpar.canal===lan.canal)return;
+        const pf=(typeof lePerfil==='function')?lePerfil():null;
+        if(!pf||!pf.email)return;
+        const meuCod=codigoDeEmail(pf.email);
+        let lista=[];try{lista=JSON.parse(localStorage.getItem('sinucaAmigos50')||'[]');}catch(e){}
+        const codigos=new Set(lista.map(a=>codigoDeEmail(a.email)));
+        const s=(salas||[]).find(r=>r.vagas&&String(r.nome).trim()!==meuCod&&codigos.has(String(r.nome).trim()));
+        if(s){enviar({t:'leave'});lan.sala=null;lan.token=null;enviar({t:'join',room:s.id,nome:nomeJogador()});statusSrv('Seu amigo está no servidor! Entrando na partida…','aguarde');}
+    }
+    function atualizarCodigoNaTela(){
+        const el=$('lan-my-code');if(!el)return;
+        const cod=codigoDoId();
+        el.textContent=cod||'cadastre seu ID';
+        if(!cod)el.style.color='#93a4ad';
+    }
+    function aguardarDesafio(){
+        const cod=codigoDoId();
+        if(!cod||!lan.ws||lan.ws.readyState!==1||lan.sala)return;
+        lan.sala=null;lan.token=null;
+        enviar({t:'create',nome:cod,modo:modoRedeEscolhido});
+        statusSrv('Aguardando alguém conectar com o seu código…','aguarde');
+    }
+    function copiarCodigo(){
+        const cod=codigoDoId();
+        if(!cod){if(typeof abrirRegistro==='function')abrirRegistro('Cadastre seu e-mail no ID para gerar seu código de jogo.');return;}
+        const txt='Meu código no SinucaPro: '+cod;
+        const done=()=>statusSrv('Código copiado: '+cod+'. Mande pro seu amigo!','ok');
+        if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>copiarCodigoAlternativo(txt,done));}
+        else copiarCodigoAlternativo(txt,done);
+    }
+    function copiarCodigoAlternativo(txt,done){
+        const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+        document.body.appendChild(ta);ta.focus();ta.select();ta.setSelectionRange(0,txt.length);
+        try{document.execCommand('copy');done();}catch(e){statusSrv('Não deu pra copiar. Seu código: '+codigoDoId(),'erro');}
+        document.body.removeChild(ta);
+    }
+    function tentarEntrarSalaAlvo(salas){
+        if(!pareamento.ativo||lan.sala||!lan.ws||lan.ws.readyState!==1)return;
+        const s=(salas||[]).find(r=>String(r.nome).trim()===pareamento.alvo&&r.vagas);
+        if(s){enviar({t:'leave'});lan.sala=null;lan.token=null;enviar({t:'join',room:s.id,nome:nomeJogador()});statusSrv('Código '+pareamento.alvo+' encontrado! Entrando na partida…','aguarde');}
+    }
+    function conectarPorCodigo(){
+        if(!lan.ws||lan.ws.readyState!==1){statusSrv('Conecte-se ao servidor primeiro (⚡ CONECTAR RÁPIDO).','erro');return;}
+        const pf=(typeof lePerfil==='function')?lePerfil():null;
+        if(!pf||!pf.email){if(typeof abrirRegistro==='function')abrirRegistro('Você precisa de um ID (e-mail) para jogar no servidor local.');return;}
+        const cod=($('lan-pair-code').value||'').replace(/\D/g,'');
+        const meu=codigoDoId();
+        if(cod.length<6){statusSrv('Digite o código de 6 números do seu amigo.','erro');return;}
+        if(meu&&cod===meu){statusSrv('Esse é o SEU código! Mande ele pro seu amigo digitar.','erro');return;}
+        pareamento.alvo=cod;pareamento.ativo=true;
+        statusSrv('Procurando o código '+cod+' no servidor…','aguarde');
+        tentarEntrarSalaAlvo();
+    }
     function desenharSalas(salas){
         const box=$('lan-room-list');if(!box)return;
         if(!salas.length){box.innerHTML='<div class="lan-room-empty">Nenhuma mesa aberta. Crie uma sala e peça ao outro jogador para entrar.</div>';return;}
@@ -4411,20 +4572,21 @@ function criarTexturaBolaMarmorizada(cor,num) {
         lan.ws=ws;
         ws.onopen=()=>{lan.conectando=false;lan.tentativas=0;statusSrv('Conectado ao servidor '+endereco+'.','ok');enviar({t:'hello',nome:nomeJogador()});iniciarPing();
             if(lan.sala&&lan.token)enviar({t:'join',room:lan.sala,token:lan.token,nome:nomeJogador()});
+            atualizarCodigoNaTela();if(!lan.sala)setTimeout(aguardarDesafio,400);
             fetch('http://'+endereco+'/api/info').then(r=>r.json()).then(info=>{const u=$('lan-server-urls');if(u&&info.ips)u.innerHTML='Endereço para o outro aparelho: '+info.ips.map(i=>'<b>http://'+i.ip+':'+info.porta+'</b>').join(' ou ');}).catch(()=>{});};
         ws.onmessage=ev=>{let m;try{m=JSON.parse(ev.data);}catch(e){return;}
-            if(m.t==='rooms')desenharSalas(m.rooms||[]);
+            if(m.t==='rooms'){autoConectarAmigosLocais(m.rooms||[]);tentarEntrarSalaAlvo(m.rooms||[]);desenharSalas(m.rooms||[]);}
             else if(m.t==='pong'){const ms=performance.now()-m.ts;lan.pingMs=lan.pingMs===null?ms:lan.pingMs*0.7+ms*0.3;}
             else if(m.t==='error')statusSrv(m.msg,'erro');
-            else if(m.t==='joined'){
+            else if(m.t==='joined'){pareamento.ativo=false;
                 const reconexao=lan.sala===m.room&&lan.canal&&parImpar.canal===lan.canal&&parImpar.ativo;
                 lan.sala=m.room;lan.token=m.token;lan.host=m.host;
                 if(!reconexao){
                     if(typeof selecionarModoRede==='function'&&m.modo)selecionarModoRede(m.modo);
                     try{if(parImpar.pc){parImpar.pc.close();parImpar.pc=null;}}catch(e){}
                     parImpar.jogador=m.host?1:2;configurarCanalParImpar(criarCanal(),m.host);
-                    statusSrv(m.host?'Sala '+m.room+' criada. Aguardando o jogador 2 entrar…':'Entrando na sala '+m.room+'…','aguarde');
-                } else statusSrv('Reconectado à sala '+m.room+'.','ok');
+                    statusSrv(m.host?'Aguardando o outro jogador conectar…':'Entrando na partida…','aguarde');
+                } else statusSrv('Reconectado à partida.','ok');
                 $('lan-room-leave').style.display='inline-block';
             }
             else if(m.t==='peer-joined'){
@@ -4449,8 +4611,6 @@ function criarTexturaBolaMarmorizada(cor,num) {
             setTimeout(()=>{if(!lan.manualFechou&&(!lan.ws||lan.ws.readyState>1))conectar(lan.endereco);},espera);};
     }
     document.addEventListener('DOMContentLoaded',()=>{});
-    const nomeSalvo=(()=>{try{return localStorage.getItem('sinucaNomeRede')||'';}catch(e){return '';}})();
-    $('lan-player-name').value=nomeSalvo;
     const servidoPorHttp=/^https?:$/.test(location.protocol)&&location.host;
     const enderecoSalvo=(()=>{try{return localStorage.getItem('sinucaServidorLan')||'';}catch(e){return '';}})();
     $('lan-server-addr').value=servidoPorHttp?location.host:enderecoSalvo;
@@ -4471,9 +4631,11 @@ function criarTexturaBolaMarmorizada(cor,num) {
         if(servidoPorHttp){fetch('/api/info').then(r=>r.json()).then(i=>{if(i&&i.app==='sinuca-lan'){statusSrv('Servidor local detectado — conectando automaticamente…','aguarde');conectar(location.host,true);}}).catch(()=>{});}
         else if(enderecoSalvo){statusSrv('Tentando o último servidor usado ('+enderecoSalvo+')…','aguarde');conectar(enderecoSalvo,true);}
     })();
-    $('lan-room-create').addEventListener('click',()=>{if(!lan.ws||lan.ws.readyState!==1){statusSrv('Conecte-se ao servidor primeiro.','erro');return;}lan.sala=null;lan.token=null;enviar({t:'create',nome:nomeJogador(),modo:modoRedeEscolhido});});
-    $('lan-room-list').addEventListener('click',e=>{const b=e.target.closest('button[data-room]');if(!b||b.disabled)return;lan.sala=null;lan.token=null;enviar({t:'join',room:b.dataset.room,nome:nomeJogador()});});
-    $('lan-room-leave').addEventListener('click',()=>{enviar({t:'leave'});lan.sala=null;lan.token=null;if(lan.canal){lan.canal.readyState='closed';}if(parImpar.canal===lan.canal){parImpar.ativo=false;parImpar.local=false;parImpar.canal=null;exibirPlacarParImpar();}$('lan-room-leave').style.display='none';statusSrv('Você saiu da sala.','');});
+    $('lan-pair-connect').addEventListener('click',conectarPorCodigo);
+    $('lan-pair-code').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();conectarPorCodigo();}});
+    $('lan-copy-code').addEventListener('click',copiarCodigo);
+    $('lan-room-leave').addEventListener('click',()=>{enviar({t:'leave'});lan.sala=null;lan.token=null;pareamento.ativo=false;if(lan.canal){lan.canal.readyState='closed';}if(parImpar.canal===lan.canal){parImpar.ativo=false;parImpar.local=false;parImpar.canal=null;exibirPlacarParImpar();}$('lan-room-leave').style.display='none';statusSrv('Partida encerrada. Aguardando novo desafio com seu código…','');setTimeout(aguardarDesafio,400);});
+    atualizarCodigoNaTela();
     $('lan-menu-entry').addEventListener('click',()=>{if(servidoPorHttp&&(!lan.ws||lan.ws.readyState>1))fetch('/api/info').then(r=>r.json()).then(i=>{if(i&&i.app==='sinuca-lan')conectar(location.host);}).catch(()=>{});});
     const selo=document.createElement('div');selo.id='lan-net-badge';selo.innerHTML='<i></i><span>Conectado</span>';document.body.appendChild(selo);
 })();
