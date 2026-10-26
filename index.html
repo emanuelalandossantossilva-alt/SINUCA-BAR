@@ -52,6 +52,13 @@
         .barra-menu { display:block; width:100%; height:2px; border-radius:2px; background:#e9b56b; box-shadow:0 1px 1px rgba(0,0,0,.55); }
         .game-modal { display:none; position:absolute; inset:0; z-index:145; padding:16px; align-items:center; justify-content:center; background:rgba(0,0,0,.8); pointer-events:auto; }
         #victory-panel { z-index:150; }
+        #rotate-overlay { display:none; position:fixed; inset:0; z-index:9999; background:#0b0f13; color:#fff2d1; align-items:center; justify-content:center; text-align:center; font:bold 17px Arial,sans-serif; }
+        #rotate-overlay .rotate-box p { margin:14px 0 4px; letter-spacing:.5px; }
+        #rotate-overlay .rotate-box small { color:#9fb0bb; font-weight:normal; }
+        #rotate-overlay .rotate-phone { width:34px; height:60px; margin:0 auto; border:3px solid #e4bb71; border-radius:8px; position:relative; animation:girarCel 1.6s ease-in-out infinite; }
+        #rotate-overlay .rotate-phone::after { content:''; position:absolute; left:50%; bottom:4px; transform:translateX(-50%); width:10px; height:3px; border-radius:2px; background:#e4bb71; }
+        @keyframes girarCel { 0%,20% { transform:rotate(0); } 60%,100% { transform:rotate(90deg); } }
+        @media (orientation:portrait) and (pointer:coarse) { #rotate-overlay { display:flex; } }
         .phase-card { width:min(440px,96vw); max-height:84vh; overflow:auto; padding:22px 18px 18px; border:2px solid #b87a3e; border-radius:14px; color:#f8e4bd; background:linear-gradient(145deg,#3b2415,#17100b); box-shadow:0 12px 40px rgba(0,0,0,.65); font-family:Arial,sans-serif; }
         .phase-card { position:relative; width:min(560px,96vw); max-height:90vh; overflow:auto; padding:22px 18px 16px; touch-action:pan-y; }
         #phase-menu .phase-card, #phase-menu .phase-card * { touch-action:pan-y; }
@@ -66,7 +73,6 @@
         #bolinho-history-list li { margin:5px 0; }
         .menu-tools { display:flex; gap:8px; margin:8px 0 12px; }
         #phase-menu #sound-btn, #phase-menu .menu-shop-shortcut { position:static; z-index:auto; display:inline-flex; align-items:center; justify-content:center; width:auto; min-height:38px; padding:8px 12px; border:1px solid rgba(225,180,99,.65); border-radius:9px; color:#fff2d1; background:linear-gradient(135deg,rgba(28,39,47,.96),rgba(11,17,22,.96)); box-shadow:0 4px 14px rgba(0,0,0,.25); font:bold 12px Arial,sans-serif; cursor:pointer; }
-        #phase-menu #fullscreen-menu-btn { position:static; z-index:auto; display:inline-flex; align-items:center; justify-content:center; width:auto; min-height:38px; padding:8px 12px; border:1px solid rgba(225,180,99,.65); border-radius:9px; color:#fff2d1; background:linear-gradient(135deg,rgba(28,39,47,.96),rgba(11,17,22,.96)); box-shadow:0 4px 14px rgba(0,0,0,.25); font:bold 12px Arial,sans-serif; cursor:pointer; touch-action:manipulation; }
         .phase-card h2 { margin:0 42px 12px 0; color:#ffd28a; font-size:22px; }
         .phase-card h3 { margin:14px 0 7px; color:#ffd28a; font-size:15px; }
         .phase-card p { margin:0 0 12px; color:#e5d1b0; line-height:1.4; }
@@ -109,6 +115,8 @@
         #victory-next { text-align:center; font-size:15px; }
         #victory-coins { width:100%; margin:5px 0; border:1px solid #e4bb71; border-radius:9px; padding:11px; color:#1c252b; background:linear-gradient(135deg,#f0ce8b,#d9a955); font-weight:bold; text-align:center; font-size:15px; }
         #victory-coins:disabled { opacity:.55; }
+        #victory-extra-life { width:100%; margin:5px 0; border:1px solid #b3543f; border-radius:9px; padding:11px; color:#ffe9e2; background:linear-gradient(145deg,#8a2f1f,#5c1c12); font-weight:bold; text-align:center; font-size:15px; }
+        #victory-extra-life:disabled { opacity:.55; }
         #victory-retry, #victory-menu { width:100%; margin:5px 0; border:1px solid #53636d; border-radius:9px; padding:10px; color:#e7edf0; background:linear-gradient(145deg,#263640,#172129); font-weight:bold; }
         #victory-retry:active, #victory-menu:active { transform:scale(.99); }
         .phase-note { display:block; margin-top:10px; color:#c8b497; font-size:12px; }
@@ -323,7 +331,7 @@
 <div id="phase-menu" class="game-modal initial-menu" aria-hidden="false" style="display:flex">
         <div class="phase-card">
             <div class="menu-kicker">MODO SOLO</div>
-            <div class="menu-tools"><button id="sound-btn" type="button" aria-label="Desativar som do jogo">🔊 SOM ON</button><button id="fullscreen-menu-btn" type="button" aria-label="Ativar tela cheia">⛶ TELA CHEIA</button><button class="menu-shop-shortcut" type="button" data-tab="shop">🛒 ABRIR LOJA</button></div>
+            <div class="menu-tools"><button id="sound-btn" type="button" aria-label="Desativar som do jogo">🔊 SOM ON</button><button class="menu-shop-shortcut" type="button" data-tab="shop">🛒 ABRIR LOJA</button></div>
             <h2>DESAFIO DE SINUCA</h2>
             <p class="menu-subtitle">Escolha como quer jogar. Seu progresso da campanha fica salvo.</p>
             <nav id="solo-tabs" class="solo-tabs" aria-label="Modos de jogo">
@@ -391,12 +399,12 @@
                 <div class="shop-cat" data-cat="mesa">
             <section id="table-color-section" aria-label="Personalização de cores da mesa">
                 <h3 class="table-color-title">PERSONALIZAR A MESA</h3>
-                <p class="table-color-help">Personalize o pano, a tabela e a madeira externa. Cada cor nova custa 500 moedas por acabamento; cores compradas podem ser equipadas de novo sem custo.</p>
+                <p class="table-color-help">Personalize o pano, a tabela e a madeira externa. Cada cor nova custa 50 moedas por acabamento; cores compradas podem ser equipadas de novo sem custo.</p>
                 <div id="shop-table-colors"></div>
-                <div class="custom-finish-row"><label for="custom-table-color">Pano</label><input id="custom-table-color" type="color" value="#022817" aria-label="Escolher a cor do pano"><span id="custom-table-color-value">#0B563B</span><button id="apply-custom-table-color" type="button">COMPRAR · 500 🪙</button></div>
-                <div class="custom-finish-row"><label for="custom-rail-color">Tabela / borracha</label><input id="custom-rail-color" type="color" value="#09203e" aria-label="Escolher a cor da tabela"><span id="custom-rail-color-value">#09203E</span><button id="apply-custom-rail-color" type="button">COMPRAR · 500 🪙</button></div>
-                <div class="custom-finish-row"><label for="custom-wood-color">Pintura completa da sinuca</label><input id="custom-wood-color" type="color" value="#11151a" aria-label="Escolher a cor completa da madeira da sinuca: base, bordas e pernas"><span id="custom-wood-color-value">#11151A</span><button id="apply-custom-wood-color" type="button">COMPRAR · 500 🪙</button></div>
-                <div class="custom-finish-row"><label for="custom-arc-color">Arco das caçapas</label><input id="custom-arc-color" type="color" value="#898f95" aria-label="Escolher a cor dos arcos das caçapas"><span id="custom-arc-color-value">#898F95</span><button id="apply-custom-arc-color" type="button">COMPRAR · 500 🪙</button></div>
+                <div class="custom-finish-row"><label for="custom-table-color">Pano</label><input id="custom-table-color" type="color" value="#022817" aria-label="Escolher a cor do pano"><span id="custom-table-color-value">#0B563B</span><button id="apply-custom-table-color" type="button">COMPRAR · 50 🪙</button></div>
+                <div class="custom-finish-row"><label for="custom-rail-color">Tabela / borracha</label><input id="custom-rail-color" type="color" value="#09203e" aria-label="Escolher a cor da tabela"><span id="custom-rail-color-value">#09203E</span><button id="apply-custom-rail-color" type="button">COMPRAR · 50 🪙</button></div>
+                <div class="custom-finish-row"><label for="custom-wood-color">Pintura completa da sinuca</label><input id="custom-wood-color" type="color" value="#11151a" aria-label="Escolher a cor completa da madeira da sinuca: base, bordas e pernas"><span id="custom-wood-color-value">#11151A</span><button id="apply-custom-wood-color" type="button">COMPRAR · 50 🪙</button></div>
+                <div class="custom-finish-row"><label for="custom-arc-color">Arco das caçapas</label><input id="custom-arc-color" type="color" value="#898f95" aria-label="Escolher a cor dos arcos das caçapas"><span id="custom-arc-color-value">#898F95</span><button id="apply-custom-arc-color" type="button">COMPRAR · 50 🪙</button></div>
             </section>
                 </div>
                 <div class="shop-cat" data-cat="upgrades"><h3 class="shop-cat-title">Upgrades de performance</h3><p class="shop-cat-sub">Evolua o taco conforme avança na campanha.</p><div id="upgrade-list"></div></div>
@@ -437,11 +445,13 @@
       </div>
     </div>
     <div id="lan-score"></div>
+    <div id="rotate-overlay" role="alert"><div class="rotate-box"><div class="rotate-phone"></div><p>GIRE O CELULAR</p><small>O jogo roda no modo paisagem</small></div></div>
     <div id="victory-panel" class="game-modal" aria-hidden="true">
         <div class="phase-card">
             <h2 id="victory-title">FASE CONCLUÍDA!</h2>
             <p id="victory-message">Você encaçapou todas as bolas.</p>
             <button id="victory-coins" type="button" style="display:none">🪙 +100 MOEDAS · ASSISTIR AO VÍDEO</button>
+            <button id="victory-extra-life" type="button" style="display:none">❤️ CONTINUAR · +1 VIDA (VÍDEO)</button>
             <button id="victory-next" type="button">SEGUIR PARA A PRÓXIMA FASE?</button>
             <button id="victory-retry" type="button">REPETIR ESTA FASE</button>
             <button id="victory-menu" type="button">VOLTAR AO MENU INICIAL</button>
@@ -1878,7 +1888,8 @@
     scene.add(new THREE.AmbientLight(0x91a4b3,0.20),new THREE.HemisphereLight(0xc4d8e8,0x2b1d13,0.58));
     const luzPrincipalMesa=new THREE.SpotLight(0xffe1b3,2.6,82,Math.PI/3.25,0.68,1);
     luzPrincipalMesa.position.set(-3,43,5);luzPrincipalMesa.target.position.set(0,7.4,0);luzPrincipalMesa.castShadow=true;
-    luzPrincipalMesa.shadow.mapSize.set(2048,2048); // sombra da mesa em alta resolucaoluzPrincipalMesa.shadow.radius=3;luzPrincipalMesa.shadow.camera.near=8;luzPrincipalMesa.shadow.camera.far=76;luzPrincipalMesa.shadow.bias=-0.00012;luzPrincipalMesa.shadow.normalBias=0.035;
+    luzPrincipalMesa.shadow.mapSize.set(2048,2048); // sombra da mesa em alta resolução
+    luzPrincipalMesa.shadow.radius=3;luzPrincipalMesa.shadow.camera.near=8;luzPrincipalMesa.shadow.camera.far=76;luzPrincipalMesa.shadow.bias=-0.00012;luzPrincipalMesa.shadow.normalBias=0.035;
     scene.add(luzPrincipalMesa,luzPrincipalMesa.target);
     const luzFriaPreenchimento=new THREE.DirectionalLight(0x91b9d9,0.58);luzFriaPreenchimento.position.set(-32,24,28);scene.add(luzFriaPreenchimento);
     const luzQuenteContorno=new THREE.DirectionalLight(0xffbd7a,0.42);luzQuenteContorno.position.set(28,16,-26);scene.add(luzQuenteContorno);
@@ -2156,14 +2167,14 @@
         configuracoes.forEach(([tipo,inputId,buttonId])=>{
             const input=document.getElementById(inputId),button=document.getElementById(buttonId);if(!input||!button)return;
             const possui=coresAcabamento[tipo].includes(input.value.toLowerCase());
-            button.disabled=!possui&&gameState.moedas<500;
-            button.textContent=possui?'EQUIPAR COR':'COMPRAR · 500 🪙';
+            button.disabled=!possui&&gameState.moedas<50;
+            button.textContent=possui?'EQUIPAR COR':'COMPRAR · 50 🪙';
         });
     }
     function comprarOuEquiparCorMesa(hex,custo,tipo='pano'){
         hex=String(hex||'').toLowerCase();if(!/^#[0-9a-f]{6}$/.test(hex))return;
         const cores=coresAcabamento[tipo];if(!cores)return;
-        const possui=cores.includes(hex),price=possui?0:500;
+        const possui=cores.includes(hex),price=possui?0:50;
         if(!possui&&gameState.moedas<price){document.getElementById('status-text').innerText='Faltam '+(price-gameState.moedas)+' moedas para comprar essa cor.';return;}
         if(!possui){gameState.moedas-=price;cores.push(hex);try{localStorage.setItem(tipo==='pano'?'sinucaMesasCompradas':tipo==='tabela'?'sinucaCoresTabela':tipo==='madeira'?'sinucaCoresMadeira':'sinucaCoresArco',JSON.stringify(cores));}catch(e){}atualizarHUD(false);salvarProgresso();}
         if(tipo==='pano')aplicarCorMesa(hex,true);else if(tipo==='tabela')aplicarCorTabela(hex);else if(tipo==='madeira')aplicarCorMadeira(hex);else aplicarCorArco(hex);
@@ -2193,10 +2204,10 @@
     }
     const seletorCorPano=document.getElementById('custom-table-color'),seletorCorTabela=document.getElementById('custom-rail-color'),seletorCorMadeira=document.getElementById('custom-wood-color'),seletorCorArco=document.getElementById('custom-arc-color');
     [[seletorCorPano,'custom-table-color-value'],[seletorCorTabela,'custom-rail-color-value'],[seletorCorMadeira,'custom-wood-color-value'],[seletorCorArco,'custom-arc-color-value']].forEach(([input,valueId])=>input.addEventListener('input',()=>{document.getElementById(valueId).textContent=input.value.toUpperCase();atualizarOpcoesCoresMesa();}));
-    document.getElementById('apply-custom-table-color').addEventListener('click',()=>comprarOuEquiparCorMesa(seletorCorPano.value,500,'pano'));
-    document.getElementById('apply-custom-rail-color').addEventListener('click',()=>comprarOuEquiparCorMesa(seletorCorTabela.value,500,'tabela'));
-    document.getElementById('apply-custom-wood-color').addEventListener('click',()=>comprarOuEquiparCorMesa(seletorCorMadeira.value,500,'madeira'));
-    document.getElementById('apply-custom-arc-color').addEventListener('click',()=>comprarOuEquiparCorMesa(seletorCorArco.value,500,'arco'));
+    document.getElementById('apply-custom-table-color').addEventListener('click',()=>comprarOuEquiparCorMesa(seletorCorPano.value,50,'pano'));
+    document.getElementById('apply-custom-rail-color').addEventListener('click',()=>comprarOuEquiparCorMesa(seletorCorTabela.value,50,'tabela'));
+    document.getElementById('apply-custom-wood-color').addEventListener('click',()=>comprarOuEquiparCorMesa(seletorCorMadeira.value,50,'madeira'));
+    document.getElementById('apply-custom-arc-color').addEventListener('click',()=>comprarOuEquiparCorMesa(seletorCorArco.value,50,'arco'));
     const madeiraMat = new THREE.MeshStandardMaterial({ color: 0x11151a, roughness: 0.34, metalness: 0.24 });
     const borrachaMesaMat = new THREE.MeshStandardMaterial({color:0x0b203b,roughness:0.58});
     const metalCaçapaMat = new THREE.MeshStandardMaterial({color:0x898f95,roughness:0.34,metalness:0.58}); 
@@ -3178,30 +3189,28 @@ function criarTexturaBolaMarmorizada(cor,num) {
         document.getElementById('status-text').innerText=perfeito?'Perfect Run!':'Fase concluída!';
     }
     document.getElementById('phase-menu-btn').addEventListener('click',()=>abrirMenuSolo('levels'));
-    const fullscreenMenuBtn=document.getElementById('fullscreen-menu-btn');
+    // Botão de tela cheia removido: agora o jogo pede tela cheia e trava no
+    // modo paisagem sozinho, no primeiro toque do jogador.
     async function tentarFixarPaisagem(){
         try{
             if(screen.orientation&&typeof screen.orientation.lock==='function') await screen.orientation.lock('landscape');
-        }catch(err){ /* Android ou navegador pode exigir app instalado ou outro gesto do usuário. */ }
+        }catch(err){ /* Navegador pode exigir tela cheia ou app instalado. */ }
     }
-    fullscreenMenuBtn.addEventListener('click',async()=>{
+    let paisagemJaFixada=false;
+    async function fixarPaisagemNoPrimeiroToque(){
+        if(paisagemJaFixada) return; paisagemJaFixada=true;
         try{
             if(!document.fullscreenElement){
                 const requisicao=document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen;
                 if(requisicao) await requisicao.call(document.documentElement);
-                await tentarFixarPaisagem();
-            }else{
-                const sair=document.exitFullscreen||document.webkitExitFullscreen;
-                if(sair) await sair.call(document);
-                try{ if(screen.orientation&&typeof screen.orientation.unlock==='function') screen.orientation.unlock(); }catch(err){}
             }
         }catch(err){ /* Tela cheia pode não estar disponível neste navegador. */ }
-    });
+        await tentarFixarPaisagem();
+    }
+    ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,fixarPaisagemNoPrimeiroToque,true));
     document.addEventListener('fullscreenchange',()=>{
-        const cheia=!!document.fullscreenElement;
-        fullscreenMenuBtn.innerText=cheia?'⛶ SAIR DA TELA CHEIA':'⛶ TELA CHEIA';
-        fullscreenMenuBtn.setAttribute('aria-label',cheia?'Sair da tela cheia':'Ativar tela cheia');
-        if(cheia) tentarFixarPaisagem();
+        if(document.fullscreenElement) tentarFixarPaisagem();
+        else paisagemJaFixada=false; // tela cheia voltará a ativar no próximo toque
     });
     document.getElementById('phase-menu-close-bottom').addEventListener('click',fecharMenuFases);
     document.getElementById('phase-menu').addEventListener('click',e=>{ if(e.target.id==='phase-menu'&&!e.currentTarget.classList.contains('initial-menu')) fecharMenuFases(); });
@@ -3219,12 +3228,43 @@ function criarTexturaBolaMarmorizada(cor,num) {
     // ===== ANÚNCIO PREMIADO (AdMob) — botão de +100 moedas no fim da fase =====
     const ADMOB_ID_ANUNCIO_PREMIADO='ca-app-pub-4472793118406300/5087802928'; // ID gerado no AdMob
     const rotuloBotaoMoeda=()=>((window.cordova&&window.AdMob)?'🪙 +100 MOEDAS · ASSISTIR AO VÍDEO':'🪙 +100 MOEDAS (MODO TESTE)');
+    const rotuloBotaoVidaExtra=()=>((window.cordova&&window.AdMob)?'❤️ CONTINUAR · +1 VIDA (VÍDEO)':'❤️ CONTINUAR · +1 VIDA (MODO TESTE)');
     function prepararBotaoMoedaFimDeFase(visivel){
         const btn=document.getElementById('victory-coins'); if(!btn) return;
         btn.style.display=visivel?'block':'none';
         btn.disabled=false; btn.style.opacity='1';
         btn.innerText=rotuloBotaoMoeda();
+        const btnVida=document.getElementById('victory-extra-life');
+        if(btnVida){
+            const mostrarVida=!visivel && gameState.modo==='gameOver';
+            btnVida.style.display=mostrarVida?'block':'none';
+            btnVida.disabled=false; btnVida.style.opacity='1';
+            btnVida.innerText=rotuloBotaoVidaExtra();
+        }
     }
+    function reviverComVidaExtra(){
+        gameState.ghosts=1; gameState.sequenciaEncaçapadas=0;
+        gameState.modo='niveis'; gameState.faseConcluida=false; gameState.aguardandoReset=false;
+        const painel=document.getElementById('victory-panel');painel.style.display='none';painel.setAttribute('aria-hidden','true');
+        atualizarHUD(); carregarFase(gameState.nivel);
+        document.getElementById('status-text').innerText='Você continuou com 1 vida. Boa sorte!';
+    }
+    function onVidaExtraFimDeJogoClick(){
+        const btn=document.getElementById('victory-extra-life');
+        if(window.cordova && window.AdMob){
+            // App Android: anúncio premiado em troca de +1 vida para continuar a fase.
+            window.AdMob.showRewardedAd({adId:ADMOB_ID_ANUNCIO_PREMIADO})
+                .then(()=>{ reviverComVidaExtra(); })
+                .catch(err=>{
+                    console.log('Anúncio indisponível: ',err);
+                    if(btn) btn.innerText='VÍDEO INDISPONÍVEL AGORA';
+                    document.getElementById('status-text').innerText='Vídeo indisponível de momento.';
+                });
+        } else {
+            reviverComVidaExtra(); // modo navegador/teste
+        }
+    }
+    document.getElementById('victory-extra-life').addEventListener('click',onVidaExtraFimDeJogoClick);
     function adicionarMoedasFimDeFase(){
         gameState.moedas+=100; gameState.moedasFase+=100;
         atualizarHUD(); salvarProgresso();
@@ -3412,7 +3452,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         document.getElementById('shop-coins').innerText=gameState.moedas.toLocaleString('pt-BR');
         document.getElementById('shop-level').innerText='Fase '+gameState.maxFaseLiberada+'/48';
         atualizarOpcoesCoresMesa();
-        document.getElementById('shop-table-colors').innerHTML='<small>Pano, tabela, arco e pintura completa da sinuca (base, bordas, pernas e travessas) têm cores independentes. Cada cor nova custa 500 moedas; cores compradas podem ser equipadas de novo sem custo no menu MODOS.</small>';
+        document.getElementById('shop-table-colors').innerHTML='<small>Pano, tabela, arco e pintura completa da sinuca (base, bordas, pernas e travessas) têm cores independentes. Cada cor nova custa 50 moedas; cores compradas podem ser equipadas de novo sem custo no menu MODOS.</small>';
         document.getElementById('upgrade-list').innerHTML=upgradesTaco.map(u=>{
             const level=gameState.upgrades[u.id], cost=u.base+level*u.porNivel;
             const requiredLevel=u.nivelInicial+level*u.intervaloNiveis;
@@ -3671,7 +3711,8 @@ function criarTexturaBolaMarmorizada(cor,num) {
         if(modoGesto==='reposicionarBranca') {
             posicionarBrancaPorToque(x,y);
         } else if(modoGesto==='tacada') {
-            rawForca=Math.max(0,Math.min(1,totalY/330));
+            const cursoPuxadaTacada=Math.max(140,Math.min(330,window.innerHeight*0.42));
+            rawForca=Math.max(0,Math.min(1,totalY/cursoPuxadaTacada));
             document.getElementById('power-meter').style.width=(rawForca*100)+'%';
             document.getElementById('power-pct').textContent=textoPuxada(rawForca);
             atualizarCuePullVisual(rawForca);
@@ -4414,7 +4455,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         const tam=q==='alto'?1024:512;
         if(luzPrincipalMesa.shadow.mapSize.x!==tam){luzPrincipalMesa.shadow.mapSize.set(tam,tam);if(luzPrincipalMesa.shadow.map){luzPrincipalMesa.shadow.map.dispose();luzPrincipalMesa.shadow.map=null;}}
         feltroMat.bumpScale=q==='desempenho'?0.018:0.032;
-        bolas.forEach(grupo=>{const sombra=grupo.children.find(x=>x.material&&x.material.map===texturaSombraBola);if(sombra)sombra.visible=q==='desempenho';});
+        bolas.forEach(grupo=>{const sombra=grupo.children.find(x=>x.material&&x.material.map===texturaSombraBola);if(sombra)sombra.visible=true;});
         if(qualityButton)qualityButton.textContent='GRÁFICOS · '+qualityNames[q];
         menuQuality.textContent='GRÁFICOS · '+qualityNames[q];
         if(qualityButton)qualityButton.setAttribute('aria-label','Qualidade gráfica '+qualityNames[q]+'. Clique para alterar.');
