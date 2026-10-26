@@ -408,7 +408,7 @@
                 <div id="shop-table-colors"></div>
                 <div class="custom-finish-row"><label for="custom-table-color">Pano</label><input id="custom-table-color" type="color" value="#022817" aria-label="Escolher a cor do pano"><span id="custom-table-color-value">#0B563B</span><button id="apply-custom-table-color" type="button">COMPRAR · 10 🪙</button></div>
                 <div class="custom-finish-row"><label for="custom-rail-color">Tabela / borracha</label><input id="custom-rail-color" type="color" value="#09203e" aria-label="Escolher a cor da tabela"><span id="custom-rail-color-value">#09203E</span><button id="apply-custom-rail-color" type="button">COMPRAR · 10 🪙</button></div>
-                <div class="custom-finish-row"><label for="custom-wood-color">Pintura completa da sinuca</label><input id="custom-wood-color" type="color" value="#11151a" aria-label="Escolher a cor completa da madeira da sinuca: base, bordas e pernas"><span id="custom-wood-color-value">#11151A</span><button id="apply-custom-wood-color" type="button">COMPRAR · 10 🪙</button></div>
+                <div class="custom-finish-row"><label for="custom-wood-color">Madeira externa · laterais, base e pés</label><input id="custom-wood-color" type="color" value="#11151a" aria-label="Escolher a cor da madeira externa, laterais, base e pés da sinuca"><span id="custom-wood-color-value">#11151A</span><button id="apply-custom-wood-color" type="button">COMPRAR · 10 🪙</button></div>
                 <div class="custom-finish-row"><label for="custom-arc-color">Arco das caçapas</label><input id="custom-arc-color" type="color" value="#898f95" aria-label="Escolher a cor dos arcos das caçapas"><span id="custom-arc-color-value">#898F95</span><button id="apply-custom-arc-color" type="button">COMPRAR · 10 🪙</button></div>
             </section></div>
                 <div class="shop-cat active" data-cat="equip"><h3 class="shop-cat-title">Equipamentos</h3><p class="shop-cat-sub">Tacos profissionais e acessórios que mudam seu jogo.</p><div id="shop-items" class="shop-grid"></div></div>
@@ -2238,10 +2238,15 @@
         document.getElementById('custom-rail-color').value=hex;document.getElementById('custom-rail-color-value').textContent=hex.toUpperCase();
         try{localStorage.setItem('sinucaCorTabela',hex);}catch(e){}try{atualizarMaterialAlmofadas();}catch(e){}
     }
-    function aplicarCorMadeira(hex){
+    let corMadeiraLateralPersonalizada=null;
+    function aplicarCorMadeira(hex,salvar=true){
+        if(typeof hex!=='string'||!/^#[0-9a-fA-F]{6}$/.test(hex))return;
+        hex=hex.toLowerCase();corMadeiraEscolhida=hex;
         madeiraMat.color.set(hex);madeiraMat.needsUpdate=true;pernaMat.color.set(hex);pernaMat.needsUpdate=true;reforcoMat.color.set(hex);reforcoMat.needsUpdate=true;
+        if(salvar){corMadeiraLateralPersonalizada=hex;try{localStorage.setItem('sinucaCorMadeiraLateral',hex);}catch(e){}}
+        saiaBrancaMat.color.set(corMadeiraLateralPersonalizada||0xe8e8e5);saiaBrancaMat.needsUpdate=true;
         document.getElementById('custom-wood-color').value=hex;document.getElementById('custom-wood-color-value').textContent=hex.toUpperCase();
-        try{localStorage.setItem('sinucaCorMadeira',hex);}catch(e){}
+        if(salvar)try{localStorage.setItem('sinucaCorMadeira',hex);}catch(e){}
     }
     function aplicarCorArco(hex){
         metalCaçapaMat.color.set(hex);metalCaçapaMat.needsUpdate=true;
@@ -2285,6 +2290,7 @@
         }
     })();
     try{const c=localStorage.getItem('sinucaCorMadeira');if(c&&/^#[0-9a-fA-F]{6}$/.test(c))corMadeiraEscolhida=c.toLowerCase();}catch(e){}
+    try{const c=localStorage.getItem('sinucaCorMadeiraLateral');if(c&&/^#[0-9a-fA-F]{6}$/.test(c))corMadeiraLateralPersonalizada=c.toLowerCase();}catch(e){}
     if((migracaoMesaV2&&corMadeiraEscolhida==='#11151a')||corMadeiraEscolhida==='#7a2c18')corMadeiraEscolhida='#141414';
     try{localStorage.setItem('sinucaMesaV2','1');}catch(e){}
     let corArcoEscolhida='#dfe2e5';
@@ -2300,7 +2306,7 @@
     aplicarCorArco(corArcoEscolhida);
     borrachaMesaMat.color.set(corTabelaEscolhida);protetorVermelho.color.set(corTabelaEscolhida);
     madeiraMat.color.set(corMadeiraEscolhida);pernaMat.color.set(corMadeiraEscolhida);reforcoMat.color.set(corMadeiraEscolhida);
-    aplicarCorMesa(corPanoEscolhida,false);aplicarCorTabela(corTabelaEscolhida);aplicarCorMadeira(corMadeiraEscolhida);atualizarOpcoesCoresMesa();
+    aplicarCorMesa(corPanoEscolhida,false);aplicarCorTabela(corTabelaEscolhida);aplicarCorMadeira(corMadeiraEscolhida,false);atualizarOpcoesCoresMesa();
 
     // Mesa estilo torneio: tampo de mogno, cantos prateados, losangos de madrepérola e dois pedestais.
     function texturaMadeiraMogno(){
@@ -2624,18 +2630,20 @@
     window.aplicarModeloMesa=function(id){
         const estilo=catalogoMesas.find(m=>m.id===id)||catalogoMesas[0];
         gruposModeloMesa.forEach((grupo,chave)=>{grupo.visible=chave===estilo.id;});
-        madeiraMat.color.set(estilo.wood);
+        const corMadeira=corMadeiraEscolhida||estilo.wood;
+        madeiraMat.color.set(corMadeira);
         madeiraMat.map=estilo.textura?texMogno:null;
         madeiraMat.roughness=estilo.textura?0.44:0.32;
         madeiraMat.metalness=estilo.textura?0.03:0.12;
-        pernaMat.color.set(estilo.wood);pernaMat.map=estilo.textura?texMogno:null;
-        reforcoMat.color.set(estilo.rail);reforcoMat.map=estilo.textura?texMogno:null;
+        pernaMat.color.set(corMadeira);pernaMat.map=estilo.textura?texMogno:null;
+        reforcoMat.color.set(corMadeira);reforcoMat.map=estilo.textura?texMogno:null;
+        saiaBrancaMat.color.set(corMadeiraLateralPersonalizada||0xe8e8e5);
         borrachaMesaMat.color.set(estilo.rail);protetorVermelho.color.set(estilo.rail);
         feltroMat.color.set(estilo.felt);feltroMat.emissive.set(estilo.felt);
         metalCaçapaMat.color.set(estilo.metal);aluminioMat.color.set(estilo.metal);
-        [madeiraMat,pernaMat,reforcoMat,borrachaMesaMat,protetorVermelho,feltroMat,metalCaçapaMat,aluminioMat].forEach(m=>{m.needsUpdate=true;});
+        [madeiraMat,pernaMat,reforcoMat,saiaBrancaMat,borrachaMesaMat,protetorVermelho,feltroMat,metalCaçapaMat,aluminioMat].forEach(m=>{m.needsUpdate=true;});
         almofadasMesa.forEach(m=>{m.material=borrachaMesaMat;});
-        [['custom-table-color',estilo.felt],['custom-rail-color',estilo.rail],['custom-wood-color',estilo.wood],['custom-arc-color',estilo.metal]].forEach(([id,hex])=>{
+        [['custom-table-color',estilo.felt],['custom-rail-color',estilo.rail],['custom-wood-color',corMadeira],['custom-arc-color',estilo.metal]].forEach(([id,hex])=>{
             const input=document.getElementById(id),value=document.getElementById(id+'-value');
             if(input)input.value=hex;
             if(value)value.textContent=hex.toUpperCase();
