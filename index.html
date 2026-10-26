@@ -107,6 +107,8 @@
         .phase-choice, #victory-next { width:100%; margin:5px 0; border:1px solid #d4a15e; border-radius:8px; padding:11px; color:#231508; background:#f1bd63; font-weight:bold; text-align:left; }
         .phase-choice:disabled { color:#cbbca8; background:#51483e; border-color:#665c50; }
         #victory-next { text-align:center; font-size:15px; }
+        #victory-coins { width:100%; margin:5px 0; border:1px solid #e4bb71; border-radius:9px; padding:11px; color:#1c252b; background:linear-gradient(135deg,#f0ce8b,#d9a955); font-weight:bold; text-align:center; font-size:15px; }
+        #victory-coins:disabled { opacity:.55; }
         #victory-retry, #victory-menu { width:100%; margin:5px 0; border:1px solid #53636d; border-radius:9px; padding:10px; color:#e7edf0; background:linear-gradient(145deg,#263640,#172129); font-weight:bold; }
         #victory-retry:active, #victory-menu:active { transform:scale(.99); }
         .phase-note { display:block; margin-top:10px; color:#c8b497; font-size:12px; }
@@ -439,6 +441,7 @@
         <div class="phase-card">
             <h2 id="victory-title">FASE CONCLUÍDA!</h2>
             <p id="victory-message">Você encaçapou todas as bolas.</p>
+            <button id="victory-coins" type="button" style="display:none">🪙 +100 MOEDAS · ASSISTIR AO VÍDEO</button>
             <button id="victory-next" type="button">SEGUIR PARA A PRÓXIMA FASE?</button>
             <button id="victory-retry" type="button">REPETIR ESTA FASE</button>
             <button id="victory-menu" type="button">VOLTAR AO MENU INICIAL</button>
@@ -2855,6 +2858,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         document.getElementById('victory-title').innerText='FASE MONTINHO CONCLUÍDA!';document.getElementById('victory-message').innerText='Você limpou o montinho sem errar depois do estouro. A próxima fase foi liberada!';document.getElementById('victory-next').innerText='SEGUIR PARA A PRÓXIMA FASE?';document.getElementById('victory-retry').style.display='block';document.getElementById('victory-menu').style.display='block';
         document.getElementById('victory-retry').innerText='REPETIR ESTA FASE';
         document.getElementById('victory-menu').innerText='VOLTAR AO MENU INICIAL';
+        prepararBotaoMoedaFimDeFase(true);
         const painel=document.getElementById('victory-panel');painel.style.display='flex';painel.setAttribute('aria-hidden','false');atualizarHUD();desenharMenuFases();salvarProgresso();
     }
     function montarNivel() {
@@ -3112,6 +3116,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
                 document.getElementById('victory-next').innerText='TENTAR ESTA FASE DE NOVO';
                 document.getElementById('victory-retry').style.display='none';
                 document.getElementById('victory-menu').style.display='block';
+                prepararBotaoMoedaFimDeFase(false);
                 const painel=document.getElementById('victory-panel'); painel.style.display='flex'; painel.setAttribute('aria-hidden','false');
                 salvarProgresso(); return;
             }
@@ -3136,6 +3141,9 @@ function criarTexturaBolaMarmorizada(cor,num) {
     }
     function avaliarPosicaoBranca() {
         if(gameState.modo!=='niveis') return;
+        // CORREÇÃO: a branca parada no corredor (vão) da caçapa segue em jogo.
+        // Não perde coração por estar ali; só perde se cair de verdade na caçapa.
+        if(estaNoVaoDaCacapa(branca,'x') || estaNoVaoDaCacapa(branca,'z')) return;
         const folga=Math.min(LIMITE_X-Math.abs(branca.position.x),LIMITE_Z-Math.abs(branca.position.z));
         if(folga<0.72 && !existeLinhaLivreParaAlvo()) perderGhosts(1,'A branca ficou presa junto à tabela e sem linha livre.');
     }
@@ -3165,6 +3173,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         document.getElementById('victory-retry').style.display='block';
         document.getElementById('victory-retry').innerText='REPETIR ESTA FASE';
         document.getElementById('victory-menu').style.display='block';
+        prepararBotaoMoedaFimDeFase(true);
         const painel=document.getElementById('victory-panel'); painel.style.display='flex'; painel.setAttribute('aria-hidden','false');
         document.getElementById('status-text').innerText=perfeito?'Perfect Run!':'Fase concluída!';
     }
@@ -3207,6 +3216,39 @@ function criarTexturaBolaMarmorizada(cor,num) {
         const menu=document.getElementById('phase-menu');menu.classList.add('initial-menu');menu.style.display='flex';menu.setAttribute('aria-hidden','false');
         selecionarAbaMenu('levels');document.getElementById('start-campaign-label').innerText='CONTINUAR CAMPANHA · FASE '+gameState.nivel;
     }
+    // ===== ANÚNCIO PREMIADO (AdMob) — botão de +100 moedas no fim da fase =====
+    const ADMOB_ID_ANUNCIO_PREMIADO='ca-app-pub-4472793118406300/5087802928'; // ID gerado no AdMob
+    const rotuloBotaoMoeda=()=>((window.cordova&&window.AdMob)?'🪙 +100 MOEDAS · ASSISTIR AO VÍDEO':'🪙 +100 MOEDAS (MODO TESTE)');
+    function prepararBotaoMoedaFimDeFase(visivel){
+        const btn=document.getElementById('victory-coins'); if(!btn) return;
+        btn.style.display=visivel?'block':'none';
+        btn.disabled=false; btn.style.opacity='1';
+        btn.innerText=rotuloBotaoMoeda();
+    }
+    function adicionarMoedasFimDeFase(){
+        gameState.moedas+=100; gameState.moedasFase+=100;
+        atualizarHUD(); salvarProgresso();
+        const btn=document.getElementById('victory-coins');
+        if(btn){ btn.disabled=true; btn.style.opacity='.55'; btn.innerText='✓ +100 MOEDAS ADICIONADAS'; }
+        document.getElementById('status-text').innerText='+100 moedas adicionadas!';
+    }
+    function onMoedaFimDeFaseClick(){
+        if(window.cordova && window.AdMob){
+            // App Android oficial: mostra o anúncio premiado do AdMob.
+            window.AdMob.showRewardedAd({adId:ADMOB_ID_ANUNCIO_PREMIADO})
+                .then(()=>{ adicionarMoedasFimDeFase(); }) // assistiu até o fim: libera as moedas
+                .catch(err=>{
+                    console.log('Anúncio indisponível: ',err);
+                    const btn=document.getElementById('victory-coins');
+                    if(btn && !btn.disabled) btn.innerText='VÍDEO INDISPONÍVEL AGORA';
+                    document.getElementById('status-text').innerText='Vídeo indisponível de momento. Tente de novo no próximo fim de fase.';
+                });
+        } else {
+            // Modo navegador/teste: dá a moeda direto, sem quebrar o jogo no link.
+            adicionarMoedasFimDeFase();
+        }
+    }
+    document.getElementById('victory-coins').addEventListener('click',onMoedaFimDeFaseClick);
     document.getElementById('victory-next').addEventListener('click',()=>{
         if(gameState.modo==='gameOver'){const faseAtual=gameState.nivel;gameState.ghosts=VIDAS_INICIAIS;gameState.sequenciaEncaçapadas=0;gameState.modo='niveis';gameState.aguardandoReset=false;carregarFase(faseAtual);return;}
         const prox=gameState.nivel<48?gameState.nivel+1:1;gameState.aguardandoReset=false;carregarFase(prox);
