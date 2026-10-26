@@ -3374,7 +3374,10 @@ function criarTexturaBolaMarmorizada(cor,num) {
     // A tela cheia só é pedida DEPOIS do toque (pointerup/click): pedir no
     // pointerdown redimensionava a tela no meio do toque e cancelava o clique
     // do botão — era por isso que o modo desafio precisava de dois toques.
-    ['pointerup','click','keyup','keydown'].forEach(ev=>document.addEventListener(ev,ativarTelaCheia,true));
+    // Não intercepta pointerup: em celulares isso pode redimensionar a tela
+    // antes do click do botão e cancelar o início da partida. O click sobe
+    // pela árvore depois que o próprio botão conclui sua ação.
+    ['click','keyup','keydown'].forEach(ev=>document.addEventListener(ev,ativarTelaCheia,false));
     // O botão de tela cheia existe, mas fica invisível: ninguém precisa tocar
     // nele — o próprio jogo cuida de ativar e desativar a tela cheia.
     const botaoTelaCheia=document.getElementById('fullscreen-menu-btn');
@@ -3559,6 +3562,11 @@ function criarTexturaBolaMarmorizada(cor,num) {
     ];
     const ghostBall = new THREE.Mesh(new THREE.SphereGeometry(RAIO, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15, wireframe: true })); scene.add(ghostBall); // bola fantasma de contato: onde a branca vai bater
     const ghostStopBall = new THREE.Mesh(new THREE.SphereGeometry(RAIO, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.42 })); scene.add(ghostStopBall); // a BRANCA fantasma: onde a branca vai parar
+    // Quando o pano ou a tabela forem claros, escurece as duas guias para destacá-las.
+    function fundoDaMesaClaro(){
+        const luminanciaHex=hex=>{const h=String(hex||'').replace('#','');if(!/^[0-9a-f]{6}$/i.test(h))return 0;const c=[0,2,4].map(i=>parseInt(h.slice(i,i+2),16)/255).map(v=>v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2));return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2];};
+        return luminanciaHex(corPanoEscolhida)>0.34||luminanciaHex(corTabelaEscolhida)>0.34;
+    }
     const guiaGeo=new THREE.BufferGeometry(); guiaGeo.setAttribute('position',new THREE.Float32BufferAttribute(new Float32Array(6),3));
     const guiaMira=new THREE.Line(guiaGeo,new THREE.LineBasicMaterial({color:0x9effc2,transparent:true,opacity:0.78,depthWrite:false}));
     guiaMira.visible=false; scene.add(guiaMira);
@@ -4654,6 +4662,12 @@ function criarTexturaBolaMarmorizada(cor,num) {
                     else { ghostBall.material.color.setHex(legal?0x00e676:0xff1744); ghostBall.material.opacity=0.32; }
                 } else { ghostBall.material.color.setHex(0xffd67a); ghostBall.material.opacity=0.22; }
             } else { ghostBall.material.color.setHex(0xffffff); ghostBall.material.opacity=0.12; }
+            if(fundoDaMesaClaro()){
+                ghostBall.material.color.setHex(0x111820); ghostBall.material.opacity=0.78;
+                ghostStopBall.material.color.setHex(0x111820); ghostStopBall.material.opacity=0.76;
+            } else {
+                ghostStopBall.material.color.setHex(0xffffff); ghostStopBall.material.opacity=0.42;
+            }
             const limiteForca=gameState.modo==='niveis' && gameState.nivel>=13 ? (gameState.nivel>=19?0.88:0.93) : 1;
             let forcaPrevista=Math.pow(rawForca,1.6)*1.9*statsTaco().forca*tacoForcaMultiplicador*limiteForca*(parImpar.ativo?2:1);if(parImpar.ativo)forcaPrevista=Math.max(0.15,Math.min(4.5,forcaPrevista));
             const distMax=calcularDistanciaParadaEstimada(forcaPrevista,gameState.spinY,gameState.spinX);
@@ -4756,13 +4770,13 @@ function criarTexturaBolaMarmorizada(cor,num) {
         if(Math.abs(camera.fov-fovVisao)>0.05) { camera.fov=fovVisao; camera.updateProjectionMatrix(); }
         const centroMesa=new THREE.Vector3(0,Y_BOLAS,0);
         const focoCamera=alvoCamera.position.clone().lerp(centroMesa,gameState.jogadaAtiva?0.85:visaoGeral*0.45); // na tacada: foco no centro, sem ir longe demais
-        const distanciaCamera=(1+alturaCamSolicitada*0.62)*(1+0.35*visaoGeral)*(cameraEmVisaoJogador?0.72:1)*Math.min(2.5,fatorTelaEstreita);
+        const distanciaCamera=(1+alturaCamSolicitada*0.62)*(1+0.35*visaoGeral)*(cameraEmVisaoJogador?0.60:1)*Math.min(2.5,fatorTelaEstreita);
         // CÂMERA POR CIMA DO TACO: a câmera nunca desce pra baixo da linha do taco
         // erguido. O piso da altura sobe junto com o cabo (que levanta perto da
         // tabela), então o olho fica sempre ACIMA do taco, olhando por cima dele
         // pra branca — nunca embaixo do cabo.
         const alturaTacoNaCam=yTacoContato+folgaTacoAtual+Math.abs(inclinacaoSuaveTaco)*distanciaCamera;
-        const alturaCamEfetiva=Math.max(9,Math.min(72,Math.max((cameraEmVisaoJogador?alturaCamBase*0.64:alturaCamBase)*Math.min(1.7,Math.sqrt(fatorTelaEstreita)),cameraEmVisaoJogador?alturaTacoNaCam+1.15:0)));
+        const alturaCamEfetiva=Math.max(cameraEmVisaoJogador?7:9,Math.min(72,Math.max((cameraEmVisaoJogador?alturaCamBase*0.54:alturaCamBase)*Math.min(1.7,Math.sqrt(fatorTelaEstreita)),cameraEmVisaoJogador?alturaTacoNaCam+1.15:0)));
         const posCamera=new THREE.Vector3(focoCamera.x-dX*distanciaCamera,alturaCamEfetiva,focoCamera.z-dZ*distanciaCamera);
         // SALÃO POR LADO na tacada: só fica invisível o lado por onde a câmera
         // foi parar (parede, coluna, taqueira que entrariam na frente da mesa).
