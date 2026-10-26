@@ -2962,6 +2962,18 @@ function criarTexturaBolaMarmorizada(cor,num) {
         }
         gameState.saidaBranca=[0,16*MESA_ESCALA];gameState.encaixadas=0;gameState.total=fase.bolas;gameState.brancaCaiu=false;gameState.posicionandoBranca=false;gameState.aguardandoReset=false;gameState.jogadaAtiva=false;gameState.bossArranhou=false;gameState.bossTentativaAtiva=false;gameState.bossQuebraConcluida=false;gameState.encaixadasInicioJogada=0;atualizarListaBolasEncaixadas();
     }
+    function devolverBrancaAoEstouro(){
+        const x=0,z=16*MESA_ESCALA;
+        branca.position.set(x,Y_BOLAS,z);
+        branca.userData.vx=0;branca.userData.vz=0;branca.userData.ativa=true;
+        branca.userData.caindo=false;branca.userData.encaçapada=false;
+        branca.userData.spinSide=0;branca.userData.spinTop=0;
+        zerarRotacaoBola(branca);
+        if(!branca.parent)scene.add(branca);
+        gameState.saidaBranca=[x,z];gameState.brancaCaiu=false;
+        gameState.posicionandoBranca=false;gameState.aguardandoReset=false;
+        alvoCamera=branca;
+    }
     function resolverBossSolo(){
         if(!isBossSolo()||!gameState.bossTentativaAtiva)return;
         // Consume the completed shot immediately so the physics loop cannot resolve the same shot twice.
@@ -2969,23 +2981,22 @@ function criarTexturaBolaMarmorizada(cor,num) {
         const fase=FASES[gameState.nivel-1],encaixouNestaTacada=gameState.encaixadas>gameState.encaixadasInicioJogada;
         const restam=bolas.some(b=>!b.userData.isBranca&&b.userData.ativa&&!b.userData.caindo);
         gameState.jogadaAtiva=false;
-        if(gameState.bossArranhou){
-            if(!gameState.bossQuebraConcluida){
-                // The first break is free, even if the cue ball scratches. Keep the spread and return only the cue.
-                gameState.bossQuebraConcluida=true;gameState.bossArranhou=false;
-                document.getElementById('status-text').innerText='Estouro livre concluído. A partir da próxima tacada, acerte ao menos uma bola.';
+        if(!gameState.bossQuebraConcluida){
+            // A primeira tacada é sempre livre: mantém as bolas espalhadas e
+            // devolve a branca ao ponto de saída, sem reiniciar o montinho.
+            gameState.bossQuebraConcluida=true;gameState.bossArranhou=false;
+            devolverBrancaAoEstouro();
+            if(!encaixouNestaTacada){
+                document.getElementById('status-text').innerText='Estouro livre concluído. A branca voltou ao ponto de saída; a partir da próxima tacada, acerte ao menos uma bola.';
                 atualizarHUD(false);return;
             }
+        }
+        if(gameState.bossArranhou){
             salvarHistoricoBolinho('Scratch na fase Bolinho '+gameState.nivel+' · montinho reiniciado.');
             gameState.idFase++;prepararRackBoss();atualizarHUD(false);
             document.getElementById('status-text').innerText='A branca caiu. Montinho reiniciado; faça um novo estouro livre.';return;
         }
         if(!encaixouNestaTacada){
-            if(!gameState.bossQuebraConcluida){
-                gameState.bossQuebraConcluida=true;
-                document.getElementById('status-text').innerText='Estouro livre concluído. A partir da próxima tacada, encaçape ao menos uma bola por tacada.';
-                atualizarHUD(false);return;
-            }
             salvarHistoricoBolinho('Erro depois do estouro na fase Bolinho '+gameState.nivel+' · montinho reiniciado para novo estouro.');
             gameState.idFase++;prepararRackBoss();atualizarHUD(false);
             document.getElementById('status-text').innerText='Você errou depois do estouro. Montinho reiniciado; faça um novo estouro livre.';return;
