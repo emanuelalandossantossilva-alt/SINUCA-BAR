@@ -204,13 +204,13 @@
         .custom-finish-row button:disabled { opacity:.5; }
 
         #phase-menu { align-items:flex-start; justify-content:center; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; touch-action:pan-y; padding-top:max(8px,env(safe-area-inset-top)); padding-bottom:max(8px,env(safe-area-inset-bottom)); }
-        #phase-menu .phase-card { max-height:none; overflow:visible; touch-action:pan-y; }
+        #phase-menu .phase-card { max-height:calc(100vh - max(16px,env(safe-area-inset-top)) - max(16px,env(safe-area-inset-bottom))); overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; touch-action:pan-y; }
         #phase-menu-close-bottom { position:static; display:block; width:100%; box-sizing:border-box; margin:14px 0 4px; transform:none; }
         #phase-menu .tab-page.active { padding-bottom:12px; }
         /* ABA EM TELA CHEIA: ao clicar numa aba do menu, o conteúdo ocupa a tela toda. */
         #phase-menu.menu-full { padding:0; }
-        #phase-menu.menu-full .phase-card { width:100%; max-width:100%; min-height:100%; max-height:100%; border-radius:0; border:none; box-sizing:border-box; }
-        #phase-menu.menu-full .solo-tabs { position:sticky; top:-22px; z-index:5; margin:0 0 12px; padding:10px 0 8px; background:rgba(13,20,26,.97); border-bottom:1px solid rgba(196,211,219,.14); }
+        #phase-menu.menu-full .phase-card { width:100%; max-width:100%; min-height:100%; max-height:100vh; max-height:100dvh; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; border-radius:0; border:none; box-sizing:border-box; touch-action:pan-y; }
+        #phase-menu.menu-full .solo-tabs { position:sticky; top:0; z-index:5; margin:0 0 12px; padding:10px 0 8px; background:rgba(13,20,26,.97); border-bottom:1px solid rgba(196,211,219,.14); }
         #phase-menu.menu-full #phase-list { grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
         #phase-menu.menu-full .shop-grid { grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); }
         /* HUD compacto no alto; controle de efeito pequeno no canto inferior esquerdo. */
@@ -3501,6 +3501,9 @@ function criarTexturaBolaMarmorizada(cor,num) {
     document.getElementById('victory-retry').addEventListener('click',()=>{const atual=gameState.nivel;gameState.ghosts=VIDAS_INICIAIS;gameState.sequenciaEncaçapadas=0;gameState.modo='niveis';gameState.aguardandoReset=false;carregarFase(atual);});
     document.getElementById('victory-menu').addEventListener('click',voltarAoMenuInicialDoJogo);
     montarNivel();
+    // O menu já abre na aba de níveis; desenha a lista logo no carregamento,
+    // sem exigir um toque prévio numa aba para habilitar o início da campanha.
+    desenharMenuFases();
     gameState.aguardandoReset=true;
     document.getElementById('start-campaign-label').innerText='CONTINUAR CAMPANHA · FASE '+gameState.nivel;
 
