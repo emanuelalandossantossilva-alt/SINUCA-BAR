@@ -358,6 +358,27 @@
     </style>
 </head>  
 <body>  
+<script id="storage-shim">
+/* Armazenamento reserva: quando o navegador bloqueia localStorage
+   (ex.: jogo aberto dentro da visualização do chat), usa memória
+   para o jogo continuar funcionando sem quebrar os saldos. */
+(function(){
+  try{ localStorage.getItem('sinuca-teste-acesso'); }
+  catch(e){
+    var mem={};
+    try{
+      Object.defineProperty(window,'localStorage',{configurable:true,value:{
+        getItem:function(k){return Object.prototype.hasOwnProperty.call(mem,k)?mem[k]:null;},
+        setItem:function(k,v){mem[k]=String(v);},
+        removeItem:function(k){delete mem[k];},
+        clear:function(){mem={};},
+        key:function(i){return Object.keys(mem)[i]||null;},
+        get length(){return Object.keys(mem).length;}
+      }});
+    }catch(e2){}
+  }
+})();
+</script>
 <!-- TELA DE CARREGAMENTO: bola 1 rolando enquanto o jogo levanta a mesa 3D -->
 <div id="tela-carregando" data-saiu="0" role="status" aria-label="Carregando o jogo">
     <div class="tc-palco">
@@ -412,7 +433,7 @@
         <span id="cue-pull-hint">PUXE &#8595;</span>
     </div>
     <div id="stage-hud">FASE 1/48 · BOLAS 0/3</div>
-    <div id="wallet-hud">🪙 0</div>
+    <div id="wallet-hud">🪙 <span id="wallet-hud-val">0</span><button id="wallet-plus-btn" type="button" aria-label="Ganhar moedas assistindo anúncio">＋</button></div>
     <div id="life-hud" aria-label="Vidas restantes" aria-live="polite"></div>
     <button id="phase-menu-btn" type="button" aria-label="Menu de modos"><span class="barra-menu"></span><span class="barra-menu"></span><span class="barra-menu"></span></button>
         <div id="vinheta" aria-hidden="true"></div>
@@ -428,7 +449,7 @@
 <div id="phase-menu" class="game-modal initial-menu" aria-hidden="false" style="display:flex">
         <div class="phase-card">
             <div class="menu-kicker">MODO SOLO</div>
-            <div class="menu-tools"><button id="sound-btn" type="button" aria-label="Desativar som do jogo">🔊 SOM ON</button><button class="menu-shop-shortcut" type="button" data-tab="shop">🛒 ABRIR LOJA</button></div>
+            <div class="menu-tools"><button id="shop-back-btn" type="button" aria-label="Voltar ao jogo" hidden><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M14.5 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button id="sound-btn" type="button" aria-label="Desativar som do jogo">🔊 SOM ON</button><button class="menu-shop-shortcut" type="button" data-tab="shop">🛒 ABRIR LOJA</button></div>
             <h2>SINUCA BAR</h2>
             <p class="menu-subtitle">Escolha como quer jogar. Seu progresso da campanha fica salvo.</p>
             <nav id="solo-tabs" class="solo-tabs" aria-label="Modos de jogo">
@@ -489,10 +510,10 @@
                 <button id="shop-video-coins" class="shop-video-btn" type="button">
                     <span class="svb-ico" aria-hidden="true">▶</span> ASSISTIR VÍDEO · +200 MOEDAS</button>
                 <nav class="shop-tabs" role="tablist" aria-label="Categorias da loja">
-                    <button type="button" class="shop-tab active" data-shop-cat="equip" title="Equipamentos" aria-label="Equipamentos">EQU</button>
-                    <button type="button" class="shop-tab" data-shop-cat="upgrades" title="Upgrades" aria-label="Upgrades">UPG</button>
-                    <button type="button" class="shop-tab" data-shop-cat="taco" title="Personalizar taco e mesa" aria-label="Personalizar taco e mesa">PER</button>
-                    <button type="button" class="shop-tab" data-shop-cat="luz" title="Iluminação da mesa" aria-label="Iluminação da mesa">ILU</button>
+                    <button type="button" class="shop-tab active" data-shop-cat="equip" title="Equipamentos" aria-label="Equipamentos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.2 19.8L19 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M17.5 3.5L20.5 6.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><circle cx="5.4" cy="18.6" r="1.4" fill="currentColor"/></svg><span>EQU</span></button>
+                    <button type="button" class="shop-tab" data-shop-cat="upgrades" title="Upgrades" aria-label="Upgrades"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13.5l6-6 6 6M6 19l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>UPG</span></button>
+                    <button type="button" class="shop-tab" data-shop-cat="taco" title="Personalizar taco e mesa" aria-label="Personalizar taco e mesa"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="9" cy="9.5" r="1.5" fill="currentColor"/><circle cx="15" cy="9.5" r="1.5" fill="currentColor"/><circle cx="12" cy="14.5" r="1.5" fill="currentColor"/></svg><span>PER</span></button>
+                    <button type="button" class="shop-tab" data-shop-cat="luz" title="Iluminação da mesa" aria-label="Iluminação da mesa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2a6.2 6.2 0 0 1 4.3 10.7c-.8.9-1.3 1.8-1.3 2.9H9c0-1.1-.5-2-1.3-2.9A6.2 6.2 0 0 1 12 3.2z" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M9.6 19h4.8M10.6 21.3h2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>ILU</span></button>
                 </nav>
                 
                 <div class="shop-cat" data-cat="upgrades"><h3 class="shop-cat-title">Upgrades de performance</h3><p class="shop-cat-sub">Evolua o taco conforme avança na campanha.</p><div id="upgrade-list"></div></div>
@@ -612,8 +633,9 @@
     const THREE = window.THREE;  
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x283136);
-    scene.fog = new THREE.FogExp2(0x30383c, 0.00015);
+    // Boteco: penumbra quente em vez de cinza azulado.
+    scene.background = new THREE.Color(0x201409);
+    scene.fog = new THREE.FogExp2(0x241708, 0.00015);
     function avisoBoot(titulo,texto){
         try{
             let el=document.getElementById('sinuca-erro-boot');
@@ -698,6 +720,29 @@
         const g=x.createLinearGradient(0,0,256,0);g.addColorStop(0,'#b7a897');g.addColorStop(.45,'#e0d3c1');g.addColorStop(1,'#aa9b89');x.fillStyle=g;x.fillRect(0,0,256,512);
         for(let i=0;i<95;i++){const px=rndRealismo()*256,amp=2+rndRealismo()*11,f=.012+rndRealismo()*.028;x.strokeStyle=`rgba(${45+Math.floor(rndRealismo()*45)},${35+Math.floor(rndRealismo()*35)},${25+Math.floor(rndRealismo()*28)},${.035+rndRealismo()*.13})`;x.lineWidth=.35+rndRealismo()*1.4;x.beginPath();for(let y=0;y<=512;y+=8){const xx=px+Math.sin(y*f+i)*amp+Math.sin(y*.003+i)*4;if(y===0)x.moveTo(xx,y);else x.lineTo(xx,y);}x.stroke();}
         for(let i=0;i<7;i++){const px=rndRealismo()*256,py=rndRealismo()*512;x.strokeStyle='rgba(55,35,22,.11)';x.lineWidth=1;x.beginPath();x.ellipse(px,py,5+rndRealismo()*11,22+rndRealismo()*28,0,0,Math.PI*2);x.stroke();}
+        return c;
+    }
+    function criarCanvasTijolo(){
+        // TIJOLO APARENTE DE BOTECO: fileiras desencontradas, juntas grossas
+        // e variação de queimado tijolo a tijolo, gerado em canvas 256.
+        const S=256,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');
+        x.fillStyle='#3d3229';x.fillRect(0,0,S,S);                    // argamassa rústica
+        const bh=S/8,bw=S/4;
+        for(let linha=0,r=0;linha<8;linha++,r++){
+            const off=(r%2)*bw/2;
+            for(let col=-1;col<5;col++){
+                const t=Math.floor(rndRealismo()*26);                  // barro queimado variado
+                x.fillStyle=`rgb(${112+t},${60+(t*0.55|0)},${44+(t*0.4|0)})`;
+                x.fillRect(off+col*bw+1.6, linha*bh+1.6, bw-3.2, bh-3.2);
+                if(rndRealismo()<.4){                                  // meia-sombra do tijolo
+                    x.fillStyle='rgba(0,0,0,.14)';x.fillRect(off+col*bw+1.6,linha*bh+1.6,(bw-3.2)/2,bh-3.2);
+                }
+            }
+        }
+        for(let i=0;i<600;i++){                                         // fuligem do tempo
+            x.fillStyle=`rgba(0,0,0,${rndRealismo()*0.10})`;
+            x.fillRect(rndRealismo()*S,rndRealismo()*S,3,3);
+        }
         return c;
     }
     function criarAmbienteEstudio(){
@@ -1017,11 +1062,25 @@
         visuaisComprados:progressoInicial.visuaisComprados&&typeof progressoInicial.visuaisComprados==='object'?progressoInicial.visuaisComprados:{corpo:['madeira'],ponteira:['azul'],virola:['metal'],estampa:['nenhuma']},
         luzMesa:progressoInicial.luzMesa||'painel', luzesCompradas:Array.isArray(progressoInicial.luzesCompradas)?progressoInicial.luzesCompradas:['painel'],
         recordeTimer:Math.max(0,parseInt(progressoInicial.recordeTimer)||0), modo:'niveis', timerAtivo:false, timerFim:0, timerScore:0,
-        fasesConcluidas:Array.isArray(progressoInicial.fasesConcluidas)?progressoInicial.fasesConcluidas:[], estrelasPorFase:progressoInicial.estrelasPorFase&&typeof progressoInicial.estrelasPorFase==='object'&&!Array.isArray(progressoInicial.estrelasPorFase)?progressoInicial.estrelasPorFase:{}, bonusCampanhaPaga:!!progressoInicial.bonusCampanhaPaga,
+        fasesConcluidas:Array.isArray(progressoInicial.fasesConcluidas)?progressoInicial.fasesConcluidas:[], estrelasPorFase:progressoInicial.estrelasPorFase&&typeof progressoInicial.estrelasPorFase==='object'&&!Array.isArray(progressoInicial.estrelasPorFase)?progressoInicial.estrelasPorFase:{}, bonusCampanhaPaga:!!progressoInicial.bonusCampanhaPaga, recompensasBlocos:progressoInicial.recompensasBlocos&&typeof progressoInicial.recompensasBlocos==='object'&&!Array.isArray(progressoInicial.recompensasBlocos)?progressoInicial.recompensasBlocos:{},
         ghosts:VIDAS_INICIAIS, ghostsNivelInicio:VIDAS_INICIAIS, ghostPerdidosNivel:0, sequenciaEncaçapadas:0, ghostPenaltyThisShot:false, tacadasNivel:0, inicioNivelMs:Date.now(), nivelPerfeito:true, usouEfeitoComplexo:false, posicionandoBranca:false,
         faseConcluida:false, recompensaPaga:false,
         tabelasSemContato:0, acertouBola:false, penalidadeAplicada:false
     };
+    // ===== MODO TESTE (a pedido do dono: liberar tudo para testar) =====
+    // Em TODO carregamento: abre as 48 fases e garante no mínimo
+    // 50.000 moedas. Remover este bloco quando os testes terminarem.
+    try{
+        gameState.maxFaseLiberada=48;
+        if((gameState.moedas||0)<50000) gameState.moedas=50000;
+        // HISTÓRICO DE FASE liberado: todas as fases contam como concluídas
+        // com 3 estrelas — as recompensas dos blocos ficam prontas para recolher.
+        for(let n=1;n<=48;n++){
+            gameState.estrelasPorFase[n]=3;
+            if(!gameState.fasesConcluidas.includes(n)) gameState.fasesConcluidas.push(n);
+        }
+        try{ salvarProgresso(); }catch(e){}
+    }catch(e){}
     // TACO EQUIPADO E APRIMORAMENTOS: qualquer taco comprado pode ser
     // equipado; cada taco comprado começa um pouco mais fraco e sobe em
     // até 5 níveis de aprimoramento até chegar ao valor máximo.
@@ -2151,7 +2210,7 @@
                 bolasPagas:gameState.bolasPagas, upgrades:gameState.upgrades, upgradesPorTaco:gameState.upgradesPorTaco, equipNiveis:gameState.equipNiveis,
                 designTaco:gameState.designTaco, estampasCompradas:gameState.estampasCompradas, visuaisComprados:gameState.visuaisComprados,
                 luzMesa:gameState.luzMesa, luzesCompradas:gameState.luzesCompradas, recordeTimer:gameState.recordeTimer,
-                fasesConcluidas:gameState.fasesConcluidas, estrelasPorFase:gameState.estrelasPorFase, historicoBolinho:gameState.historicoBolinho, bonusCampanhaPaga:gameState.bonusCampanhaPaga
+                fasesConcluidas:gameState.fasesConcluidas, estrelasPorFase:gameState.estrelasPorFase, historicoBolinho:gameState.historicoBolinho, bonusCampanhaPaga:gameState.bonusCampanhaPaga, recompensasBlocos:gameState.recompensasBlocos
             }));
         } catch(e) {}
     }
@@ -2185,13 +2244,13 @@
 
     // Salão amplo e elegante: piso polido, paredes escuras e iluminação em cada mesa.
     // Sem refletor direto sobre o pano; a cena usa luz ambiente e hemisférica uniforme.
-    scene.add(new THREE.AmbientLight(0x91a4b3,0.20),new THREE.HemisphereLight(0xc4d8e8,0x2b1d13,0.58));
+    scene.add(new THREE.AmbientLight(0x8a5a34,0.26),new THREE.HemisphereLight(0xd9a468,0x1a1109,0.52));
     const luzPrincipalMesa=new THREE.SpotLight(0xffe1b3,2.6,82,Math.PI/3.25,0.68,1);
     luzPrincipalMesa.position.set(-3,43,5);luzPrincipalMesa.target.position.set(0,7.4,0);luzPrincipalMesa.castShadow=true;
     luzPrincipalMesa.shadow.mapSize.set(2048,2048); // sombra da mesa em alta resolução
     luzPrincipalMesa.shadow.radius=3;luzPrincipalMesa.shadow.camera.near=8;luzPrincipalMesa.shadow.camera.far=76;luzPrincipalMesa.shadow.bias=-0.00012;luzPrincipalMesa.shadow.normalBias=0.035;
     scene.add(luzPrincipalMesa,luzPrincipalMesa.target);
-    const luzFriaPreenchimento=new THREE.DirectionalLight(0x91b9d9,0.58);luzFriaPreenchimento.position.set(-32,24,28);scene.add(luzFriaPreenchimento);
+    const luzFriaPreenchimento=new THREE.DirectionalLight(0xff9a4d,0.34);luzFriaPreenchimento.position.set(-32,24,28);scene.add(luzFriaPreenchimento);
     const luzQuenteContorno=new THREE.DirectionalLight(0xffbd7a,0.42);luzQuenteContorno.position.set(28,16,-26);scene.add(luzQuenteContorno);
 
     const pisoBaseMadeira = new THREE.Mesh(
@@ -2211,7 +2270,9 @@
             regua.position.set(x,0.45,z+deslocamento);scene.add(regua);
         }
     }
-    const paredeLuxMat = new THREE.MeshStandardMaterial({ color: 0x1b2429, roughness: 0.72, metalness: 0.12 });
+    // Paredes de boteco: tijolo aparente em vez de painel liso escuro.
+    const paredeLuxMat = new THREE.MeshStandardMaterial({ map: texturaCanvasRealismo(criarCanvasTijolo(),46,23), roughness: 0.93, metalness: 0.02 });
+    const paredeLadoMat = new THREE.MeshStandardMaterial({ map: texturaCanvasRealismo(criarCanvasTijolo(),64,23), roughness: 0.93, metalness: 0.02 });
     const tetoLuxMat = new THREE.MeshStandardMaterial({ color: 0x161e23, roughness: 0.88 });
     const fileteLuxMat = new THREE.MeshStandardMaterial({ color: 0x987342, roughness: 0.34, metalness: 0.72 });
     const tetoSala = new THREE.Mesh(new THREE.PlaneGeometry(170, 240), tetoLuxMat);
@@ -2224,9 +2285,9 @@
     paredeFundoLux.position.set(0, 42, -119); paredeFundoLux.userData.lado={eixo:'z',sinal:-1,limiar:86}; salaoParedes.add(paredeFundoLux);
     const paredeFrenteLux = new THREE.Mesh(new THREE.BoxGeometry(170, 84, 1), paredeLuxMat);
     paredeFrenteLux.position.set(0, 42, 119); paredeFrenteLux.userData.lado={eixo:'z',sinal:1,limiar:86}; salaoParedes.add(paredeFrenteLux);
-    const paredeEsqLux = new THREE.Mesh(new THREE.BoxGeometry(1, 84, 238), paredeLuxMat);
+    const paredeEsqLux = new THREE.Mesh(new THREE.BoxGeometry(1, 84, 238), paredeLadoMat);
     paredeEsqLux.position.set(-84, 42, 0); paredeEsqLux.userData.lado={eixo:'x',sinal:-1,limiar:60}; salaoParedes.add(paredeEsqLux);
-    const paredeDirLux = new THREE.Mesh(new THREE.BoxGeometry(1, 84, 238), paredeLuxMat);
+    const paredeDirLux = new THREE.Mesh(new THREE.BoxGeometry(1, 84, 238), paredeLadoMat);
     paredeDirLux.position.set(84, 42, 0); paredeDirLux.userData.lado={eixo:'x',sinal:1,limiar:60}; salaoParedes.add(paredeDirLux);
     for (const z of [-118.35, 118.35]) {
         const filete = new THREE.Mesh(new THREE.BoxGeometry(168, 0.28, 0.18), fileteLuxMat);
@@ -2328,6 +2389,21 @@
             const aro=new THREE.Mesh(new THREE.TorusGeometry(0.48,0.07,8,20),metalBancoMat);aro.rotation.x=Math.PI/2;aro.position.set(x,1.15,-5.0);grupo.add(aro);
             add(new THREE.CylinderGeometry(0.67,0.67,0.28,20),barMadeiraClaraMat,x,2.62,-5.0);
             add(new THREE.CylinderGeometry(0.58,0.58,0.08,20),barFrenteMat,x,2.8,-5.0);
+        }
+        // Garrafas de boteco nos nichos iluminados e sobre a pedra do balcão.
+        const coresGarrafa=[0x2f6d32,0x8a2f2f,0xb58a1e,0x2f5a8a,0x5a2f8a,0x8a6a2f];
+        const matGarrafa=coresGarrafa.map(c=>new THREE.MeshStandardMaterial({color:c,roughness:0.12,metalness:0.06,transparent:true,opacity:0.88,emissive:c,emissiveIntensity:0.06}));
+        let idxGarrafa=0;
+        for(const y of [5.9,8.2,10.4]) for(const cx of [-8.4,-5.0,-1.7,1.7,5.0,8.4]) for(const dx of [-0.55,0.55]) {
+            const m=matGarrafa[(idxGarrafa++)%matGarrafa.length];
+            add(new THREE.CylinderGeometry(0.30,0.33,1.35,10),m,cx+dx,y+0.82,0.06);
+            add(new THREE.CylinderGeometry(0.09,0.11,0.55,8),m,cx+dx,y+1.75,0.06);
+        }
+        for(let i=0;i<5;i++){
+            const m=matGarrafa[(idxGarrafa++)%matGarrafa.length];
+            const px=-8.8+i*4.4;
+            add(new THREE.CylinderGeometry(0.30,0.33,1.5,10),m,px,5.02,-0.9);
+            add(new THREE.CylinderGeometry(0.09,0.11,0.6,8),m,px,6.07,-0.9);
         }
     }
     criarBalcaoDecorativo();
@@ -3428,7 +3504,9 @@ function criarTexturaBolaMarmorizada(cor,num) {
         // montinho. Fases normais continuam mostrando a fileira completa.
         if(mostraVidas){const qtdVidas=(typeof isBossSolo==='function'&&isBossSolo())?1:VIDAS_MAXIMAS;
             lifeHud.innerHTML=Array.from({length:qtdVidas},(_,i)=>'<span class="life-heart '+(i<gameState.ghosts?'':'empty')+'" data-life-index="'+i+'">'+(i<gameState.ghosts?'♥':'♡')+'</span>').join('');}
-        document.getElementById('wallet-hud').innerText='🪙 '+gameState.moedas;
+        const carteiraHud=document.getElementById('wallet-hud-val');
+        if(carteiraHud) carteiraHud.innerText=gameState.moedas;
+        else document.getElementById('wallet-hud').innerText='🪙 '+gameState.moedas;
         if(typeof atualizarOpcoesCoresMesa==='function') atualizarOpcoesCoresMesa();
         const lojaMoedas=document.getElementById('shop-coins'); if(lojaMoedas) lojaMoedas.innerText='Moedas: '+gameState.moedas;
         if(salvar) salvarProgresso();
@@ -3449,6 +3527,9 @@ function criarTexturaBolaMarmorizada(cor,num) {
         // Ao clicar numa aba, o menu ocupa a tela toda mostrando os itens da aba.
         const menuFases=document.getElementById('phase-menu');
         if(menuFases&&telaCheia) menuFases.classList.add('menu-full');
+        // NA LOJA: esconde as abas de modo e o bloco CONTINUAR CAMPANHA,
+        // deixando só as compras (e o vídeo de moedas).
+        if(menuFases) menuFases.classList.toggle('aba-loja', nome==='shop');
         document.querySelectorAll('.tab-page').forEach(p=>p.classList.toggle('active',p.dataset.page===nome));
         if(nome==='levels') desenharMenuFases();
         if(nome==='shop') desenharLoja();
@@ -3757,6 +3838,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         else { try{ if(screen.orientation&&typeof screen.orientation.unlock==='function') screen.orientation.unlock(); }catch(err){} }
     });
     document.getElementById('phase-menu-close-bottom').addEventListener('click',fecharMenuFases);
+    document.getElementById('shop-back-btn').addEventListener('click',fecharMenuFases);
     document.getElementById('phase-menu').addEventListener('click',e=>{ if(e.target.id==='phase-menu'&&!e.currentTarget.classList.contains('initial-menu')) fecharMenuFases(); });
     document.getElementById('solo-tabs').addEventListener('click',e=>{ const b=e.target.closest('button[data-tab]'); if(b) selecionarAbaMenu(b.dataset.tab,true); });
     document.querySelector('.menu-shop-shortcut').addEventListener('click',()=>selecionarAbaMenu('shop',true));
@@ -3860,6 +3942,8 @@ function criarTexturaBolaMarmorizada(cor,num) {
     const ADMOB_ID_VIDEO_MOEDAS='ca-app-pub-4472793118406300/5496824437';
     const MOEDAS_POR_VIDEO=200;
     let videoEmCurso=false;          // trava: uma recompensa por vídeo
+    let premioVideoPendente=MOEDAS_POR_VIDEO;  // valor do vídeo em curso (loja: 200; blocos: dobro)
+    let acaoAposVideo=null;          // callback após creditar (ex.: marcar bloco recolhido)
     let ouvinteMobAds=false;         // onAdRewarded registrado uma única vez
     let tempoBotaoVideo=null;
 
@@ -3897,9 +3981,12 @@ function criarTexturaBolaMarmorizada(cor,num) {
     function creditarMoedasDoVideo(){
         if(!videoEmCurso) return;      // ignora aviso repetido/atrasado do plugin
         videoEmCurso=false;
-        adicionarMoedas(MOEDAS_POR_VIDEO);
-        recadoVideo('✓ +200 MOEDAS ADICIONADAS','ok');
+        const premio=premioVideoPendente||MOEDAS_POR_VIDEO;
+        adicionarMoedas(premio);
+        recadoVideo('✓ +'+premio+' MOEDAS ADICIONADAS','ok');
         if(window.MobAds && typeof window.MobAds.hide==='function'){ try{ window.MobAds.hide(); }catch(e){} }
+        premioVideoPendente=MOEDAS_POR_VIDEO;
+        if(acaoAposVideo){ const cb=acaoAposVideo; acaoAposVideo=null; try{ cb(premio); }catch(e){} }
     }
 
     function registrarOuvinteMobAds(){
@@ -3913,8 +4000,10 @@ function criarTexturaBolaMarmorizada(cor,num) {
     }
 
     // Função do botão: carrega e mostra o vídeo premiado do AdMob.
-    async function assistirAnuncioPorMoedas(){
+    async function assistirAnuncioPorMoedas(premio,aoFinalizar){
         if(videoEmCurso) return;
+        premioVideoPendente=(Number(premio)>0)?Number(premio):MOEDAS_POR_VIDEO;
+        acaoAposVideo=(typeof aoFinalizar==='function')?aoFinalizar:null;
         try{
             if(window.MobAds && typeof window.MobAds.prepareRewardVideoAd==='function'){
                 // App empacotado com o plugin MobAds (prepareRewardVideoAd + onAdRewarded)
@@ -3943,6 +4032,8 @@ function criarTexturaBolaMarmorizada(cor,num) {
         }catch(erro){
             console.error('Erro ao carregar o anúncio:',erro);
             videoEmCurso=false;
+            premioVideoPendente=MOEDAS_POR_VIDEO;
+            acaoAposVideo=null;
             recadoVideo('VÍDEO INDISPONÍVEL AGORA','erro');
         }
     }
@@ -4495,7 +4586,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         // chamam, mas agora não faz nada.
         return;
     }
-    const seletoresUI='#sound-btn, #wallet-hud, #stage-hud, #spin-widget, #phase-menu-btn, #phase-menu, #victory-panel, #lan-modal, #ml, #mlf';
+    const seletoresUI='#sound-btn, #wallet-hud, #stage-hud, #spin-widget, #phase-menu-btn, #phase-menu, #victory-panel, #lan-modal, #ml, #mlf, #mlg, #mlp, #coin-plus-dialog';
     function posicionarBrancaPorToque(x,y) {
         const rect=renderer.domElement.getBoundingClientRect();
         const ndc=new THREE.Vector2(((x-rect.left)/rect.width)*2-1,-((y-rect.top)/rect.height)*2+1);
@@ -4564,7 +4655,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         return true;
     }
     function moverGesto(x,y,id=null,evento=null) {
-        if(evento && evento.target && evento.target.closest && evento.target.closest('#ml,#mlf')) return;
+        if(evento && evento.target && evento.target.closest && evento.target.closest('#ml,#mlf,#mlg,#mlp,#coin-plus-dialog')) return;
         if(!pointerAtivo || (pointerIdAtivo!==null && id!==null && id!==pointerIdAtivo)) return;
         if(evento && evento.cancelable) evento.preventDefault();
         const dx=x-ultimoGesto.x, dy=y-ultimoGesto.y;
@@ -5696,15 +5787,19 @@ function criarTexturaBolaMarmorizada(cor,num) {
 
   const MESAS = [
     { id:'classic', tema:'ouro', titulo:'MIDNIGHT CUE: CLASSIC ARENA', tipo:'online', modo:'parimpar',
-      premio:6000, inscricao:3000, arte:true, rotulo:'JOGAR' },
+      premio:6000, inscricao:3000, arte:true, modoLabel:'Duelo online', rotulo:'JOGAR' },
     { id:'prata', tema:'prata', titulo:'MESA PRATA: DUELO RÁPIDO', tipo:'online', modo:'parimpar',
-      premio:600, inscricao:0, rotulo:'JOGAR' },
+      premio:600, inscricao:0, modoLabel:'Duelo online', rotulo:'JOGAR' },
     { id:'bronze', tema:'bronze', titulo:'BRONZE: JOGO DE BOLINHO', tipo:'online', modo:'bolinho',
-      premio:0, inscricao:0, rotulo:'JOGAR' },
+      premio:0, inscricao:0, modoLabel:'Jogo de bolinho', rotulo:'JOGAR' },
     { id:'treino', tema:'verde', titulo:'TREINO: ADVERSÁRIO CPU PRO', tipo:'cpu', modo:'parimpar',
       premio:0, inscricao:0, nivelCpu:'pro', modoLabel:'Treino sozinho', rotulo:'TREINAR' },
     { id:'campanha', tema:'azul', titulo:'CAMPANHA: AS 20 FASES', tipo:'campanha', modo:'parimpar',
-      premio:0, inscricao:0, modoLabel:'Fases do jogo', rotulo:'ABRIR FASES' }
+      premio:0, inscricao:0, modoLabel:'Fases do jogo', rotulo:'ABRIR FASES' },
+    { id:'amigo', tema:'prata', titulo:'JOGAR COM UM AMIGO (ID)', tipo:'amigo', modo:'parimpar',
+      premio:0, inscricao:0, modoLabel:'Duelo com amigo por ID', rotulo:'CONVIDAR' },
+    { id:'servidor', tema:'bronze', titulo:'SERVIDOR', tipo:'servidor', modo:'parimpar',
+      premio:0, inscricao:0, modoLabel:'Endereço do servidor', rotulo:'CONECTAR' }
   ];
   let idx = 0;
 
@@ -5762,9 +5857,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
       radial-gradient(60% 55% at 50% 42%,#2f8a4c,#1d6234 55%,#123a20 100%);
       box-shadow:inset 0 0 0 6px #2a1a0c,inset 0 0 0 9px #6b4b12,inset 0 0 40px rgba(0,0,0,.65)}
   #ml .ml-arte .ml-bola{position:absolute;width:13%;padding-top:13%;border-radius:50%;box-shadow:inset -2px -3px 6px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.45)}
-  #ml .ml-trofeu{position:absolute;left:7px;bottom:7px;display:flex;align-items:center;gap:4px;padding:3px 8px 3px 5px;border-radius:999px;
-      background:rgba(4,12,22,.72);border:1px solid rgba(232,194,90,.55);font-size:12px;font-weight:800;color:#ffe9a6}
-  #ml .ml-info{margin-top:9px;padding:0 2px 2px}
+    #ml .ml-info{margin-top:9px;padding:0 2px 2px}
   #ml .ml-premio{display:flex;align-items:baseline;gap:6px;font-size:12.5px;color:#dbe9f7}
   #ml .ml-premio b{font-size:23px;font-weight:900;letter-spacing:.01em;color:#ffd76a;text-shadow:0 2px 6px rgba(255,180,60,.35),0 1px 0 rgba(0,0,0,.6)}
   #ml .ml-linha{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:7px;padding-top:7px;
@@ -5859,7 +5952,6 @@ function criarTexturaBolaMarmorizada(cor,num) {
   el.innerHTML = `
     <div class="ml-linhas"></div>
     <div class="ml-top">
-      <div class="ml-pill">${SVG.gema}<span id="ml-gemas">320</span><button class="ml-plus" data-loja="gemas" type="button">+</button></div>
       <div class="ml-pill">${SVG.moeda}<span id="ml-moedas">0</span><button class="ml-plus" data-loja="moedas" type="button">+</button></div>
     </div>
     <div class="ml-banner">${SVG.mesa}<span>Desafie jogadores do mundo todo nas mesas de sinuca!</span></div>
@@ -5871,10 +5963,6 @@ function criarTexturaBolaMarmorizada(cor,num) {
     </div>
     <div class="ml-rodape">
       <button class="ml-jogar" id="ml-jogar" type="button">JOGAR</button>
-    </div>
-    <div class="ml-links">
-      <button class="ml-amigos" id="ml-amigos" type="button">jogar com um amigo (ID)</button>
-      <button class="ml-amigos" id="ml-servidor" type="button">⚙ servidor</button>
     </div>
     <div class="ml-busca" id="ml-busca" data-on="0">
       <div class="ml-busca-card">
@@ -5909,15 +5997,13 @@ function criarTexturaBolaMarmorizada(cor,num) {
            <span class="ml-bola" style="left:62%;top:30%;background:radial-gradient(circle at 32% 28%,#ff9a9a,#d63f3f 55%,#8d1d1d)"></span>
            <span class="ml-bola" style="left:70%;top:62%;background:radial-gradient(circle at 32% 28%,#9ad0ff,#3f7fd6 55%,#1d4a8d)"></span>
          </div>`;
-    const linha1 = mesa.tipo==='online'
-      ? `<span>Jogadores online:</span><b id="ml-online-${i}">—</b>`
-      : `<span>Modo:</span><b>${mesa.modoLabel||'Treino'}</b>`;
+    const linha1 = `<span>Modo:</span><b>${mesa.modoLabel||'Duelo'}</b>`;
     card.innerHTML = `
       <div class="ml-moldura tema-${mesa.tema}">
         <div class="ml-miolo">
           <div class="ml-brasao">${SVG.brasao}</div>
           <h2 class="ml-titulo">${mesa.titulo}</h2>
-          <div class="ml-arte">${arteHtml}<div class="ml-trofeu">${SVG.trofeu}<span>0</span></div></div>
+          <div class="ml-arte">${arteHtml}</div>
           <div class="ml-info">
             <div class="ml-premio"><span>Prêmio:</span><b>${mesa.premio?fmt(mesa.premio):'—'}</b>${mesa.premio?SVG.moeda:''}</div>
             <div class="ml-linha">${linha1}</div>
@@ -6040,25 +6126,24 @@ function criarTexturaBolaMarmorizada(cor,num) {
 
   // ---------- saldos ----------
   function lerGemas(){
-    let g=parseInt(localStorage.getItem('sinucaGemas'));
+    let g=NaN;
+    try{ g=parseInt(localStorage.getItem('sinucaGemas')); }catch(e){}
     if(!(g>=0)){g=320; try{localStorage.setItem('sinucaGemas',String(g));}catch(e){}}
     return g;
   }
   function pintarSaldos(){
-    const gemas=lerGemas();
     const moedas=(typeof gameState!=='undefined'&&gameState)?(gameState.moedas||0):0;
+    let gemas=0;
+    try{ gemas=lerGemas(); }catch(e){ gemas=0; }
     const gEl=el.querySelector('#ml-gemas'), mEl=el.querySelector('#ml-moedas');
-    if(gEl)gEl.textContent=fmt(gemas);
     if(mEl)mEl.textContent=fmt(moedas);
+    if(gEl)gEl.textContent=fmt(gemas);
     // linha de saldo no meio do menu (fica visível mesmo com o topo cortado)
   }
   window.sinucaAtualizarSaldo=pintarSaldos;
   let saldoTimer=null;
   function ligarSaldo(){ pintarSaldos(); clearInterval(saldoTimer); saldoTimer=setInterval(pintarSaldos,1200); }
   function desligarSaldo(){ clearInterval(saldoTimer); saldoTimer=null; }
-  el.querySelectorAll('.ml-plus').forEach(b=>b.addEventListener('click',()=>{
-    aviso(b.dataset.loja==='gemas'?'Gemas: ganhe jogando as mesas douradas.':'Moedas: ganhe vencendo partidas e fases.');
-  }));
 
   function aviso(txt){
     const t=el.querySelector('#ml-toast');
@@ -6066,20 +6151,10 @@ function criarTexturaBolaMarmorizada(cor,num) {
     clearTimeout(aviso._t); aviso._t=setTimeout(()=>{t.dataset.on='0';},2800);
   }
 
-  async function contarOnline(){
-    let n=1245;
-    try{
-      const base=(typeof window.sinucaServidorOnline==='function')?window.sinucaServidorOnline():(window.SINUCA_SERVIDOR||location.origin);
-      const r=await fetch(String(base).replace(/\/+$/,'')+'/health',{cache:'no-store'});
-      if(r.ok){const d=await r.json(); if(d&&typeof d.jogadores==='number')n=Math.max(n,d.jogadores+1243);}
-    }catch(e){}
-    MESAS.forEach((m,i)=>{const alvo=el.querySelector('#ml-online-'+i); if(alvo)alvo.textContent=fmt(n);});
-  }
-
   function abrir(){
     document.body.classList.add('sem-jogo');
     el.dataset.aberto='1'; el.setAttribute('aria-hidden','false');
-    layout(0,false); ligarSaldo(); contarOnline();
+    layout(0,false); ligarSaldo();
     el.querySelector('#ml-busca').dataset.on='0';
   }
   function fechar(){
@@ -6122,6 +6197,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
   function jogar(){
     const mesa=MESAS[idx];
     if(mesa.tipo==='cpu'||mesa.tipo==='campanha'){ jogarOffline(mesa); return; }
+    if(mesa.tipo==='amigo'||mesa.tipo==='servidor'){ jogarConexao(mesa); return; }
     if(mesa.inscricao>(gameState.moedas||0)){
       aviso('Faltam '+fmt(mesa.inscricao-(gameState.moedas||0))+' moedas para esta mesa. A bronze e o treino são grátis!');
       return;
@@ -6184,19 +6260,17 @@ function criarTexturaBolaMarmorizada(cor,num) {
     if(typeof window.sinucaSairDaFila==='function') try{window.sinucaSairDaFila();}catch(e){}
   });
 
-  function abrirModalAmigos(){
+  function jogarConexao(mesa){
     fechar();
     const m=document.getElementById('lan-modal');
     if(m){m.style.display='flex';m.setAttribute('aria-hidden','false');}
+    if(mesa.tipo==='servidor'){
+      const inp=document.getElementById('match-server');
+      if(inp){inp.focus();inp.select&&inp.select();}
+      const st=document.getElementById('match-status');
+      if(st)st.textContent='Cole aqui o endereço do servidor (ex.: https://meu-sinuca.onrender.com) e toque em SALVAR.';
+    }
   }
-  el.querySelector('#ml-amigos').addEventListener('click',abrirModalAmigos);
-  el.querySelector('#ml-servidor').addEventListener('click',()=>{
-    abrirModalAmigos();
-    const inp=document.getElementById('match-server');
-    if(inp){inp.focus();inp.select&&inp.select();}
-    const st=document.getElementById('match-status');
-    if(st)st.textContent='Cole aqui o endereço do servidor (ex.: https://meu-sinuca.onrender.com) e toque em SALVAR.';
-  });
 
 
   // ==================== FASES DE CAMPANHA (no visual do menu novo) ====================
@@ -6207,7 +6281,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
     <div class="mf-topo">
       <button class="mf-voltar" id="mf-voltar" type="button" aria-label="Voltar"><svg viewBox='0 0 24 24' width='22' height='22'><path d='M14 5l-7 7 7 7' fill='none' stroke='#fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/></svg></button>
       <h2 class="mf-titulo">CAMPANHA</h2>
-      <div class="mf-pill"><svg viewBox='0 0 24 24' width='18' height='18'><defs><linearGradient id='gm1' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#ffe9a6'/><stop offset='1' stop-color='#c8992a'/></linearGradient></defs><circle cx='12' cy='12' r='9.5' fill='url(#gm1)' stroke='#8a6410' stroke-width='1.2'/><circle cx='12' cy='12' r='6' fill='none' stroke='#a5781c' stroke-width='1'/></svg><span id="mf-moedas">0</span></div>
+      <div class="mf-pill"><svg viewBox='0 0 24 24' width='18' height='18'><defs><linearGradient id='gm1' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#ffe9a6'/><stop offset='1' stop-color='#c8992a'/></linearGradient></defs><circle cx='12' cy='12' r='9.5' fill='url(#gm1)' stroke='#8a6410' stroke-width='1.2'/><circle cx='12' cy='12' r='6' fill='none' stroke='#a5781c' stroke-width='1'/></svg><span id="mf-moedas">0</span><button id="mf-plus-btn" type="button" aria-label="Ganhar moedas assistindo anúncio">＋</button></div>
     </div>
     <div class="mf-resumo">
       <div class="mf-resumo-txt"><span id="mf-progresso">FASE 1 DE 48</span><span id="mf-estrelas">0 ★</span></div>
@@ -6361,7 +6435,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
       </button>
       <button class="mp-item" id="mp-grafico" type="button">
         <svg viewBox="0 0 24 24" width="30" height="30"><path d="M4 20h16" stroke="#8fd0ff" stroke-width="2" stroke-linecap="round"/><rect x="5" y="12" width="3.4" height="6" rx="1" fill="#8fd0ff"/><rect x="10.3" y="8" width="3.4" height="10" rx="1" fill="#8fd0ff"/><rect x="15.6" y="4.5" width="3.4" height="13.5" rx="1" fill="#8fd0ff"/></svg>
-        <strong>GRÁFICO</strong><small>Seu progresso</small>
+        <strong>HISTÓRICO DE FASE</strong><small>Seu progresso</small>
       </button>
       <button class="mp-item" id="mp-som" type="button">
         <svg viewBox="0 0 24 24" width="30" height="30"><path d="M4 9.5h3.4L12 5.6v12.8L7.4 14.5H4z" fill="none" stroke="#a5d964" stroke-width="1.9" stroke-linejoin="round"/><path d="M15.5 9a4 4 0 0 1 0 6" fill="none" stroke="#a5d964" stroke-width="1.9" stroke-linecap="round"/><path d="M18 6.5a8 8 0 0 1 0 11" fill="none" stroke="#a5d964" stroke-width="1.9" stroke-linecap="round"/></svg>
@@ -6418,6 +6492,11 @@ function criarTexturaBolaMarmorizada(cor,num) {
   #mlg .mg-trilha em{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#4e8a29,#a5d964);box-shadow:0 0 10px rgba(140,220,90,.45)}
   #mlg .mg-linha b{font-size:10.5px;color:#e7f2ff;width:44px;text-align:right;flex:0 0 auto}
   #mlg .mg-nota{margin:10px 2px 0;font-size:11px;color:#a9c6e2;line-height:1.45}
+  #mlg .mg-rec{display:flex;gap:8px;margin:-2px 0 11px 61px}
+  #mlg .mg-rec-btn{flex:1;border:0;border-radius:10px;padding:9px 6px;font-size:10.5px;font-weight:900;letter-spacing:.03em;color:#241503;cursor:pointer;background:linear-gradient(135deg,#ffe6a1,#f0c579 55%,#d9a54d);box-shadow:0 3px 0 #80551b,0 5px 12px rgba(0,0,0,.28)}
+  #mlg .mg-rec-btn:active{transform:translateY(1px)}
+  #mlg .mg-rec-anuncio{color:#06121f;background:linear-gradient(135deg,#7fd6a0,#3aa76a 55%,#2e8a56);box-shadow:0 3px 0 #1d5c3a,0 5px 12px rgba(0,0,0,.28)}
+  #mlg .mg-rec-ok{flex:1;text-align:center;font-size:10.5px;font-weight:900;color:#9fd6b0;letter-spacing:.03em;padding:9px 6px;border-radius:10px;background:rgba(78,138,41,.16);border:1px solid rgba(126,217,87,.35)}
 `+'</style>');
   document.body.appendChild(painelPausa);
 
@@ -6470,7 +6549,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
       <button class="mg-voltar" id="mg-voltar" type="button" aria-label="Voltar ao menu">
         <svg viewBox="0 0 24 24" width="21" height="21"><path d="M14 5l-7 7 7 7" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <h2 class="mp-titulo">GRÁFICO</h2>
+      <h2 class="mp-titulo">HISTÓRICO DE FASE</h2>
       <div class="mg-vazio"></div>
     </div>
     <div class="mg-corpo">
@@ -6490,6 +6569,26 @@ function criarTexturaBolaMarmorizada(cor,num) {
   function fecharGrafico(){ painelGrafico.dataset.aberto='0'; painelGrafico.setAttribute('aria-hidden','true'); }
   painelPausa.querySelector('#mp-grafico').addEventListener('click',abrirGrafico);
   painelGrafico.querySelector('#mg-voltar').addEventListener('click',()=>{ fecharGrafico(); abrirPausa(); });
+  // Recolher recompensa do bloco (com ou sem anúncio que dobra o valor).
+  painelGrafico.querySelector('#mg-barras').addEventListener('click',e=>{
+    const b=e.target.closest('.mg-rec-btn'); if(!b) return;
+    const gs=(typeof gameState!=='undefined')?gameState:null; if(!gs) return;
+    const bloco=parseInt(b.dataset.bloco)||0, comAnuncio=b.dataset.anuncio==='1';
+    if(gs.recompensasBlocos&&gs.recompensasBlocos[bloco]) return;
+    const valor=100*Math.pow(2,bloco), rotulo='do bloco '+(bloco*4+1)+'-'+(bloco*4+4);
+    const marcar=()=>{ (gs.recompensasBlocos=gs.recompensasBlocos||{})[bloco]=true;
+      try{ if(typeof salvarProgresso==='function') salvarProgresso(); }catch(err){} renderizarGrafico(); };
+    if(comAnuncio){
+      aviso('Carregando o vídeo... +'+valor*2+' moedas '+rotulo);
+      assistirAnuncioPorMoedas(valor*2,()=>{ marcar(); aviso('✓ +'+valor*2+' moedas '+rotulo+'!'); });
+    } else {
+      (gs.recompensasBlocos=gs.recompensasBlocos||{})[bloco]=true;
+      adicionarMoedas(valor);
+      try{ if(typeof salvarProgresso==='function') salvarProgresso(); }catch(err){}
+      aviso('✓ +'+valor+' moedas '+rotulo+'!');
+      renderizarGrafico();
+    }
+  });
 
   function renderizarGrafico(){
     const gs=(typeof gameState!=='undefined')?gameState:null;
@@ -6504,7 +6603,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
       '<div class="mg-tile"><span>FASE LIBERADA</span><b>'+max+'/48</b></div>'+
       '<div class="mg-tile"><span>ESTRELAS</span><b>'+estrelas+'/144</b></div>'+
       '<div class="mg-tile"><span>RECORDE 2 MIN</span><b>'+recorde+'</b></div>';
-    const blocos=6, tam=8;
+    const blocos=12, tam=4;
     let html='';
     for(let b=0;b<blocos;b++){
       const ini=b*tam+1, fim=ini+tam-1;
@@ -6512,11 +6611,21 @@ function criarTexturaBolaMarmorizada(cor,num) {
       for(let n=ini;n<=fim;n++) if(estrelasDe(n)>0) feitas++;
       const pctVal=Math.round((feitas/tam)*100);
       html+='<div class="mg-linha"><i>'+ini+'-'+fim+'</i><div class="mg-trilha"><em style="width:'+Math.max(2,pctVal)+'%"></em></div><b>'+feitas+'/'+tam+'</b></div>';
+      // RECOMPENSA DO BLOCO: ao completar as 4 fases, libera o recolhimento
+      // (100 moedas dobrando a cada bloco: 100, 200, 400... até 204.800); anúncio dobra.
+      if(feitas===tam){
+        const valor=100*Math.pow(2,b);
+        const recolhido=(gs&&gs.recompensasBlocos&&gs.recompensasBlocos[b])||false;
+        html+= recolhido
+          ? '<div class="mg-rec"><span class="mg-rec-ok">✓ RECOMPENSA DE '+valor+' MOEDAS RECOLHIDA</span></div>'
+          : '<div class="mg-rec"><button type="button" class="mg-rec-btn" data-bloco="'+b+'">RECOLHER · '+valor+' MOEDAS</button>'
+            +'<button type="button" class="mg-rec-btn mg-rec-anuncio" data-bloco="'+b+'" data-anuncio="1">▶ ANÚNCIO · '+valor*2+' MOEDAS</button></div>';
+      }
     }
     const bv=painelGrafico.querySelector('#mg-barras');
     if(bv) bv.innerHTML=html;
     const nt=painelGrafico.querySelector('#mg-nota');
-    if(nt) nt.textContent='Cada bloco tem 8 fases da campanha. A barra cresce conforme você conclui as fases (mesmo com 1 estrela).';
+    if(nt) nt.textContent='Cada bloco tem 4 fases da campanha. Ao completar as 4, recolha a recompensa em moedas (100 no 1º bloco, dobrando a cada bloco: 200, 400... até 204.800 no último). Se optar pelo anúncio, recebe o dobro.';
   }
   window.sinucaAbrirPausa=abrirPausa;
 
@@ -6561,5 +6670,134 @@ function criarTexturaBolaMarmorizada(cor,num) {
 })();
 </script>
 
+<style id="tabs-menu-mini">
+/* ===== CONTADOR DE MOEDAS FORA DA TELA DE JOGO: só aparece nos menus ===== */
+#wallet-hud { display:none !important; }
+/* ===== BOTÃO + NAS MOEDAS: pergunta se quer assistir anúncio ===== */
+#wallet-plus-btn { border:1px solid rgba(255,226,150,.75); border-radius:8px; padding:3px 8px;
+  color:#241503; background:linear-gradient(160deg,#ffe6a1,#f0c579 45%,#d9a54d);
+  box-shadow:0 3px 0 #80551b,0 4px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.7);
+  font:900 13px/1 Arial,sans-serif; cursor:pointer; }
+#wallet-plus-btn:active { transform:translateY(1px); }
+#mlf .mf-pill #mf-plus-btn { border:1px solid rgba(255,226,150,.75); border-radius:8px; padding:2px 7px; margin-left:2px;
+  color:#241503; background:linear-gradient(160deg,#ffe6a1,#f0c579 45%,#d9a54d);
+  box-shadow:0 2px 0 #80551b,0 3px 7px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.7);
+  font:900 12px/1 Arial,sans-serif; cursor:pointer; }
+#mlf .mf-pill #mf-plus-btn:active { transform:translateY(1px); }
+#coin-plus-dialog { position:fixed; inset:0; z-index:520; display:none; align-items:center; justify-content:center;
+  padding:18px; background:rgba(0,0,0,.78); }
+#coin-plus-dialog[data-aberto="1"] { display:flex; }
+#coin-plus-dialog .cpc-card { width:min(340px,92vw); padding:18px 16px 16px; text-align:center;
+  border:1px solid rgba(225,180,99,.55); border-radius:16px; color:#f8e9c8;
+  background:linear-gradient(155deg,#20313e,#0b161f); box-shadow:0 18px 50px rgba(0,0,0,.6); }
+#coin-plus-dialog h3 { margin:0 0 6px; font:900 15px Arial,sans-serif; letter-spacing:.04em; }
+#coin-plus-dialog p { margin:0 0 14px; font:12.5px Arial,sans-serif; color:#cfe0ec; }
+#coin-plus-dialog .cpc-botoes { display:flex; gap:10px; }
+#coin-plus-dialog .cpc-botoes button { flex:1; border:0; border-radius:10px; padding:12px 8px;
+  font:800 12px Arial,sans-serif; cursor:pointer; }
+#coin-plus-dialog .cpc-sim { color:#241503;
+  background:linear-gradient(160deg,#ffe6a1,#f0c579 45%,#d9a54d); box-shadow:0 4px 0 #80551b; }
+#coin-plus-dialog .cpc-nao { color:#e8f4ff; border:1px solid rgba(153,222,248,.4);
+  background:linear-gradient(160deg,#1b526f,#0d2740); box-shadow:0 4px 0 rgba(7,25,42,.9); }
+#coin-plus-dialog .cpc-botoes button:active { transform:translateY(1px); }
+/* ===== ROLAGEM DAS TELAS DE FASES E HISTÓRICO =====
+   A regra global * { touch-action:none } (linha de cima, do jogo 3D)
+   travava o toque nos botões filhos, e o dedo não rolava a lista.
+   Com pan-y nos filhos, o arrasto vertical rola normal. */
+#mlf .mf-lista, #mlf .mf-lista *, #mlf .mf-topo *, #mlf .mf-resumo * { touch-action:pan-y; }
+#mlg .mg-corpo, #mlg .mg-corpo * { touch-action:pan-y; }
+#mlp, #mlp * { touch-action:pan-y; }
+/* ===== LOJA LIMPA: sem abas de modo e sem CONTINUAR CAMPANHA ===== */
+#phase-menu.aba-loja .menu-shop-shortcut { display:none !important; }
+#phase-menu.aba-loja .menu-tools {
+  position:sticky; top:-22px; z-index:60;
+  margin:0 -18px 12px; padding:12px 18px 10px;
+  background:linear-gradient(180deg,#121b23 72%,rgba(18,27,35,.94) 90%,rgba(18,27,35,0));
+  box-shadow:0 6px 10px -8px rgba(0,0,0,.85);
+}
+#phase-menu.aba-loja #solo-tabs { display:none !important; }
+#phase-menu.aba-loja #start-options { display:none !important; }
+#phase-menu.aba-loja #phase-menu-close-bottom { display:none !important; }
+/* ===== SETINHA DE VOLTAR (só na loja) ===== */
+#shop-back-btn { display:none; align-items:center; justify-content:center; width:38px; min-height:38px; padding:0 8px;
+  border:1px solid rgba(153,222,248,.48); border-radius:10px; color:#e7f8ff;
+  background:linear-gradient(150deg,#1b526f,#102d45);
+  box-shadow:0 3px 0 #081e30,0 5px 10px rgba(0,0,0,.25),inset 0 1px rgba(255,255,255,.16); cursor:pointer; }
+#phase-menu.aba-loja #shop-back-btn { display:inline-flex; }
+#shop-back-btn:active { transform:translateY(1px); }
+/* ===== ABAS DA LOJA com ícones, todas no mesmo padrão bonito ===== */
+#phase-menu .shop-tabs { gap:7px; padding:8px 0 12px; }
+#phase-menu .shop-tab { display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  min-width:66px; padding:9px 12px; border:1px solid rgba(153,222,248,.35); border-radius:12px;
+  color:#cfe6f7; background:linear-gradient(160deg,#1b526f,#0d2740);
+  box-shadow:0 3px 0 rgba(7,25,42,.9),0 4px 10px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.18);
+  font:800 11px/1 Arial,sans-serif; letter-spacing:.05em; }
+#phase-menu .shop-tab svg { width:14px; height:14px; flex:none; }
+#phase-menu .shop-tab.active { color:#241503; border-color:#ffe6a1;
+  background:linear-gradient(160deg,#ffe6a1,#f0c579 45%,#d9a54d);
+  box-shadow:0 3px 0 #80551b,0 6px 14px rgba(217,165,77,.35),inset 0 1px 0 rgba(255,255,255,.7); }
+#phase-menu .shop-tab:active { transform:translateY(1px); }
+/* ===== ABAS DO MENU INICIAL ~50% MENORES (override final) ===== */
+#phase-menu .solo-tabs {
+  gap:4px !important;
+  margin:0 0 7px !important;
+  padding:4px !important;
+  border-radius:8px !important;
+  perspective:400px;
+}
+#phase-menu .solo-tab {
+  min-height:23px !important;
+  padding:4px 3px !important;
+  font-size:7.5px !important;
+  line-height:1.15 !important;
+  border-radius:6px !important;
+  letter-spacing:0 !important;
+  box-shadow:0 2px 0 #082941,0 3px 6px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.3) !important;
+  transform:perspective(400px) rotateX(4deg) !important;
+}
+#phase-menu .solo-tab.active {
+  box-shadow:0 2px 0 #80551b,0 3px 8px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.7) !important;
+  transform:perspective(400px) rotateX(2deg) translateY(-1px) !important;
+}
+@media(max-width:380px) {
+  #phase-menu .solo-tabs { gap:3px !important; padding:3px !important; }
+  #phase-menu .solo-tab { min-height:21px !important; padding:3px 2px !important; font-size:7px !important; }
+}
+</style>
+<script id="moedas-mais-anuncio">
+/* ===== BOTÃO + DAS MOEDAS: pergunta se quer assistir anúncio ===== */
+(function(){
+  var dialogo=null;
+  function premioVideo(){ try{ if(typeof MOEDAS_POR_VIDEO==='number') return MOEDAS_POR_VIDEO; }catch(e){} return 200; }
+  function garantirDialogo(){
+    if(dialogo) return dialogo;
+    dialogo=document.createElement('div');
+    dialogo.id='coin-plus-dialog';
+    dialogo.innerHTML='<div class="cpc-card">'+
+      '<h3>🪙 GANHAR MOEDAS</h3>'+
+      '<p>Quer assistir um anúncio e receber <b class="cpc-valor">200</b> moedas?</p>'+
+      '<div class="cpc-botoes">'+
+      '<button type="button" class="cpc-sim">▶ ASSISTIR</button>'+
+      '<button type="button" class="cpc-nao">AGORA NÃO</button>'+
+      '</div></div>';
+    dialogo.querySelector('.cpc-sim').addEventListener('click',function(){
+      dialogo.dataset.aberto='0';
+      if(window.assistirAnuncioPorMoedas) window.assistirAnuncioPorMoedas();
+    });
+    dialogo.querySelector('.cpc-nao').addEventListener('click',function(){ dialogo.dataset.aberto='0'; });
+    dialogo.addEventListener('click',function(e){ if(!e.target.closest('.cpc-card')) dialogo.dataset.aberto='0'; });
+    document.body.appendChild(dialogo);
+    return dialogo;
+  }
+  function abrir(){
+    var d=garantirDialogo();
+    d.querySelector('.cpc-valor').textContent=premioVideo();
+    d.dataset.aberto='1';
+  }
+  document.addEventListener('click',function(e){
+    if(e.target && e.target.closest && e.target.closest('#wallet-plus-btn, #mf-plus-btn, .ml-plus')) abrir();
+  });
+})();
+</script>
 </body> 
 </html>
