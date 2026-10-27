@@ -3111,12 +3111,23 @@ function criarTexturaBolaMarmorizada(cor,num) {
         const restam=bolas.some(b=>!b.userData.isBranca&&b.userData.ativa&&!b.userData.caindo);
         gameState.jogadaAtiva=false;
         if(!gameState.bossQuebraConcluida){
-            // A primeira tacada é sempre livre: mantém as bolas espalhadas e
-            // devolve a branca ao ponto de saída, sem reiniciar o montinho.
+            // A primeira tacada é sempre livre: mantém as bolas espalhadas, sem
+            // reiniciar o montinho. A branca CONTINUA onde parou depois do
+            // estouro — só volta ao ponto de saída se tiver caído (scratch),
+            // porque aí ela precisa reaparecer em jogo.
+            const arranhouNoEstouro=gameState.bossArranhou;
             gameState.bossQuebraConcluida=true;gameState.bossArranhou=false;
-            devolverBrancaAoEstouro();
+            if(arranhouNoEstouro){
+                devolverBrancaAoEstouro();
+            }else{
+                branca.userData.vx=0;branca.userData.vz=0;
+                branca.userData.ativa=true;branca.userData.caindo=false;
+                gameState.saidaBranca=[branca.position.x,branca.position.z];
+                gameState.brancaCaiu=false;gameState.posicionandoBranca=false;gameState.aguardandoReset=false;
+                alvoCamera=branca;
+            }
             if(!encaixouNestaTacada){
-                document.getElementById('status-text').innerText='Estouro livre concluído. A branca voltou ao ponto de saída; a partir da próxima tacada, acerte ao menos uma bola.';
+                document.getElementById('status-text').innerText=arranhouNoEstouro?'Estouro livre concluído. A branca caiu e voltou ao ponto de saída; a partir da próxima tacada, acerte ao menos uma bola.':'Estouro livre concluído. A branca ficou onde parou; a partir da próxima tacada, acerte ao menos uma bola.';
                 atualizarHUD(false);return;
             }
         }
