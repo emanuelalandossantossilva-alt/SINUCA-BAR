@@ -126,7 +126,12 @@
         .phase-card h3 { color:#ecc071; letter-spacing:.03em; }
         .menu-kicker { margin-bottom:5px; color:#70d9ad; font:700 10px Arial,sans-serif; letter-spacing:.18em; }
         .menu-subtitle { margin:-5px 0 14px !important; color:#9facb5 !important; font-size:12px; }
-        .start-options { display:none !important; }
+        .start-options { display:block !important; margin:2px 0 10px; }
+        #start-options #start-training, #start-options #start-timer { display:none !important; }
+        #start-options #start-campaign { box-shadow:0 6px 18px rgba(0,0,0,.34); }
+        #sinuca-erro-boot { position:fixed; z-index:9999; left:8px; right:8px; top:8px; padding:10px 12px; border:1px solid #ff9a6b; border-radius:10px; color:#ffe9df; background:rgba(70,18,10,.96); font:12px/1.4 Arial,sans-serif; }
+        #sinuca-erro-boot b { display:block; margin-bottom:4px; color:#ffc4a3; font-size:12px; }
+        #sinuca-erro-boot button { margin-top:8px; border:1px solid #ffb08a; border-radius:8px; padding:6px 10px; color:#3a1105; background:#ffcfae; font:bold 12px Arial,sans-serif; }
         #menu-return-btn { display:block; width:100%; margin:0 0 12px; border:1px solid #d5ad68; border-radius:9px; padding:9px 10px; color:#f4e7cc; background:linear-gradient(145deg,#26343d,#19232a); font:bold 12px Arial,sans-serif; }
         .start-option { width:100%; border:1px solid #e4bb71; border-radius:10px; padding:13px 12px; color:#1c252b; background:linear-gradient(135deg,#f0ce8b,#d9a955); font:bold 14px Arial,sans-serif; text-align:left; }
         .start-option small { display:block; margin-top:4px; color:#4b3b24; font:11px Arial,sans-serif; }
@@ -472,6 +477,30 @@
     </div>
     <div id="pocket-tray" aria-label="Bolas encaçapadas"><span id="pocket-label">CAÍRAM</span><div id="potted-list"><span class="pocket-empty">—</span></div></div>
 
+<script id="sinuca-vigia-boot">
+(function(){
+    function mostrar(titulo,texto){
+        try{
+            var el=document.getElementById('sinuca-erro-boot');
+            if(!el){el=document.createElement('div');el.id='sinuca-erro-boot';document.body.appendChild(el);}
+            el.innerHTML='<b>'+titulo+'</b>'+texto+'<button type="button" onclick="location.reload()">TENTAR DE NOVO</button>';
+        }catch(e){}
+    }
+    window.avisoBoot=mostrar;
+    var jaAvisou=false;
+    function tratar(msg){
+        if(!msg||jaAvisou||window.__GAME_READY__===true)return;
+        jaAvisou=true;
+        mostrar('O JOGO NÃO CONSEGUIU INICIAR','O navegador barrou uma parte do 3D ('+String(msg).slice(0,120)+'). Toque em tentar de novo; se repetir, abra o arquivo no Chrome ou Safari atualizado.');
+    }
+    window.addEventListener('error',function(e){
+        if(e&&e.target&&e.target.tagName&&/^(SCRIPT|LINK|IMG)$/.test(e.target.tagName))return;
+        tratar((e&&e.message)||'erro de script');
+    },true);
+    window.addEventListener('unhandledrejection',function(e){tratar((e&&e.reason&&(e.reason.message||e.reason))||'promessa rejeitada');});
+    window.__sinucaAvisoBoot=mostrar;
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>/* Three.js r136 — bundled locally for offline use. */
 /**
@@ -488,7 +517,29 @@
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x283136);
     scene.fog = new THREE.FogExp2(0x30383c, 0.00015);
-    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+    function avisoBoot(titulo,texto){
+        try{
+            let el=document.getElementById('sinuca-erro-boot');
+            if(!el){el=document.createElement('div');el.id='sinuca-erro-boot';document.body.appendChild(el);}
+            el.innerHTML='<b>'+titulo+'</b>'+texto+'<button type="button" onclick="location.reload()">TENTAR DE NOVO</button>';
+        }catch(e){}
+    }
+    window.avisoBoot=avisoBoot;
+    function criarRenderer() {
+        const tentativas=[
+            {antialias:true,powerPreference:"high-performance"},
+            {antialias:true},
+            {antialias:false},
+            {antialias:false,alpha:false,stencil:false,powerPreference:"default"},
+            {antialias:false,alpha:false,stencil:false,depth:true,preserveDrawingBuffer:false,failIfMajorPerformanceCaveat:false}
+        ];
+        for(const opcoes of tentativas){
+            try{ return new THREE.WebGLRenderer(opcoes); }catch(e){ console.warn('Tentativa de WebGL falhou:',e&&e.message); }
+        }
+        avisoBoot('3D INDISPONÍVEL NESTE NAVEGADOR','Não consegui abrir o WebGL, que desenha a mesa. Abra o arquivo no Chrome, Safari ou Edge atualizados (ou desative o modo de economia de bateria) e tente de novo.');
+        throw new Error('WebGL indisponível');
+    }
+    const renderer = criarRenderer();
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.outputEncoding = THREE.sRGBEncoding;
@@ -504,7 +555,7 @@
     const REALISMO = { qualidade:'alto', fps:60, emaQuadro:16.7, ultimaMedida:performance.now(), quadros:0 };
     try { const q=localStorage.getItem('sinucaQualidadeGrafica'); if(['alto','equilibrado','desempenho'].includes(q)) REALISMO.qualidade=q; } catch(e) {}
     let sementeRealismo=0x51ca7;
-    function rndRealismo(){ sementeRealismo=(sementeRealismo*1664525+1013904223)>>>0; return sementeRealismo/4294967296; }
+    function rndRealismo(){ sementeRealismo=((typeof sementeRealismo==='number'?sementeRealismo:0x51ca7)*1664525+1013904223)>>>0; return sementeRealismo/4294967296; }
     function texturaCanvasRealismo(canvas,repetirX=1,repetirY=1,srgb=true){
         const t=new THREE.CanvasTexture(canvas); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(repetirX,repetirY);
         t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy()); if(srgb)t.encoding=THREE.sRGBEncoding; return t;
@@ -658,7 +709,7 @@
         if(audioCtx) { carregarSomCacapa(); carregarSomTacada(); carregarSomColisao(); return; }
         const AudioAPI = window.AudioContext || window.webkitAudioContext;
         if(!AudioAPI) { btnSom.innerText = 'SOM INDISPONÍVEL'; return; }
-        audioCtx = new AudioAPI();
+        try { audioCtx = new AudioAPI(); } catch(e) { btnSom.innerText = 'SOM INDISPONÍVEL'; audioCtx = null; return; }
         masterAudio = audioCtx.createGain(); masterAudio.gain.value = 0; masterAudio.connect(audioCtx.destination);
         ruidoBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 2, audioCtx.sampleRate);
         const dados = ruidoBuffer.getChannelData(0);
@@ -1092,7 +1143,7 @@
         const forca=Math.max(0.15,Math.min(4.5,Number(shot.forca)||1));angH=Number(shot.angulo)||0;gameState.spinX=Number(shot.spinX)||0;gameState.spinY=Number(shot.spinY)||0;
         const dx=-Math.sin(angH),dz=-Math.cos(angH);
         aplicarImpactoTaco(dx,dz,forca,gameState.spinX,gameState.spinY);const linear=Math.hypot(branca.userData.vx,branca.userData.vz);
-        parImpar.primeiroContato=null;parImpar.encaçapadasNestaTacada=[];parImpar.oitoEncaçapada=false;parImpar.tacadaFinalizada=false;parImpar.quebraPendente=false;parImpar.falta=null;gameState.jogadaAtiva=true;gameState.encaixadasInicioJogada=gameState.encaixadas;gameState.cameraAcompanhar=true;gameState.acertouBola=false;gameState.tabelasSemContato=0;gameState.aguardandoReset=false;gameState.brancaCaiu=false;gameState.posicionandoBranca=false;cameraAutoLiftTarget=9;somTacada(linear);document.getElementById('status-text').innerText='';
+        parImpar.primeiroContato=null;parImpar.brancaArranhou=false;parImpar.encaçapadasNestaTacada=[];parImpar.oitoEncaçapada=false;parImpar.tacadaFinalizada=false;parImpar.quebraPendente=false;parImpar.falta=null;gameState.jogadaAtiva=true;gameState.encaixadasInicioJogada=gameState.encaixadas;gameState.cameraAcompanhar=true;gameState.acertouBola=false;gameState.tabelasSemContato=0;gameState.aguardandoReset=false;gameState.brancaCaiu=false;gameState.posicionandoBranca=false;cameraAutoLiftTarget=9;somTacada(linear);document.getElementById('status-text').innerText='';
     }
     function punirAdversarioRecebeBolas(qtd,grupoAdversario){
         // Regras de Punição do Par ou Ímpar: quem comete a falta "presenteia" o adversário,
@@ -1108,6 +1159,9 @@
     function concluirTacadaParImpar(arranhou=false){
         if(!parImpar.ativo||parImpar.tacadaFinalizada)return;
         parImpar.tacadaFinalizada=true;
+        // Se a branca caiu, é falta de branca SEMPRE — mesmo que a conclusão
+        // venha pelo fim do movimento da mesa e chegue sem o aviso.
+        if(parImpar.brancaArranhou)arranhou=true;
         const jogador=parImpar.turno,grupoAtual=parImpar.grupos[jogador],encaçapadas=parImpar.encaçapadasNestaTacada;
         if(parImpar.modo==='bolinho') {
             const restantes=bolas.filter(b=>!b.userData.isBranca&&b.userData.ativa&&!b.userData.caindo);
@@ -1133,6 +1187,7 @@
         const matouDoAdversario=!!meuGrupo&&encaçapadas.some(n=>n!==1&&classificar(n)===grupoAdversario);
         const oitoAtivo=bolas.some(b=>!b.userData.isBranca&&b.userData.numero===1&&b.userData.ativa&&!b.userData.caindo);
         const restamDoMeuGrupo=meuGrupo&&bolas.some(b=>!b.userData.isBranca&&b.userData.numero!==1&&b.userData.ativa&&!b.userData.caindo&&classificar(b.userData.numero)===meuGrupo);
+        const restamDoAdversario=grupoAdversario&&bolas.some(b=>!b.userData.isBranca&&b.userData.numero!==1&&b.userData.ativa&&!b.userData.caindo&&classificar(b.userData.numero)===grupoAdversario);
         // Regras de Punição (como no jogo de sinuca de origem): falta não dá "branca na mão",
         // quem ganha é o adversário, que recebe bolas do próprio grupo encaçapadas de graça.
         let punicao=0;let perdeJogo=false;
@@ -1146,9 +1201,10 @@
             else if(!parImpar.primeiroContato){
                 // REGRA DA BOLA 1: quem já limpou o grupo e está na fase do
                 // castigo (só a bola 1 pra derrubar) e atira SEM acertar em
-                // nenhuma bola PERDE o jogo na hora — mesmo que o adversário
-                // ainda tenha bolas do grupo dele na mesa.
-                if(meuGrupo&&!restamDoMeuGrupo){perdeJogo=true;}
+                // nada perde a partida SÓ se o adversário também já limpou o
+                // grupo dele. Se o adversário ainda tem bolas na mesa, é falta
+                // comum (o adversário recebe +1 bola), não derrota.
+                if(meuGrupo&&!restamDoMeuGrupo&&!restamDoAdversario){perdeJogo=true;}
                 else{punicao=1;falta='CEGOU! A branca não acertou nenhuma bola: o adversário recebe +1 bola.';}
             }
             else if(parImpar.primeiroContato!==1&&(parImpar.primeiroContato%2===0?'par':'impar')!==meuGrupo){
@@ -2189,16 +2245,28 @@
     // com o limite físico aqui, TODA bola encosta na borracha sem entrar dentro.
     const CORTE_NARIZ = 0.16*MESA_ESCALA;
     const canvasPanoRealista=criarCanvasPano();
-    const feltroMat = new THREE.MeshStandardMaterial({ color:0x063f2c, map:texturaCanvasRealismo(canvasPanoRealista,6,12,true), bumpMap:texturaCanvasRealismo(canvasPanoRealista,6,12,false), bumpScale:0.05, roughnessMap:texturaCanvasRealismo(canvasPanoRealista,6,12,false), roughness:0.98, metalness:0, emissive:0x022817, emissiveIntensity:0.012, envMapIntensity:0.24 });
+    // A mesa é banhada por luz forte: se o material usar o verde cru (#279644),
+    // ele estoura e o pano vira um verde-menta lavado. Esta tabela guarda a
+    // cor que o jogador escolhe e a cor que o material precisa ter pra que o
+    // pano APAREÇA naquele verde (medido no jogo).
+    const PANO_ALBEDO={'#279644':'#022008'};
+    function corPanoAlbedo(hex){
+        const h=String(hex||'').toLowerCase();
+        return PANO_ALBEDO[h]||h;
+    }
+    const feltroMat = new THREE.MeshStandardMaterial({ color:0x022008, map:texturaCanvasRealismo(canvasPanoRealista,6,12,true), bumpMap:texturaCanvasRealismo(canvasPanoRealista,6,12,false), bumpScale:0.05, roughnessMap:texturaCanvasRealismo(canvasPanoRealista,6,12,false), roughness:0.98, metalness:0, emissive:0x022817, emissiveIntensity:0.012, envMapIntensity:0.24 });
     const PALETAS_PANO=['#063f2a','#176447','#174c85','#9d2538','#41464b','#641f4c','#0b655d','#a45a28','#111316'];
-    let corPanoEscolhida='#081f3d';
+    // PANO PADRÃO VERDE DE SINUCA (#279644): a mesa já abre com o pano verde.
+    let corPanoEscolhida='#279644';
     const migracaoMesaV2=(()=>{try{return !localStorage.getItem('sinucaMesaV2');}catch(e){return false;}})();
     try { const c=localStorage.getItem('sinucaMesaPano'); if(c && /^#[0-9a-fA-F]{6}$/.test(c))corPanoEscolhida=c.toLowerCase(); } catch(e) {}
-    if(migracaoMesaV2&&corPanoEscolhida==='#022817')corPanoEscolhida='#081f3d';
-    let coresMesaCompradas=['#0f3a6b','#022817'];
+    if(migracaoMesaV2&&corPanoEscolhida==='#022817')corPanoEscolhida='#279644';
+    let coresMesaCompradas=['#0f3a6b','#022817','#279644'];
     try { const saved=JSON.parse(localStorage.getItem('sinucaMesasCompradas')||'[]'); if(Array.isArray(saved))coresMesaCompradas=[...new Set([...coresMesaCompradas,...saved.filter(c=>/^#[0-9a-fA-F]{6}$/.test(c)).map(c=>c.toLowerCase())])]; } catch(e) {}
-    if(corPanoEscolhida==='#063f2a'||corPanoEscolhida==='#0f3a6b'||corPanoEscolhida==='#0a2a4d')corPanoEscolhida='#081f3d';
-    if(!coresMesaCompradas.includes(corPanoEscolhida)) corPanoEscolhida='#081f3d';
+    // AZUIS DE VERSÕES ANTIGAS (inclusive o antigo padrão #081f3d) passam a
+    // valer o verde novo, pra mesa já nascer verde em quem já tinha jogado.
+    if(corPanoEscolhida==='#063f2a'||corPanoEscolhida==='#0f3a6b'||corPanoEscolhida==='#0a2a4d'||corPanoEscolhida==='#081f3d')corPanoEscolhida='#279644';
+    if(!coresMesaCompradas.includes(corPanoEscolhida)) corPanoEscolhida='#279644';
     function atualizarOpcoesCoresMesa(){
         const configuracoes=[['pano','custom-table-color','apply-custom-table-color'],['tabela','custom-rail-color','apply-custom-rail-color'],['madeira','custom-wood-color','apply-custom-wood-color'],['arco','custom-arc-color','apply-custom-arc-color']];
         configuracoes.forEach(([tipo,inputId,buttonId])=>{
@@ -2214,36 +2282,53 @@
         const possui=cores.includes(hex),price=possui?0:10;
         if(!possui&&gameState.moedas<price){document.getElementById('status-text').innerText='Faltam '+(price-gameState.moedas)+' moedas para comprar essa cor.';return;}
         if(!possui){gameState.moedas-=price;cores.push(hex);try{localStorage.setItem(tipo==='pano'?'sinucaMesasCompradas':tipo==='tabela'?'sinucaCoresTabela':tipo==='madeira'?'sinucaCoresMadeira':'sinucaCoresArco',JSON.stringify(cores));}catch(e){}atualizarHUD(false);salvarProgresso();}
-        if(tipo==='pano')aplicarCorMesa(hex,true);else if(tipo==='tabela'){tabelaSeguePano=false;aplicarCorTabela(hex);}else if(tipo==='madeira')aplicarCorMadeira(hex);else aplicarCorArco(hex);
+        if(tipo==='pano')aplicarCorMesa(hex,true);else if(tipo==='tabela'){tabelaSeguePano=false;aplicarCorTabela(hex);}else if(tipo==='madeira')aplicarCorMadeira(hex);else{arcoSegueMadeira=false;aplicarCorArco(hex);}
         atualizarOpcoesCoresMesa();document.getElementById('status-text').innerText=possui?'Cor equipada.':'Cor comprada e equipada!';
     }
     function aplicarCorMesa(hex,notificarRede=true){
         if(typeof hex!=='string'||!/^#[0-9a-fA-F]{6}$/.test(hex))return;
-        hex=hex.toLowerCase();corPanoEscolhida=hex;feltroMat.color.set(hex);feltroMat.emissive.set(hex);feltroMat.needsUpdate=true;
+        hex=hex.toLowerCase();corPanoEscolhida=hex;
+        const albedoPano=corPanoAlbedo(hex);
+        feltroMat.color.set(albedoPano);feltroMat.emissive.set(albedoPano);feltroMat.needsUpdate=true;
         document.getElementById('custom-table-color').value=hex;document.getElementById('custom-table-color-value').textContent=hex.toUpperCase();
         try{localStorage.setItem('sinucaMesaPano',hex);}catch(e){}
         // A tabela acompanha a cor do pano (mesma cor, 1 tom mais claro) enquanto
         // o jogador não comprar uma cor de tabela própria.
         try{
             if(typeof tabelaSeguePano!=='undefined'&&tabelaSeguePano){
-                const cl=v=>Math.min(255,v+1).toString(16).padStart(2,'0');
-                const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-                corTabelaEscolhida='#'+cl(r)+cl(g)+cl(b);
+                // TABELA = COR DO PANO, sem tom mais claro: a almofada é forrada
+                // com o mesmo pano da mesa.
+                corTabelaEscolhida=hex;
                 aplicarCorTabela(corTabelaEscolhida);
             }
         }catch(err){}
         if(notificarRede&&parImpar.ativo&&parImpar.host)enviarParImpar({type:'color',color:hex});
     }
     function aplicarCorTabela(hex){
-        borrachaMesaMat.color.set(hex);borrachaMesaMat.needsUpdate=true;protetorVermelho.color.set(hex);protetorVermelho.needsUpdate=true;
+        const albedoAlmofada=corPanoAlbedo(hex);
+        borrachaMesaMat.color.set(albedoAlmofada);borrachaMesaMat.needsUpdate=true;protetorVermelho.color.set(albedoAlmofada);protetorVermelho.needsUpdate=true;
         document.getElementById('custom-rail-color').value=hex;document.getElementById('custom-rail-color-value').textContent=hex.toUpperCase();
         try{localStorage.setItem('sinucaCorTabela',hex);}catch(e){}try{atualizarMaterialAlmofadas();}catch(e){}
     }
     let corMadeiraLateralPersonalizada=null;
+    // ARTES METÁLICAS (cantos e meio) acompanham a madeira até o jogador
+    // comprar uma cor de arco própria na loja.
+    let arcoSegueMadeira=true;
+    function definirCorArtesMetalicas(hex,seguindoMadeira){
+        var cor=hex;
+        try{
+            if(typeof aluminioMat!=='undefined'&&aluminioMat){aluminioMat.color.set(cor);aluminioMat.metalness=seguindoMadeira?0.55:0.94;aluminioMat.roughness=seguindoMadeira?0.38:0.2;aluminioMat.needsUpdate=true;}
+        }catch(err){}
+        try{metalCaçapaMat.color.set(cor);metalCaçapaMat.needsUpdate=true;}catch(err){}
+    }
     function aplicarCorMadeira(hex,salvar=true){
         if(typeof hex!=='string'||!/^#[0-9a-fA-F]{6}$/.test(hex))return;
         hex=hex.toLowerCase();corMadeiraEscolhida=hex;
         madeiraMat.color.set(hex);madeiraMat.needsUpdate=true;pernaMat.color.set(hex);pernaMat.needsUpdate=true;reforcoMat.color.set(hex);reforcoMat.needsUpdate=true;
+        // A parte externa da madeira é a faixa que fica do lado da borracha da
+        // tabela (era preta fixa) e as artes metálicas dos cantos e do meio.
+        try{bordaPretaMat.color.set(hex);bordaPretaMat.needsUpdate=true;}catch(err){}
+        if(arcoSegueMadeira)definirCorArtesMetalicas(hex,true);
         if(salvar){corMadeiraLateralPersonalizada=hex;try{localStorage.setItem('sinucaCorMadeiraLateral',hex);}catch(e){}}
         saiaBrancaMat.color.set(corMadeiraLateralPersonalizada||0xe8e8e5);saiaBrancaMat.needsUpdate=true;
         document.getElementById('custom-wood-color').value=hex;document.getElementById('custom-wood-color-value').textContent=hex.toUpperCase();
@@ -2251,6 +2336,7 @@
     }
     function aplicarCorArco(hex){
         metalCaçapaMat.color.set(hex);metalCaçapaMat.needsUpdate=true;
+        try{aluminioMat.color.set(hex);aluminioMat.metalness=0.94;aluminioMat.roughness=0.2;aluminioMat.needsUpdate=true;}catch(err){}
         document.getElementById('custom-arc-color').value=hex;document.getElementById('custom-arc-color-value').textContent=hex.toUpperCase();
         try{localStorage.setItem('sinucaCorArco',hex);}catch(e){}
     }
@@ -2305,7 +2391,7 @@
     };
     corTabelaEscolhida=corTabelaEscolhida.toLowerCase();corMadeiraEscolhida=corMadeiraEscolhida.toLowerCase();
     aplicarCorArco(corArcoEscolhida);
-    borrachaMesaMat.color.set(corTabelaEscolhida);protetorVermelho.color.set(corTabelaEscolhida);
+    borrachaMesaMat.color.set(corPanoAlbedo(corTabelaEscolhida));protetorVermelho.color.set(corPanoAlbedo(corTabelaEscolhida));
     madeiraMat.color.set(corMadeiraEscolhida);pernaMat.color.set(corMadeiraEscolhida);reforcoMat.color.set(corMadeiraEscolhida);
     aplicarCorMesa(corPanoEscolhida,false);aplicarCorTabela(corTabelaEscolhida);aplicarCorMadeira(corMadeiraEscolhida,false);atualizarOpcoesCoresMesa();
 
@@ -2371,14 +2457,19 @@
         const z0=geo.boundingBox.min.z,z1=geo.boundingBox.max.z,i0=eixo==='x'?0:1;
         for(let i=0;i<pos.count;i++){
             const v=i0===0?pos.getX(i):-pos.getY(i),dist=(v-face)*sinal; // 0 na face, >0 indo para a borda
-            if(dist>0.9)continue;const t=(pos.getZ(i)-z0)/(z1-z0),w=1-Math.max(0,dist)/0.9;
-            const off=(0.28-0.5*t)*w*sinal; // base +0.28 para fora, topo -0.22 para dentro
+            const faixa=1.2;
+            if(dist>faixa)continue;const t=(pos.getZ(i)-z0)/(z1-z0),w=1-Math.max(0,dist)/faixa;
+            // Base recua e topo avança menos que antes: o bico fica cheio em vez
+            // de terminar em fio de faca (era 0.28 / -0.22).
+            const off=(0.22-0.34*t)*w*sinal;
             if(i0===0)pos.setX(i,pos.getX(i)+off);else pos.setY(i,pos.getY(i)-off);
         }
         pos.needsUpdate=true;geo.computeVertexNormals();
     }
     {
-        const g=GEO_MESA_VISUAL,nX=g.narizX,nZ=g.narizZ,m=g.bocaCanto,opc={depth:yTopoRail-Y_PANO-0.1,bevelEnabled:true,bevelThickness:0.05,bevelSize:0.05,bevelSegments:2};
+        // CHANFRO DO BICO MAIS GROSSO: o arredondamento onde a bola bate era de
+        // 0.05 (lâmina fina). Agora é um ombro cheio, arredondado em 3 segmentos.
+        const g=GEO_MESA_VISUAL,nX=g.narizX,nZ=g.narizZ,m=g.bocaCanto,opc={depth:yTopoRail-Y_PANO-0.1,bevelEnabled:true,bevelThickness:0.17,bevelSize:0.115,bevelSegments:3};
         for(const sx of [-1,1])for(const sz of [-1,1]){
             const lado=arredondarBicos([[nX,g.bocaMeio],[nX,nZ-m],[RAIL_INT_X+0.02,nZ-m+(RAIL_INT_X+0.02-nX)],[RAIL_INT_X+0.02,g.gargantaMeio]],[0.8,0.8,0,0]).map(([x,z])=>[x*sx,z*sz]);
             const ml=malhaPlanta(formaXZ(lado),opc,borrachaMesaMat,Y_PANO+0.05);chanfrarAlmofada(ml,'x',nX*sx,sx);almofadasMesa.push(ml);
@@ -2394,6 +2485,7 @@
     // Buracos: fundo preto, forro de couro e canto prateado como na foto.
     const buracoMat=new THREE.MeshBasicMaterial({color:0x030303});
     const forroMat=new THREE.MeshStandardMaterial({color:0x0c0c0d,roughness:0.85,side:THREE.DoubleSide});
+    const forrosCacapa=[];
     function arcoForaDoPano(cx,cz,r){
         const N=720,fora=[];for(let i=0;i<N;i++){const f=i/N*Math.PI*2;fora.push(Math.abs(cx+Math.cos(f)*r)>RAIL_INT_X||Math.abs(cz+Math.sin(f)*r)>RAIL_INT_Z);}
         let ini=fora.findIndex((v,i)=>v&&!fora[(i+N-1)%N]);if(ini<0)return null;let n=0;while(n<N&&fora[(ini+n)%N])n++;
@@ -2403,7 +2495,10 @@
         const r=R-0.05;
         const fundo=new THREE.Mesh(new THREE.CircleGeometry(r,40),buracoMat);fundo.rotation.x=-Math.PI/2;fundo.position.set(cx,Y_PANO+0.012,cz);mesaFoto.add(fundo);
         const arco=arcoForaDoPano(cx,cz,R);
-        if(arco){const h=yTopoRail-Y_PANO;const forro=new THREE.Mesh(new THREE.CylinderGeometry(R-0.01,R-0.01,h,40,1,true,Math.PI/2-arco.fi-arco.len,arco.len),forroMat);forro.position.set(cx,Y_PANO+h/2,cz);mesaFoto.add(forro);}
+        // A parede de dentro do buraco faz parte da arte metálica (era couro
+        // preto). O material de alumínio só é criado mais abaixo, então aqui a
+        // peça nasce com o couro e entra na lista pra trocar de material.
+        if(arco){const h=yTopoRail-Y_PANO;const forro=new THREE.Mesh(new THREE.CylinderGeometry(R-0.01,R-0.01,h,40,1,true,Math.PI/2-arco.fi-arco.len,arco.len),forroMat);forro.position.set(cx,Y_PANO+h/2,cz);forro.castShadow=false;forro.receiveShadow=true;forrosCacapa.push(forro);mesaFoto.add(forro);}
     });
     // (Blocos brancos antigos dos cantos REMOVIDOS: no lugar deles ficam
     // apenas as peças de ferro triangulares das caçapas, como na foto.)
@@ -2413,6 +2508,8 @@
     // chanfro e dois furos quadrados de parafuso cada. Tudo fica ACIMA do
     // topo da bola (a bola passa por baixo e cai normalmente).
     const aluminioMat=new THREE.MeshStandardMaterial({color:0xd6dbe1,roughness:0.2,metalness:0.94,envMapIntensity:1.0,side:THREE.DoubleSide});
+    // parede de dentro das 6 caçapas = mesma arte metálica das placas
+    forrosCacapa.forEach(f=>{f.material=aluminioMat;});
     const parafusoMat=new THREE.MeshStandardMaterial({color:0x33393f,roughness:0.36,metalness:0.85});
     const extrusaoPlaca={depth:0.065,bevelEnabled:true,bevelThickness:0.025,bevelSize:0.05,bevelSegments:2,curveSegments:28};
     const extrusaoFundo={depth:0.07,bevelEnabled:false,curveSegments:16};
@@ -2518,7 +2615,7 @@
     // Modelos selecionáveis: apenas a estrutura visual muda; pano, caçapas,
     // dimensões e colisões continuam compartilhados com a mesa de jogo.
     const catalogoMesas=[
-        {id:'mesa-referencia',nome:'Mesa da Referência',detalhe:'Pano verde, borda preta, laterais brancas e pedestais escuros.',felt:'#14803b',wood:'#111315',rail:'#17191b',metal:'#c7ccd0',forma:'pedestais-foto',textura:false}
+        {id:'mesa-referencia',nome:'Mesa da Referência',detalhe:'Pano verde clássico, borda preta, laterais brancas e pedestais escuros.',felt:'#279644',wood:'#111315',rail:'#279644',metal:'#c7ccd0',forma:'pedestais-foto',textura:false}
     ];
     window.SINUCA_MESAS=catalogoMesas;
     const gruposModeloMesa=new Map();
@@ -2639,12 +2736,15 @@
         pernaMat.color.set(corMadeira);pernaMat.map=estilo.textura?texMogno:null;
         reforcoMat.color.set(corMadeira);reforcoMat.map=estilo.textura?texMogno:null;
         saiaBrancaMat.color.set(corMadeiraLateralPersonalizada||0xe8e8e5);
-        borrachaMesaMat.color.set(estilo.rail);protetorVermelho.color.set(estilo.rail);
-        feltroMat.color.set(estilo.felt);feltroMat.emissive.set(estilo.felt);
-        metalCaçapaMat.color.set(estilo.metal);aluminioMat.color.set(estilo.metal);
+        // faixa da madeira ao lado da borracha acompanha a cor da madeira
+        bordaPretaMat.color.set(corMadeira);bordaPretaMat.map=estilo.textura?texMogno:null;bordaPretaMat.needsUpdate=true;
+        borrachaMesaMat.color.set(corPanoAlbedo(estilo.rail));protetorVermelho.color.set(corPanoAlbedo(estilo.rail));
+        feltroMat.color.set(corPanoAlbedo(estilo.felt));feltroMat.emissive.set(corPanoAlbedo(estilo.felt));
+        if(arcoSegueMadeira){definirCorArtesMetalicas(corMadeira,true);}
+        else{metalCaçapaMat.color.set(estilo.metal);aluminioMat.color.set(estilo.metal);}
         [madeiraMat,pernaMat,reforcoMat,saiaBrancaMat,borrachaMesaMat,protetorVermelho,feltroMat,metalCaçapaMat,aluminioMat].forEach(m=>{m.needsUpdate=true;});
-        almofadasMesa.forEach(m=>{m.material=borrachaMesaMat;});
-        [['custom-table-color',estilo.felt],['custom-rail-color',estilo.rail],['custom-wood-color',corMadeira],['custom-arc-color',estilo.metal]].forEach(([id,hex])=>{
+        atualizarMaterialAlmofadas();
+        [['custom-table-color',estilo.felt],['custom-rail-color',estilo.rail],['custom-wood-color',corMadeira],['custom-arc-color',arcoSegueMadeira?corMadeira:estilo.metal]].forEach(([id,hex])=>{
             const input=document.getElementById(id),value=document.getElementById(id+'-value');
             if(input)input.value=hex;
             if(value)value.textContent=hex.toUpperCase();
@@ -2655,7 +2755,16 @@
     };
     try{window.aplicarModeloMesa('mesa-referencia');}
     catch(e){window.aplicarModeloMesa('mesa-referencia');}
-    function atualizarMaterialAlmofadas(){const usarPano=borrachaMesaMat.color.getHexString()==='032b1b';almofadasMesa.forEach(m=>{m.material=usarPano?feltroMat:borrachaMesaMat;});}
+    // A COR DO PANO ESCOLHIDA PELO JOGADOR VENCE O MODELO: sem isso o estilo da
+    // mesa voltava a cor dele a cada recarregamento e a troca na loja se perdia.
+    try{ if(typeof aplicarCorMesa==='function'&&corPanoEscolhida) aplicarCorMesa(corPanoEscolhida,false); }catch(e){ console.warn(e); }
+    function atualizarMaterialAlmofadas(){
+        // Se a tabela está na cor do pano, a almofada recebe o próprio material
+        // do pano: mesma cor, mesma textura de feltro e mesmo brilho.
+        const corTabela=borrachaMesaMat.color.getHexString(),corPano=feltroMat.color.getHexString();
+        const usarPano=corTabela===corPano||corTabela==='032b1b';
+        almofadasMesa.forEach(m=>{m.material=usarPano?feltroMat:borrachaMesaMat;});
+    }
     atualizarMaterialAlmofadas();
 
     // Caçapas recuadas dentro da borda (centro do buraco e raio de queda).
@@ -2948,6 +3057,16 @@ function criarTexturaBolaMarmorizada(cor,num) {
             // com só 1 bola na frente dela, uma ponta traseira fica exposta.
             // Aí a bola ausente sai da ponta traseira em vez de esvaziar a frente.
             if(R>=3&&cnts[R-1]===R&&cnts[R-2]===1){cnts[R-1]-=1;}
+            // CORREÇÃO: o ajuste acima tirava uma bola do total e o triângulo ficava
+            // com uma posição a menos (era o que travava a Fase 4). Agora a conta
+            // é refeita até fechar exatamente o número de bolas da fase.
+            let somaCnt=cnts.reduce((a,b)=>a+b,0);
+            for(let guarda=0;somaCnt<qtd&&guarda<64;guarda++){
+                let colocou=false;
+                for(let r=R-1;r>=0&&somaCnt<qtd;r--){ if(cnts[r]<r+1){ cnts[r]++; somaCnt++; colocou=true; } }
+                if(!colocou)break;
+            }
+            for(let r=0;r<R&&somaCnt>qtd;r++){ while(cnts[r]>0&&somaCnt>qtd){cnts[r]--;somaCnt--;} }
             let k=0;while(k<R&&cnts[k]===0)k++;           // pula fileiras vazias da frente
             for(let r=k;r<R;r++){
                 const cap=r+1,cnt=cnts[r];
@@ -2956,7 +3075,8 @@ function criarTexturaBolaMarmorizada(cor,num) {
             }
         }
         rackFase.forEach((b,i)=>{
-            const [x,z]=pos[i];
+            const alvo=pos[i]||[(i%3-1)*dx,-13.4*MESA_ESCALA-(Math.floor(i/3)+1)*dz];
+            const x=Number(alvo[0])||0, z=Number(alvo[1])||-13.4*MESA_ESCALA;
             b.userData.ativa=true;b.position.set(x,Y_BOLAS,z);if(!b.parent)scene.add(b);
         });
         branca.position.set(0,Y_BOLAS,16*MESA_ESCALA);branca.userData.ativa=true;branca.userData.caindo=false;branca.userData.encaçapada=false;branca.userData.vx=0;branca.userData.vz=0;zerarRotacaoBola(branca);if(!branca.parent)scene.add(branca);
@@ -3061,7 +3181,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
             const ativa=i<fase.bolas;
             b.userData.ativa=ativa; b.userData.caindo=false; b.userData.encaçapada=false; b.userData.vx=0; b.userData.vz=0; zerarRotacaoBola(b);
             b.userData.spinSide=0; b.userData.spinTop=0;
-            if(ativa) { const [x,z]=posicoesFase[i]; b.position.set(x,Y_BOLAS,z); if(!b.parent) scene.add(b); }
+            if(ativa) { const alvo=posicoesFase[i]||[0,-6*MESA_ESCALA]; const x=Number(alvo[0])||0, z=Number(alvo[1])||0; b.position.set(x,Y_BOLAS,z); if(!b.parent) scene.add(b); }
             else if(b.parent) scene.remove(b);
         });
         branca.position.set(brancaFase[0],Y_BOLAS,brancaFase[1]);
@@ -3227,11 +3347,14 @@ function criarTexturaBolaMarmorizada(cor,num) {
     document.getElementById('training-spread').addEventListener('click',prepararTreinoLivre);
     document.getElementById('training-clear').addEventListener('click',limparMesaTreino);
     document.getElementById('timer-start').addEventListener('click',iniciarCronometro);
-    document.getElementById('start-campaign').addEventListener('click',()=>carregarFase(gameState.nivel));
+    document.getElementById('start-campaign').addEventListener('click',()=>{
+        if(window.__jogoFoiArrasto&&window.__jogoFoiArrasto())return;
+        carregarFase(gameState.nivel);
+    });
     function iniciarTreinoPeloMenu(){
         try {
-            prepararTreinoLivre();
             fecharMenuFases();
+            prepararTreinoLivre();
             gameState.aguardandoReset=false; gameState.jogadaAtiva=false; gameState.posicionandoBranca=false;
             document.getElementById('status-text').innerText='Treino livre iniciado: arraste a partir da branca para reposicionar antes da primeira tacada; arraste no lado direito para carregar e soltar para tacar.';
         } catch(err) {
@@ -3243,21 +3366,40 @@ function criarTexturaBolaMarmorizada(cor,num) {
     document.getElementById('training-start-now').addEventListener('click',iniciarTreinoPeloMenu);
     document.getElementById('start-timer').addEventListener('click',iniciarCronometro);
     function carregarFase(numeroFase) {
-        if(parImpar.ativo&&parImpar.oponente!=='rede'){parImpar.ativo=false;parImpar.cpuPensando=false;exibirPlacarParImpar();}
-        const n=Math.floor(Number(numeroFase));
-        if(!Number.isFinite(n) || n<1 || n>48 || n>gameState.maxFaseLiberada) return;
-        ligarSomAoComecar();
-        if(gameState.modo==='gameOver' && gameState.ghosts===0) gameState.ghosts=VIDAS_INICIAIS;
-        if(timerInterval) { clearInterval(timerInterval); timerInterval=null; }
-        gameState.timerAtivo=false; gameState.modo='niveis'; tacoAnimacao=null;
-        gameState.nivel=n; gameState.ghosts=gameState.ghosts>0?Math.min(gameState.ghosts,VIDAS_MAXIMAS):VIDAS_INICIAIS; gameState.sequenciaEncaçapadas=0; gameState.posicionandoBranca=false; gameState.bolasPagas=[]; gameState.moedasFase=0;
-        gameState.moedasInicioJogada=gameState.moedas; gameState.moedasFaseInicioJogada=0; gameState.bolasPagasInicioJogada=[];
-        gameState.tacadasNivel=0; gameState.inicioNivelMs=Date.now(); gameState.nivelPerfeito=true; gameState.usouEfeitoComplexo=false;
-        gameState.ghostPerdidosNivel=0; gameState.ghostsNivelInicio=gameState.ghosts;
-        gameState.faseConcluida=false; gameState.brancaCaiu=false;
-        document.getElementById('victory-panel').style.display='none';
-        document.getElementById('victory-panel').setAttribute('aria-hidden','true');
-        fecharMenuFases(); montarNivel(); salvarProgresso();
+        // COMEÇAR O JOGO NUNCA PODE FALHAR EM SILÊNCIO: o menu fecha primeiro e
+        // cada passo secundário (som, salvar, montar) fica isolado. Se algo der
+        // errado, o jogador vê a mesa e um aviso — nunca um botão morto.
+        try{
+            if(parImpar.ativo&&parImpar.oponente!=='rede'){parImpar.ativo=false;parImpar.cpuPensando=false;exibirPlacarParImpar();}
+        }catch(e){ console.warn(e); }
+        const n=Math.max(1,Math.min(48,Math.floor(Number(numeroFase))||1));
+        if(n>gameState.maxFaseLiberada) gameState.maxFaseLiberada=n;
+        try{ ligarSomAoComecar(); }catch(e){ console.warn('Som indisponível ao começar:',e); }
+        try{
+            if(gameState.modo==='gameOver' && gameState.ghosts===0) gameState.ghosts=VIDAS_INICIAIS;
+            if(timerInterval) { clearInterval(timerInterval); timerInterval=null; }
+            gameState.timerAtivo=false; gameState.modo='niveis'; tacoAnimacao=null;
+            gameState.nivel=n; gameState.ghosts=gameState.ghosts>0?Math.min(gameState.ghosts,VIDAS_MAXIMAS):VIDAS_INICIAIS; gameState.sequenciaEncaçapadas=0; gameState.posicionandoBranca=false; gameState.bolasPagas=[]; gameState.moedasFase=0;
+            gameState.moedasInicioJogada=gameState.moedas; gameState.moedasFaseInicioJogada=0; gameState.bolasPagasInicioJogada=[];
+            gameState.tacadasNivel=0; gameState.inicioNivelMs=Date.now(); gameState.nivelPerfeito=true; gameState.usouEfeitoComplexo=false;
+            gameState.ghostPerdidosNivel=0; gameState.ghostsNivelInicio=gameState.ghosts;
+            gameState.faseConcluida=false; gameState.brancaCaiu=false; gameState.aguardandoReset=false;
+        }catch(e){ console.warn('Estado da fase:',e); }
+        try{
+            document.getElementById('victory-panel').style.display='none';
+            document.getElementById('victory-panel').setAttribute('aria-hidden','true');
+        }catch(e){}
+        fecharMenuFases();
+        try{
+            if(renderer&&renderer.setSize) renderer.setSize(window.innerWidth,window.innerHeight);
+        }catch(e){}
+        try{ montarNivel(); }
+        catch(e){
+            console.error('Falha ao montar a fase '+n+':',e);
+            try{ document.getElementById('status-text').innerText='Fase '+n+': não consegui montar as bolas. Toque no menu e escolha outra fase.'; }catch(_){}
+            if(typeof avisoBoot==='function') avisoBoot('FASE '+n+' NÃO MONTADA','Deu um erro ao preparar as bolas desta fase. Escolha outra fase no menu; o progresso continua salvo.');
+        }
+        try{ salvarProgresso(); }catch(e){ console.warn(e); }
     }
     function tocarAvisoPerdaVida(){
         if(!somLigado||!audioCtx)return;
@@ -3404,6 +3546,8 @@ function criarTexturaBolaMarmorizada(cor,num) {
     document.getElementById('solo-tabs').addEventListener('click',e=>{ const b=e.target.closest('button[data-tab]'); if(b) selecionarAbaMenu(b.dataset.tab,true); });
     document.querySelector('.menu-shop-shortcut').addEventListener('click',()=>selecionarAbaMenu('shop',true));
     document.getElementById('phase-list').addEventListener('click',e=>{
+        // Se o dedo arrastou para rolar a lista, o clique não vale.
+        if(window.__jogoFoiArrasto&&window.__jogoFoiArrasto())return;
         const b=e.target.closest('button[data-fase]'); if(b && !b.disabled) carregarFase(b.dataset.fase);
     });
     function voltarAoMenuInicialDoJogo(){
@@ -3501,7 +3645,18 @@ function criarTexturaBolaMarmorizada(cor,num) {
     });
     document.getElementById('victory-retry').addEventListener('click',()=>{const atual=gameState.nivel;gameState.ghosts=VIDAS_INICIAIS;gameState.sequenciaEncaçapadas=0;gameState.modo='niveis';gameState.aguardandoReset=false;carregarFase(atual);});
     document.getElementById('victory-menu').addEventListener('click',voltarAoMenuInicialDoJogo);
-    montarNivel();
+    // A MONTAGEM INICIAL FICA PARA O FIM DO SCRIPT. Antes ela rodava aqui, no
+    // meio do arquivo, e quando o progresso salvo era uma FASE MONTINHO o
+    // prepararRackBoss mexia no taco/mira que ainda não existiam: dava erro,
+    // o script inteiro parava e o menu ficava com os botões mortos (o jogo
+    // "não começava").
+    setTimeout(()=>{
+        try{ montarNivel(); }
+        catch(err){
+            console.error('Falha ao montar a fase inicial:',err);
+            try{ carregarFase(1); }catch(e2){ console.error('Falha no plano B:',e2); }
+        }
+    },0);
     // O menu já abre na aba de níveis; desenha a lista logo no carregamento,
     // sem exigir um toque prévio numa aba para habilitar o início da campanha.
     desenharMenuFases();
@@ -4828,7 +4983,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
     const madeiraMap=texturaCanvasRealismo(madeiraRealista,2,5,true),madeiraBump=texturaCanvasRealismo(madeiraRealista,2,5,false);
     const materiaisMadeira=[madeiraMat,pernaMat,reforcoMat,barMadeiraMat,barMadeiraClaraMat,barFrenteMat,madeiraTaqueiraMat,madeiraTaqueiraClaraMat,...materiaisPisoMadeira,tacoMaterial,tacoButt.material];
     materiaisMadeira.forEach((m,i)=>{if(!m)return;m.map=madeiraMap;m.bumpMap=madeiraBump;m.bumpScale=i===materiaisMadeira.length-1?0.012:0.026;m.roughness=Math.max(0.28,m.roughness||0.5);m.envMapIntensity=0.72;m.needsUpdate=true;});
-    [borrachaMesaMat,protetorVermelho].forEach(m=>{m.roughness=0.48;m.envMapIntensity=0.65;m.needsUpdate=true;});
+    [borrachaMesaMat,protetorVermelho].forEach(m=>{m.roughness=0.9;m.envMapIntensity=0.35;m.needsUpdate=true;});
     metalCaçapaMat.roughness=0.24;metalCaçapaMat.metalness=0.88;metalCaçapaMat.envMapIntensity=0.9;
     bolas.forEach(grupo=>{
         const mesh=grupo.userData.mesh,antigo=mesh.material;
@@ -4836,7 +4991,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         mesh.material.envMapIntensity=1.4;mesh.castShadow=true;mesh.receiveShadow=true;mesh.material.needsUpdate=true;
         const sombra=grupo.children.find(x=>x.material&&x.material.map===texturaSombraBola);if(sombra)sombra.material.opacity=0.42;
     });
-    const materiaisComSombra=new Set([madeiraMat,pernaMat,reforcoMat,borrachaMesaMat,metalCaçapaMat,protetorVermelho,tacoMaterial,tacoButt.material]);
+    const materiaisComSombra=new Set([madeiraMat,pernaMat,reforcoMat,borrachaMesaMat,feltroMat,metalCaçapaMat,protetorVermelho,tacoMaterial,tacoButt.material]);
     scene.traverse(obj=>{
         if(!obj.isMesh)return;
         const mats=Array.isArray(obj.material)?obj.material:[obj.material];
@@ -5160,6 +5315,57 @@ function criarTexturaBolaMarmorizada(cor,num) {
     #phase-menu.initial-menu { align-items:flex-start; }
   }
 </style>
+<script id="sinuca-start-guard">
+(function(){
+    // EM CELULAR o toque às vezes é engolido (o jogo chama preventDefault em
+    // pointerdown/touchstart). Aqui a gente confere: se o clique do botão não
+    // sair em 360ms, dispara o clique na mão. Vale só dentro dos menus.
+    var ultimoClique=0;
+    document.addEventListener('click',function(){ultimoClique=Date.now();},true);
+    // ARRASTAR A TELA NÃO É CLIQUE: se o dedo andou (rolagem da lista de fases)
+    // ou levou tempo demais, o resgate abaixo fica quieto. Antes ele disparava
+    // botao.click() no fim de qualquer arrasto e a fase entrava sozinha.
+    var inicio=null,arrastou=false,rolou=false;
+    var LIMITE_ARRASTO=14;
+    function marcar(e){
+        var t=(e.touches&&e.touches[0])||(e.changedTouches&&e.changedTouches[0])||e;
+        inicio={x:t.clientX,y:t.clientY,quando:Date.now()};
+        arrastou=false;rolou=false;
+    }
+    function mover(e){
+        if(!inicio)return;
+        var t=(e.touches&&e.touches[0])||e;
+        if(!t||typeof t.clientX!=='number')return;
+        if(Math.abs(t.clientX-inicio.x)>LIMITE_ARRASTO||Math.abs(t.clientY-inicio.y)>LIMITE_ARRASTO)arrastou=true;
+    }
+    // SÓ O MOVIMENTO CONTA. Tempo não entra na conta: em celular lento o toque
+    // pode demorar e isso barrava toque bom. Se o dedo não andou, é clique.
+    function foiArrasto(){return arrastou;}
+    document.addEventListener('pointerdown',marcar,true);
+    document.addEventListener('touchstart',marcar,{capture:true,passive:true});
+    document.addEventListener('pointermove',mover,true);
+    document.addEventListener('touchmove',mover,{capture:true,passive:true});
+    document.addEventListener('scroll',function(){rolou=true;},true);
+    window.__jogoFoiArrasto=function(){return !!foiArrasto();};
+    function agendar(botao){
+        if(!botao||botao.disabled)return;
+        if(foiArrasto())return; // rolagem: não entra no jogo
+        var marca=ultimoClique;
+        setTimeout(function(){
+            if(ultimoClique===marca&&!foiArrasto()){ try{ botao.click(); }catch(e){} }
+        },360);
+    }
+    function alvo(ev){
+        var t=ev.target;
+        if(!t||!t.closest)return null;
+        var b=t.closest('button');
+        if(!b)return null;
+        return b.closest('#phase-menu,#victory-panel,#fim-parimpar,#lan-modal')?b:null;
+    }
+    document.addEventListener('touchend',function(ev){agendar(alvo(ev));},true);
+    document.addEventListener('pointerup',function(ev){if(ev.pointerType==='mouse')return;agendar(alvo(ev));},true);
+})();
+</script>
 <script id="sinuca-bar-menu-refresh">
   document.documentElement.classList.add('sinuca-ui-ready');
 </script>
