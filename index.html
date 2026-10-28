@@ -4,7 +4,8 @@
     <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">  
     <title>Sinuca Bar 3D — Campanha e Jogo Livre</title>
-    <style id="boot-ui-hide">html:not(.sinuca-ui-ready){visibility:hidden;background:#000}html:not(.sinuca-ui-ready) body{visibility:hidden;background:#000}        /* ===== TELA DE CARREGAMENTO: bola 1 rolando ===== */
+    <style id="boot-ui-hide">html:not(.sinuca-ui-ready){visibility:hidden;background:#000}html:not(.sinuca-ui-ready) body{visibility:hidden;background:#000}.ficha-ico{display:inline-block;width:1.2em;height:1.2em;vertical-align:-0.24em;object-fit:cover;border-radius:50%;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.45));pointer-events:none}
+                /* ===== TELA DE CARREGAMENTO: bola 1 rolando ===== */
         #tela-carregando{position:fixed;inset:0;z-index:950;display:flex;flex-direction:column;
             align-items:center;justify-content:center;
             background:radial-gradient(130% 70% at 50% 0%,#12405f 0%,#0b2036 42%,#050d18 100%);
@@ -61,8 +62,8 @@
         #sound-btn { left: max(12px, env(safe-area-inset-left)); background: rgba(104, 62, 30, 0.82); border: 2px solid #d6a15e; }
         #power-container { position: absolute; top: 0; left: 0; width: 100%; height: 12px; background: rgba(0,0,0,0.5); z-index: 20; }
         #power-pct { position: absolute; right: 8px; top: 13px; font: 700 12px/1 sans-serif; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.9); z-index: 21; pointer-events: none; }
-        #cue-pull-strip { position: fixed; top: 50%; right: max(2vw, 8px); transform: translateY(-50%); width: 42px; display: flex; flex-direction: column; align-items: center; pointer-events: none; z-index: 28; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.55)); }
-        #cue-pull-svg { transition: transform .04s linear; }
+        #cue-pull-strip { position: fixed; top: 46%; right: max(2vw, 8px); transform: translateY(-50%); width: 34px; display: flex; flex-direction: column; align-items: center; pointer-events: none; z-index: 28; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.55)); }
+        #cue-pull-svg { width:24px; height:232px; transition: transform .04s linear; }
         #cue-pull-hint { margin-top: 6px; font: 700 10px Arial, sans-serif; letter-spacing: .14em; color: rgba(255,216,122,0.9); text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
         @media (max-height: 480px) { #cue-pull-strip { transform: translateY(-50%) scale(0.72); } }
         #power-meter { width: 0%; height: 100%; background: linear-gradient(90deg, #00ff88, #ffff00, #ff4400); box-shadow: 0 0 15px rgba(0,255,136,0.7); }
@@ -237,7 +238,34 @@
         #phase-menu.initial-menu .lan-start { display:block; }
 
         #lan-reset-codes { display:block; width:100%; margin:8px 0 12px !important; border-color:#e4bb71 !important; color:#fff4dc !important; background:linear-gradient(135deg,#875123,#613419) !important; }
-        #lan-score { position:absolute; top:20px; left:50%; transform:translateX(-50%); z-index:41; display:none; padding:7px 10px; border:1px solid #d5ad68; border-radius:9px; background:rgba(5,12,16,.88); color:#fff0ce; font:bold 11px Arial,sans-serif; white-space:nowrap; pointer-events:none; }
+        #lan-score { position:fixed; top:max(5px,env(safe-area-inset-top)); left:50%; transform:translateX(-50%); z-index:41; display:none; width:min(430px,calc(100vw - 12px)); padding:3px 5px; border:1px solid rgba(213,173,104,.68); border-radius:9px; background:rgba(5,12,16,.86); color:#fff0ce; font:700 9px Arial,sans-serif; pointer-events:none; box-shadow:0 3px 10px rgba(0,0,0,.38); backdrop-filter:blur(4px); }
+        #lan-score .score-topline { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:4px; }
+        #lan-score .score-player { min-width:0; display:grid; grid-template-columns:25px minmax(0,1fr); align-items:center; gap:3px; padding:2px; border:1px solid rgba(255,255,255,.1); border-radius:6px; background:rgba(255,255,255,.025); }
+        #lan-score .score-player.right { grid-template-columns:minmax(0,1fr) 25px; text-align:right; }
+        #lan-score .score-player.active { border-color:rgba(237,196,126,.72); }
+        #lan-score .score-avatar { width:22px; height:22px; display:grid; place-items:center; border:0; border-radius:50%; position:relative; overflow:visible; background:radial-gradient(circle at 29% 23%,#fff 0%,#fff9e9 5%,#f5f0df 12%,#c6c3b8 39%,#65666b 76%,#24282e 100%); box-shadow:inset -3px -4px 6px rgba(0,0,0,.7),inset 2px 2px 4px rgba(255,255,255,.88),0 1px 5px rgba(255,255,255,.35),0 2px 4px rgba(0,0,0,.65); }
+        #lan-score .score-avatar.target-ball { background:radial-gradient(circle at 29% 23%,#fff 0%,#fff 6%,var(--ball-color) 28%,var(--ball-color) 60%,#111 100%); }
+        #lan-score .score-avatar-number { width:11px; height:11px; z-index:1; display:grid; place-items:center; border-radius:50%; color:#111; background:radial-gradient(circle at 35% 25%,#fff 0%,#fff 60%,#d8d8d8 100%); box-shadow:0 1px 2px rgba(0,0,0,.55); font:bold 8px Arial,sans-serif; }
+        #lan-score .score-avatar .timer-ring { position:absolute; z-index:2; inset:-3px; border-radius:50%; padding:2px; background:conic-gradient(#70e3a1 var(--timer-pct),rgba(255,255,255,.15) 0); -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; }
+        #lan-score .score-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#f3e6c9; font-size:8px; line-height:1.1; }
+        #lan-score .score-group { display:inline; margin-left:3px; color:#aebdc4; font-size:7px; letter-spacing:.02em; }
+        #lan-score .score-balls { display:flex; gap:2px; margin-top:2px; min-height:9px; }
+        #lan-score .score-player.right .score-balls { justify-content:flex-end; }
+        #lan-score .score-ball-slot { width:9px; height:9px; flex:0 0 9px; border:1px solid rgba(255,255,255,.2); border-radius:50%; background:rgba(255,255,255,.025); display:grid; place-items:center; color:#111; font:700 5px Arial,sans-serif; }
+        #lan-score .score-ball-slot.potted, #lan-score .score-ball-slot.target-ball { border-color:#fff; background:radial-gradient(circle at 30% 25%,#fff 0 8%,var(--ball-color) 38%,#111 100%); }
+        #lan-score .score-ball-slot.target-own { outline:1px solid #00f074; box-shadow:0 0 5px #00f074; }
+        #lan-score .score-ball-slot.target-opponent { outline:1px solid #ff253c; box-shadow:0 0 5px #ff253c; }
+        body:has(#lan-score[style*="display: block"]) #pocket-tray { display:none !important; }
+        #lan-score .score-center { text-align:center; min-width:35px; color:#f2d18f; font-size:8px; line-height:1.1; }
+        #lan-score .score-center-target { display:none; width:16px; height:16px; margin:2px auto 0; place-items:center; position:relative; border-radius:50%; color:#17191c; background:radial-gradient(circle at 27% 22%,#fff 0 5%,var(--ball-color,#f7f2df) 10%,var(--ball-color,#cac7bd) 45%,#24272c 100%); box-shadow:inset -2px -2px 4px rgba(0,0,0,.7),inset 1px 1px 3px rgba(255,255,255,.8),0 1px 4px rgba(255,255,255,.3); font:bold 7px Arial,sans-serif; }
+        #lan-score .score-center-target.visible { display:grid; }
+        #lan-score .score-center-target.own { outline:1px solid #00ef74; box-shadow:0 0 6px #00ef74,inset -2px -2px 4px rgba(0,0,0,.7),inset 1px 1px 3px rgba(255,255,255,.8); }
+        #lan-score .score-center-target.opponent { outline:1px solid #ff253c; box-shadow:0 0 6px #ff253c,inset -2px -2px 4px rgba(0,0,0,.7),inset 1px 1px 3px rgba(255,255,255,.8); }
+        #lan-score .score-aim { display:none; }
+        #lan-score .score-aim-ball { display:inline-grid; place-items:center; min-width:12px; height:12px; padding:0 3px; border:1px solid #d7bd83; border-radius:99px; color:#172126; background:#f4d795; font:bold 7px Arial,sans-serif; vertical-align:middle; }
+        #lan-score .score-aim-ball.own { border-color:#00ef74; background:#aaffcb; box-shadow:0 0 5px #00ef74; }
+        #lan-score .score-aim-ball.opponent { border-color:#ff253c; background:#ffafb7; box-shadow:0 0 5px #ff253c; }
+        @media(max-width:370px){#lan-score{padding:2px 3px}.score-player{grid-template-columns:22px minmax(0,1fr)!important;gap:2px!important}.score-player.right{grid-template-columns:minmax(0,1fr) 22px!important}.score-avatar{width:19px!important;height:19px!important}.score-ball-slot{width:8px!important;height:8px!important;flex-basis:8px!important;font-size:4px!important}.score-balls{gap:1px!important}}
 
         .start-option { border:1px solid #57d99b; color:#f2fff8; background:linear-gradient(135deg,#1b7050,#164b3c); box-shadow:0 4px 14px rgba(0,0,0,.24); }
         .start-option small { color:#c5ead8; }
@@ -263,7 +291,7 @@
         .custom-finish-row button:disabled { opacity:.5; }
 
         #phase-menu { align-items:flex-start; justify-content:center; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; touch-action:pan-y; padding-top:max(8px,env(safe-area-inset-top)); padding-bottom:max(8px,env(safe-area-inset-bottom)); }
-        #phase-menu .phase-card { max-height:min(82vh,calc(100vh - max(16px,env(safe-area-inset-top)) - max(16px,env(safe-area-inset-bottom))); overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; touch-action:pan-y; }
+        #phase-menu .phase-card { max-height:min(82vh,calc(100vh - max(16px,env(safe-area-inset-top)) - max(16px,env(safe-area-inset-bottom)))); overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; touch-action:pan-y; }
         #phase-menu-close-bottom { position:static; display:block; width:100%; box-sizing:border-box; margin:14px 0 4px; transform:none; }
         #phase-menu .solo-tabs { transform:translateY(-2px); position:sticky; top:0; z-index:8; margin:0 0 12px; padding:8px 0; background:rgba(13,20,26,.98); border-bottom:1px solid rgba(196,211,219,.2); }
         #phase-menu .tab-page.active { padding-bottom:12px; }
@@ -436,7 +464,7 @@
         <span id="cue-pull-hint">PUXE &#8595;</span>
     </div>
     <div id="stage-hud">FASE 1/48 · BOLAS 0/3</div>
-    <div id="wallet-hud">🪙 <span id="wallet-hud-val">0</span><span class="wallet-divider">·</span>🎟️ <span id="fichas-hud-val">10</span><button id="wallet-plus-btn" type="button" aria-label="Ganhar moedas assistindo anúncio">＋</button></div>
+    <div id="wallet-hud">🪙 <span id="wallet-hud-val">0</span><span class="wallet-divider">·</span><img src="https://base44.app/api/apps/6ae0ff061d8d4e2a739347c7/files/mp/public/6ae0ff061d8d4e2a739347c7/fc743f4e8_ficha-sinuca.png" class="ficha-ico" alt="Ficha"> <span id="fichas-hud-val">100</span><button id="wallet-plus-btn" type="button" aria-label="Comprar fichas">＋</button></div>
     <div id="life-hud" aria-label="Vidas restantes" aria-live="polite"></div>
     <button id="phase-menu-btn" type="button" aria-label="Menu de modos"><span class="barra-menu"></span><span class="barra-menu"></span><span class="barra-menu"></span></button>
         <div id="vinheta" aria-hidden="true"></div>
@@ -454,7 +482,7 @@
             <div class="menu-kicker">MODO SOLO</div>
             <div class="menu-currency-bar" aria-label="Saldo inicial">
                 <div class="menu-currency"><span aria-hidden="true">🪙</span><div><small>MOEDAS</small><strong id="menu-coins">0</strong></div></div>
-                <div class="menu-currency ticket"><span aria-hidden="true">🎟️</span><div><small>FICHAS</small><strong id="menu-fichas">10</strong></div></div>
+                <div class="menu-currency ticket"><span aria-hidden="true"><img src="https://base44.app/api/apps/6ae0ff061d8d4e2a739347c7/files/mp/public/6ae0ff061d8d4e2a739347c7/fc743f4e8_ficha-sinuca.png" class="ficha-ico" alt="Ficha"></span><div><small>FICHAS</small><strong id="menu-fichas">100</strong></div></div>
             </div>
             <div class="menu-tools"><button id="shop-back-btn" type="button" aria-label="Voltar ao jogo" hidden><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M14.5 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button id="sound-btn" type="button" aria-label="Desativar som do jogo">🔊 SOM ON</button><button class="menu-shop-shortcut" type="button" data-tab="shop">🛒 ABRIR LOJA</button></div>
             <h2>SINUCA BAR</h2>
@@ -499,7 +527,7 @@
                 <ol id="timer-ranking"><li class="timer-rank-empty">Nenhuma partida registrada.</li></ol>
             </section>
             <section class="tab-page" data-page="parimpar">
-                <p>Jogue no mesmo aparelho com um amigo (passando o celular a cada vez), contra a CPU, ou em dois aparelhos — pela internet (online) ou na mesma rede Wi‑Fi. Cada jogador tem <b>20 segundos por tacada</b>; depois de cada tacada o cronômetro reinicia. Se o tempo acabar antes da tacada, a vez passa automaticamente.</p>
+                <p>Jogue no mesmo aparelho com um amigo (passando o celular a cada vez), contra a CPU, ou em dois aparelhos — pela internet (online) ou na mesma rede Wi‑Fi. Cada jogador tem <b>1 minuto por tacada</b>; depois de cada tacada o cronômetro reinicia. Se o tempo acabar antes da tacada, a vez passa automaticamente.</p>
                 <h3>2 jogadores · mesmo aparelho</h3>
                 <button id="local-parimpar" class="primary-action" type="button">PAR OU ÍMPAR · 2 JOGADORES</button>
                 <button id="local-bolinho" class="primary-action" type="button">BOLINHO · 2 JOGADORES</button>
@@ -512,7 +540,7 @@
             <section class="tab-page" data-page="shop">
                 <div class="shop-header">
                     <div class="shop-balance"><span class="shop-coin-ico" aria-hidden="true"></span><div><small>MOEDAS</small><p id="shop-coins">0</p></div></div>
-                    <div class="shop-balance shop-ticket-balance"><span class="shop-ticket-ico" aria-hidden="true">🎟️</span><div><small>FICHAS</small><p id="shop-fichas">10</p></div></div><div class="shop-rank"><small>CAMPANHA</small><p id="shop-level">Fase 1/48</p></div>
+                    <div class="shop-balance shop-ticket-balance"><span class="shop-ticket-ico" aria-hidden="true"><img src="https://base44.app/api/apps/6ae0ff061d8d4e2a739347c7/files/mp/public/6ae0ff061d8d4e2a739347c7/fc743f4e8_ficha-sinuca.png" class="ficha-ico" alt="Ficha"></span><div><small>FICHAS</small><p id="shop-fichas">100</p></div></div><div class="shop-rank"><small>CAMPANHA</small><p id="shop-level">Fase 1/48</p></div>
                 </div>
                 <button id="shop-video-coins" class="shop-video-btn" type="button">
                     <span class="svb-ico" aria-hidden="true">▶</span> ASSISTIR VÍDEO · +200 MOEDAS</button>
@@ -520,7 +548,7 @@
                     <button type="button" class="shop-tab active" data-shop-cat="equip" title="Equipamentos" aria-label="Equipamentos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.2 19.8L19 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M17.5 3.5L20.5 6.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><circle cx="5.4" cy="18.6" r="1.4" fill="currentColor"/></svg><span>EQU</span></button>
                     <button type="button" class="shop-tab" data-shop-cat="upgrades" title="Upgrades" aria-label="Upgrades"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13.5l6-6 6 6M6 19l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>UPG</span></button>
                     <button type="button" class="shop-tab" data-shop-cat="taco" title="Personalizar taco e mesa" aria-label="Personalizar taco e mesa"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="9" cy="9.5" r="1.5" fill="currentColor"/><circle cx="15" cy="9.5" r="1.5" fill="currentColor"/><circle cx="12" cy="14.5" r="1.5" fill="currentColor"/></svg><span>PER</span></button>
-                    <button type="button" class="shop-tab" data-shop-cat="fichas" title="Fichas" aria-label="Fichas"><span style="font-size:18px">🎟️</span><span>FICHAS</span></button><button type="button" class="shop-tab" data-shop-cat="luz" title="Iluminação da mesa" aria-label="Iluminação da mesa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2a6.2 6.2 0 0 1 4.3 10.7c-.8.9-1.3 1.8-1.3 2.9H9c0-1.1-.5-2-1.3-2.9A6.2 6.2 0 0 1 12 3.2z" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M9.6 19h4.8M10.6 21.3h2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>ILU</span></button>
+                    <button type="button" class="shop-tab" data-shop-cat="fichas" title="Fichas" aria-label="Fichas"><span style="font-size:18px"><img src="https://base44.app/api/apps/6ae0ff061d8d4e2a739347c7/files/mp/public/6ae0ff061d8d4e2a739347c7/fc743f4e8_ficha-sinuca.png" class="ficha-ico" alt="Ficha"></span><span>FICHAS</span></button><button type="button" class="shop-tab" data-shop-cat="luz" title="Iluminação da mesa" aria-label="Iluminação da mesa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2a6.2 6.2 0 0 1 4.3 10.7c-.8.9-1.3 1.8-1.3 2.9H9c0-1.1-.5-2-1.3-2.9A6.2 6.2 0 0 1 12 3.2z" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M9.6 19h4.8M10.6 21.3h2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>ILU</span></button>
                 </nav>
                 
                 <div class="shop-cat" data-cat="upgrades"><h3 class="shop-cat-title">Upgrades de performance</h3><p class="shop-cat-sub">Evolua o taco conforme avança na campanha.</p><div id="upgrade-list"></div></div>
@@ -535,7 +563,7 @@
                 <div class="custom-finish-row"><label for="custom-arc-color">Arco das caçapas</label><input id="custom-arc-color" type="color" value="#898f95" aria-label="Escolher a cor dos arcos das caçapas"><span id="custom-arc-color-value">#898F95</span><button id="apply-custom-arc-color" type="button">COMPRAR · 10 🪙</button></div>
             </section></div>
                 <div class="shop-cat active" data-cat="equip"><h3 class="shop-cat-title">Equipamentos</h3><p class="shop-cat-sub">Tacos profissionais e acessórios que mudam seu jogo.</p><div id="shop-items" class="shop-grid"></div></div>
-                <div class="shop-cat" data-cat="fichas"><h3 class="shop-cat-title">Fichas</h3><p class="shop-cat-sub">Cada partida, em qualquer modo, custa 1 ficha. Você tem <b class="fichas-val">10</b> fichas.</p><div class="shop-item" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border:1px solid rgba(221,174,95,.4);border-radius:10px;margin:6px 0"><b>🎟️ 1 ficha</b><button type="button" class="shop-buy" onclick="comprarFichas(1)">10 🪙</button></div><div class="shop-item" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border:1px solid rgba(221,174,95,.4);border-radius:10px;margin:6px 0"><b>🎟️ 5 fichas</b><button type="button" class="shop-buy" onclick="comprarFichas(5)">50 🪙</button></div><div class="shop-item" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border:1px solid rgba(221,174,95,.4);border-radius:10px;margin:6px 0"><b>🎟️ 10 fichas</b><button type="button" class="shop-buy" onclick="comprarFichas(10)">100 🪙</button></div><div class="shop-item" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border:1px solid rgba(221,174,95,.4);border-radius:10px;margin:6px 0"><b>🎟️ 20 fichas</b><button type="button" class="shop-buy" onclick="comprarFichas(20)">200 🪙</button></div></div><div class="shop-cat" data-cat="luz"><h3 class="shop-cat-title">Iluminação da mesa</h3><p class="shop-cat-sub">Luminárias com luz e reflexos próprios sobre o pano.</p><div id="shop-lights" class="shop-grid"></div></div>
+                <div class="shop-cat" data-cat="fichas"><h3 class="shop-cat-title">Fichas</h3><p class="shop-cat-sub">Cada partida, em qualquer modo, custa 1 ficha. Você tem <b class="fichas-val">100</b> fichas.</p><div class="shop-item" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border:1px solid rgba(221,174,95,.4);border-radius:10px;margin:6px 0"><b><img src="https://base44.app/api/apps/6ae0ff061d8d4e2a739347c7/files/mp/public/6ae0ff061d8d4e2a739347c7/fc743f4e8_ficha-sinuca.png" class="ficha-ico" alt="Ficha"> 1 ficha</b><button type="button" class="shop-buy" onclick="comprarFichas(1)">10 🪙</button></div><div class="shop-item" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border:1px solid rgba(221,174,95,.4);border-radius:10px;margin:6px 0"><b><img src="https://base44.app/api/apps/6ae0ff061d8d4e2a739347c7/files/mp/public/6ae0ff061d8d4e2a739347c7/fc743f4e8_ficha-sinuca.png" class="ficha-ico" alt="Ficha"> 5 fichas</b><button type="button" class="shop-buy" onclick="comprarFichas(5)">50 🪙</button></div><div class="shop-item" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border:1px solid rgba(221,174,95,.4);border-radius:10px;margin:6px 0"><b><img src="https://base44.app/api/apps/6ae0ff061d8d4e2a739347c7/files/mp/public/6ae0ff061d8d4e2a739347c7/fc743f4e8_ficha-sinuca.png" class="ficha-ico" alt="Ficha"> 10 fichas</b><button type="button" class="shop-buy" onclick="comprarFichas(10)">100 🪙</button></div><div class="shop-item" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border:1px solid rgba(221,174,95,.4);border-radius:10px;margin:6px 0"><b><img src="https://base44.app/api/apps/6ae0ff061d8d4e2a739347c7/files/mp/public/6ae0ff061d8d4e2a739347c7/fc743f4e8_ficha-sinuca.png" class="ficha-ico" alt="Ficha"> 20 fichas</b><button type="button" class="shop-buy" onclick="comprarFichas(20)">200 🪙</button></div></div><div class="shop-cat" data-cat="luz"><h3 class="shop-cat-title">Iluminação da mesa</h3><p class="shop-cat-sub">Luminárias com luz e reflexos próprios sobre o pano.</p><div id="shop-lights" class="shop-grid"></div></div>
                 <small class="shop-foot">Compras e progresso ficam salvos localmente neste aparelho.</small>
             </section>
             <button id="phase-menu-close-bottom" class="close-action" type="button">VOLTAR AO JOGO</button>
@@ -561,7 +589,7 @@
             </div>
             <button id="online-copy-id" type="button" style="padding:8px 12px;flex:0 0 auto">COPIAR ID</button>
           </div>
-          <p style="margin:6px 0;color:#ffd76a;font-weight:700">🎟️ Fichas: <span class="fichas-val">10</span> · cada partida gasta 1</p><div class="lan-row"><button id="online-create" type="button" style="background:#2fae44">ESTOU ONLINE — QUERO JOGAR</button></div>
+          <p style="margin:6px 0;color:#ffd76a;font-weight:700"><img src="https://base44.app/api/apps/6ae0ff061d8d4e2a739347c7/files/mp/public/6ae0ff061d8d4e2a739347c7/fc743f4e8_ficha-sinuca.png" class="ficha-ico" alt="Ficha"> Fichas: <span class="fichas-val">100</span> · cada partida gasta 1</p><div class="lan-row"><button id="online-create" type="button" style="background:#2fae44">ESTOU ONLINE — QUERO JOGAR</button></div>
           <div class="lan-row"><input id="online-code-in" maxlength="6" inputmode="numeric" autocomplete="off" placeholder="ID do amigo (6 números)"><button id="online-join" type="button" style="background:#2a77c2">DESAFIAR</button></div>
           <div id="online-status">Toque em ESTOU ONLINE — com um amigo conhecido online, o duelo começa sozinho.</div>
         </section>
@@ -576,7 +604,7 @@
         
       </div>
     </div>
-    <div id="lan-score"></div>
+    <div id="lan-score" aria-label="Placar do duelo"></div>
     <div id="victory-panel" class="game-modal" aria-hidden="true">
         <div class="phase-card">
             <h2 id="victory-title">FASE CONCLUÍDA!</h2>
@@ -1045,6 +1073,8 @@
     }
     let progressoInicial = {};
     try { progressoInicial = JSON.parse(localStorage.getItem('sinucaBarDoBairro') || '{}') || {}; } catch(e) {}
+    const perfilDeTesteSalvo=(Number(progressoInicial.maxCampanhaIntercalada)>=48&&Number(progressoInicial.moedas)>=50000&&Array.isArray(progressoInicial.fasesConcluidas)&&progressoInicial.fasesConcluidas.length>=48&&progressoInicial.estrelasPorFase&&Object.keys(progressoInicial.estrelasPorFase).length>=48);
+    if(perfilDeTesteSalvo){try{localStorage.removeItem('sinucaBarDoBairro');}catch(e){}progressoInicial={};}
     const normalAntigo=Math.max(1,Math.min(36,parseInt(progressoInicial.normalNumeroSalvo)||parseInt(progressoInicial.nivel)||1));
     const etapaAntiga=normalAntigo+Math.floor((normalAntigo-1)/3);
     const nivelSalvo=Math.max(1,Math.min(48,parseInt(progressoInicial.nivelCampanhaIntercalada)||etapaAntiga));
@@ -1063,7 +1093,7 @@
         saidaBranca:[-8,18], cameraAcompanhar:false,
         // O jogador começa o jogo com 500 moedas (se tiver progresso salvo,
         // mantém as moedas que já juntou).
-        moedas:Math.max(0,parseInt(progressoInicial.moedas)||500), moedasFase:0, moedasFaseInicioJogada:0,
+        moedas:progressoInicial.moedas==null?500:Math.max(0,parseInt(progressoInicial.moedas)||0), moedasFase:0, moedasFaseInicioJogada:0,
         spinX:0, spinY:0, brancaCaiu:false, idFase:0,
         nivelInicioJogada:nivelSalvo, moedasInicioJogada:0, bolasPagasInicioJogada:[],
         tacoNivel:(()=>{let n=Math.max(0,Math.min(11,parseInt(progressoInicial.tacoNivel)||0));if(!progressoInicial.escadaTacosV2)n=[0,1,3,5][Math.min(3,n)];return n;})(),
@@ -1081,20 +1111,6 @@
         faseConcluida:false, recompensaPaga:false,
         tabelasSemContato:0, acertouBola:false, penalidadeAplicada:false
     };
-    // ===== MODO TESTE (a pedido do dono: liberar tudo para testar) =====
-    // Em TODO carregamento: abre as 48 fases e garante no mínimo
-    // 50.000 moedas. Remover este bloco quando os testes terminarem.
-    try{
-        gameState.maxFaseLiberada=48;
-        if((gameState.moedas||0)<50000) gameState.moedas=50000;
-        // HISTÓRICO DE FASE liberado: todas as fases contam como concluídas
-        // com 3 estrelas — as recompensas dos blocos ficam prontas para recolher.
-        for(let n=1;n<=48;n++){
-            gameState.estrelasPorFase[n]=3;
-            if(!gameState.fasesConcluidas.includes(n)) gameState.fasesConcluidas.push(n);
-        }
-        try{ salvarProgresso(); }catch(e){}
-    }catch(e){}
     // TACO EQUIPADO E APRIMORAMENTOS: qualquer taco comprado pode ser
     // equipado; cada taco comprado começa um pouco mais fraco e sobe em
     // até 5 níveis de aprimoramento até chegar ao valor máximo.
@@ -1126,7 +1142,7 @@
     const parImpar={ativo:false,local:false,host:false,pc:null,canal:null,jogador:1,modo:'parimpar',bolinhoFase:3,historico:[],turno:1,grupos:{1:null,2:null},aposta:0,apostaLiquidada:false,primeiroContato:null,encaçapadasNestaTacada:[],oitoEncaçapada:false,tacadaFinalizada:false,vencedor:null,falta:null,cpuNivel:'normal',quebraPendente:false,turnoFim:0};
     let modoRedeEscolhido='parimpar', ultimaPontaMonte='';
     function rotuloGrupo(g){return g==='par'?'PARES':g==='impar'?'ÍMPARES':'—';}
-    const TEMPO_TURNO_PARIMPAR=20000;
+    const TEMPO_TURNO_PARIMPAR=60000;  // 1 minuto por tacada
     let relogioTurnoParImpar=null;
     function definirTurnoParImpar(proximo){
         parImpar.turno=proximo;
@@ -1157,20 +1173,50 @@
                     if(removidas)punicaoTempo=' O adversário recebe +1 bola de punição.';
                 }
                 definirTurnoParImpar(anterior===1?2:1);
-                parImpar.falta='Falta por tempo: J'+anterior+' não jogou em 20 segundos.'+punicaoTempo+' A vez passa.';
+                parImpar.falta='Falta por tempo: J'+anterior+' não jogou em 1 minuto.'+punicaoTempo+' A vez passa.';
                 gameState.aguardandoReset=false;
                 aplicarPlacarParImpar();
                 if(parImpar.host&&parImpar.local)enviarParImpar({type:'state',state:estadoParImpar()});
             }
         },250);
     }
+    let numeroBolaNaMira=null;
     function exibirPlacarParImpar(){
         const hud=document.getElementById('lan-score'); if(!hud)return;
         if(!parImpar.ativo){hud.style.display='none';return;}
-        const vencedor=parImpar.vencedor?' · VENCEU J'+parImpar.vencedor:'';
-        hud.textContent=parImpar.modo==='bolinho'?'JOGO DE BOLINHO · '+(bolas.filter(b=>!b.userData.isBranca&&b.userData.ativa).length)+' BOLAS · J'+parImpar.turno+' JOGA'+vencedor:'J1 '+rotuloGrupo(parImpar.grupos[1])+'  |  J'+parImpar.turno+' JOGA  |  J2 '+rotuloGrupo(parImpar.grupos[2])+vencedor;
-        const segundosTurno=Math.ceil(Math.max(0,(parImpar.turnoFim||Date.now()+TEMPO_TURNO_PARIMPAR)-Date.now())/1000); hud.textContent+=' · ⏱ '+segundosTurno+'s';
-        if(parImpar.oponente==='cpu')hud.textContent=hud.textContent.replace(/J2/g,parImpar.cpuNivel==='pro'?'CPU PRO':'CPU').replace('J1','VOCÊ');
+        const agora=Date.now(), restante=Math.max(0,(parImpar.turnoFim||agora+TEMPO_TURNO_PARIMPAR)-agora);
+        const segundos=Math.ceil(restante/1000), pct=Math.max(0,Math.min(100,restante/TEMPO_TURNO_PARIMPAR*100));
+        const nome=j=>parImpar.oponente==='cpu'?(j===1?'VOCÊ':(parImpar.cpuNivel==='pro'?'CPU PRO':'CPU')):parImpar.oponente==='local'?'JOGADOR '+j:(j===parImpar.jogador?'VOCÊ':'ADVERSÁRIO');
+        const bolaNum=n=>bolas.find(b=>b.userData.numero===n);
+        const jogadorHTML=j=>{
+            const g=parImpar.grupos[j], nums=g==='par'?[2,4,6,8,10,12,14]:g==='impar'?[3,5,7,9,11,13,15]:[];
+            const encaçapadas=new Set(bolas.filter(b=>!b.userData.isBranca&&b.userData.encaçapada&&b.userData.numero!==1&&(!g||((b.userData.numero%2===0?'par':'impar')===g))).map(b=>b.userData.numero));
+            const row=nums.length?nums.map(n=>{const b=bolaNum(n),inPocket=encaçapadas.has(n),alvo=numeroBolaNaMira===n;let classe='score-ball-slot'+(inPocket?' potted':'')+(alvo?' target-ball':'');
+                const grupoDoJogadorAtivo=parImpar.grupos[parImpar.turno];
+                if(alvo&&grupoDoJogadorAtivo){classe+=' '+((grupoDoJogadorAtivo===(n%2===0?'par':'impar'))?'target-own':'target-opponent');}
+                return '<span class="'+classe+'" '+((inPocket||alvo)&&b?'style="--ball-color:'+b.userData.cor+'"':'')+' aria-label="Bola '+n+(alvo?', na mira':inPocket?', encaçapada':', na mesa')+'">'+((inPocket||alvo)?n:'')+'</span>';}).join(''):Array.from({length:7},()=>'<span class="score-ball-slot" aria-label="Grupo ainda não definido"></span>').join('');
+            const active=parImpar.turno===j, ownTimer=active?'<i class="timer-ring" style="--timer-pct:'+pct+'%"></i>':'';
+            const grupoAtivo=parImpar.grupos[parImpar.turno];
+            const tipoAlvo=numeroBolaNaMira===null||numeroBolaNaMira===1?null:(numeroBolaNaMira%2===0?'par':'impar');
+            let bolaDesteLado=numeroBolaNaMira!==null&&numeroBolaNaMira!==1&&grupoAtivo&&(grupoAtivo===tipoAlvo?j===parImpar.turno:j!==parImpar.turno);
+            const numeroAvatar=bolaDesteLado?numeroBolaNaMira:null;
+            const alvoClasse=numeroAvatar===null?'':' target-ball '+(j===parImpar.turno?'target-own':'target-opponent');
+            const bolaAlvo=numeroAvatar===null?null:bolaNum(numeroAvatar);
+            const avatar='<span class="score-avatar'+alvoClasse+'" '+(bolaAlvo?'style="--ball-color:'+bolaAlvo.userData.cor+'"':'')+' aria-label="'+(numeroAvatar===null?'Bola de sinuca do jogador '+j:'Mira na bola '+numeroAvatar+' do '+(j===parImpar.turno?'seu grupo':'grupo adversário'))+'">'+ownTimer+(numeroAvatar===null?'':'<span class="score-avatar-number">'+numeroAvatar+'</span>')+'</span>';
+            const info='<span><span class="score-name">'+nome(j)+'</span><span class="score-group">'+(g?rotuloGrupo(g):'GRUPO A DEFINIR')+'</span><span class="score-balls">'+row+'</span></span>';
+            return '<div class="score-player '+(active?'active ':'')+(j===2?'right':'')+'">'+(j===1?avatar+info:info+avatar)+'</div>';
+        };
+        const center=parImpar.modo==='bolinho'?'BOLINHO<br>J'+parImpar.turno+' · '+segundos+'s':'J'+parImpar.turno+' · '+segundos+'s';
+        let alvoCentro='', classeCentro='', estiloCentro='';
+        if(numeroBolaNaMira!==null){
+            const n=numeroBolaNaMira,g=parImpar.grupos[parImpar.turno];
+            if(n===1||!g){
+                let status='';
+                if(n===1&&g){const resta=bolas.some(b=>!b.userData.isBranca&&b.userData.numero!==1&&b.userData.ativa&&!b.userData.caindo&&(b.userData.numero%2===0?'par':'impar')===g);status=resta?'opponent':'own';}
+                const bolaCentro=bolaNum(n);classeCentro='visible'+(status?' '+status:'');alvoCentro=String(n);if(bolaCentro){classeCentro+=' target-ball';estiloCentro=' style="--ball-color:'+bolaCentro.userData.cor+'"';}
+            }
+        }
+        hud.innerHTML='<div class="score-topline">'+jogadorHTML(1)+'<div class="score-center">'+center+'<span class="score-center-target '+classeCentro+'"'+estiloCentro+'>'+alvoCentro+'</span></div>'+jogadorHTML(2)+'</div>';
         hud.style.display='block';
         (document.getElementById('turn-msg')||{}).textContent=parImpar.oponente==='cpu'?(parImpar.turno===2?(parImpar.cpuNivel==='pro'?'CPU PRO JOGANDO':'CPU JOGANDO'):'SUA VEZ'):'JOGADOR '+parImpar.turno+(parImpar.oponente==='local'||parImpar.turno===parImpar.jogador?' · SUA VEZ':'');
     }
@@ -1180,10 +1226,10 @@
         // PRÊMIO GRÁTIS DO DUELO EM REDE: quem vencer leva 100 moedas —
         // ninguém paga aposta, o prêmio sai "da casa". Partida no mesmo
         // aparelho ou contra a CPU não dá prêmio.
-        const ganhei=parImpar.vencedor===parImpar.jogador, premio=parImpar.local?100:0;
+        const ganhei=parImpar.vencedor===parImpar.jogador, premio=(window.__apostaMesaAtiva?0:(parImpar.local?100:0));
         if(ganhei&&premio){gameState.moedas+=premio;atualizarHUD(true);}
         const st=document.getElementById('online-status');
-        if(st)st.textContent=ganhei?('🏆 Você venceu o duelo'+(premio?(': +'+premio+' moedas de prêmio!'):'!')):('Você perdeu o duelo. Nada pago — boa sorte na próxima!');
+        if(st)st.textContent=ganhei?('🏆 Você venceu o duelo'+(premio?(': +'+premio+' moedas de prêmio!'):'!')):(window.__apostaMesaAtiva?'Você perdeu o duelo e a aposta.':'Você perdeu o duelo. Nada pago — boa sorte na próxima!');
     }
     function aplicarPlacarParImpar(){
         if(!parImpar.ativo)return;
@@ -1294,8 +1340,17 @@
     }
     function fecharSinalizacao(){const m=document.getElementById('lan-modal');m.style.display='none';m.setAttribute('aria-hidden','true');}
     // ===== FICHAS: toda partida em qualquer modo custa 1 ficha (10 iniciais; 1 ficha = 10 moedas) =====
-    const FICHAS_INICIAIS=10, PRECO_FICHA=10;
-    function lerFichas(){const v=localStorage.getItem('sinucaFichas');return v===null?FICHAS_INICIAIS:Math.max(0,parseInt(v,10)||0);}
+    const FICHAS_INICIAIS=100, PRECO_FICHA=10;
+    function lerFichas(){
+        // Ajuste único do novo começo: quem tem saldo abaixo de 100 sobe para 100 (uma vez só).
+        try{
+            if(!localStorage.getItem('sinucaAjuste100')){
+                const antigo=localStorage.getItem('sinucaFichas');
+                if(antigo!==null&&(parseInt(antigo,10)||0)<FICHAS_INICIAIS) localStorage.setItem('sinucaFichas',String(FICHAS_INICIAIS));
+                localStorage.setItem('sinucaAjuste100','1');
+            }
+        }catch(e){}
+        const v=localStorage.getItem('sinucaFichas');return v===null?FICHAS_INICIAIS:Math.max(0,parseInt(v,10)||0);}
     function gravarFichas(n){localStorage.setItem('sinucaFichas',String(Math.max(0,n)));atualizarFichasUI();}
     function atualizarFichasUI(){const n=lerFichas();document.querySelectorAll('.fichas-val').forEach(e=>e.textContent=n);const hud=document.getElementById('fichas-hud-val');if(hud)hud.textContent=n;const shop=document.getElementById('shop-fichas');if(shop)shop.textContent=n;const menu=document.getElementById('menu-fichas');if(menu)menu.textContent=n;}
     function temFicha(){if(lerFichas()>0)return true;if(typeof onlineStatus==='function')onlineStatus('Sem fichas! Compre fichas na loja (1 ficha = '+PRECO_FICHA+' moedas).');alert('Você não tem fichas. Compre na loja, aba FICHAS (1 ficha = '+PRECO_FICHA+' moedas).');return false;}
@@ -1311,7 +1366,7 @@
         parImpar.aposta=0;parImpar.apostaLiquidada=false;
         parImpar.oponente=oponente||(redeLocal?'rede':'local');parImpar.cpuPensando=false;parImpar.cpuNivel=nivelCpu==='pro'?'pro':'normal';parImpar.tacadaFinalizada=false;parImpar.ativo=true;parImpar.local=!!redeLocal;parImpar.jogador=jogador;parImpar.modo=modo==='bolinho'?'bolinho':'parimpar';parImpar.bolinhoFase=3;parImpar.historico=[];parImpar.turno=quebraProxima||(Math.random()<0.5?1:2);parImpar.turnoFim=Date.now()+TEMPO_TURNO_PARIMPAR;parImpar.grupos={1:null,2:null};parImpar.primeiroContato=null;parImpar.encaçapadasNestaTacada=[];parImpar.tacadaFinalizada=true;parImpar.vencedor=null;parImpar.falta=null;parImpar.quebraPendente=true;
         if(gameState.modo==='timer'&&timerInterval){clearInterval(timerInterval);timerInterval=null;}
-        gameState.timerAtivo=false;gameState.modo='parimpar';gameState.idFase++;gameState.nivel=1;gameState.total=parImpar.modo==='bolinho'?3:15;gameState.encaixadas=0;gameState.aguardandoReset=false;gameState.jogadaAtiva=false;gameState.posicionandoBranca=false;gameState.brancaCaiu=false;gameState.faseConcluida=false;gameState.acertouBola=false;gameState.ghosts=VIDAS_INICIAIS; iniciarRelogioTurnoParImpar();
+        gameState.timerAtivo=false;gameState.modo='parimpar';gameState.idFase++;gameState.nivel=1;gameState.total=parImpar.modo==='bolinho'?3:15;gameState.encaixadas=0;gameState.aimLength=24;gameState.aguardandoReset=false;gameState.jogadaAtiva=false;gameState.posicionandoBranca=false;gameState.brancaCaiu=false;gameState.faseConcluida=false;gameState.acertouBola=false;gameState.ghosts=VIDAS_MAXIMAS; iniciarRelogioTurnoParImpar();
         const dx=RAIO*2.08,dz=dx*Math.sqrt(3)/2, todas=bolas.filter(b=>!b.userData.isBranca);
         // MONTE 100% EMBARALHADO: cada partida as bolas sorteiam lugar no
         // triângulo — nunca a mesma distribuição padrão, igual bar de verdade.
@@ -1365,7 +1420,7 @@
     function executarTacadaParImpar(shot){
         if(!parImpar.ativo||parImpar.vencedor)return;
         renovarTempoTacadaParImpar();
-        const forca=Math.max(0.15,Math.min(4.5,Number(shot.forca)||1));angH=Number(shot.angulo)||0;gameState.spinX=Number(shot.spinX)||0;gameState.spinY=Number(shot.spinY)||0;
+        const forca=Math.max(0.02,Math.min(4.5,Number(shot.forca)||1));angH=Number(shot.angulo)||0;gameState.spinX=Number(shot.spinX)||0;gameState.spinY=Number(shot.spinY)||0;
         const dx=-Math.sin(angH),dz=-Math.cos(angH);
         aplicarImpactoTaco(dx,dz,forca,gameState.spinX,gameState.spinY);const linear=Math.hypot(branca.userData.vx,branca.userData.vz);
         parImpar.primeiroContato=null;parImpar.brancaArranhou=false;parImpar.encaçapadasNestaTacada=[];parImpar.oitoEncaçapada=false;parImpar.tacadaFinalizada=false;parImpar.quebraPendente=false;parImpar.falta=null;gameState.jogadaAtiva=true;gameState.encaixadasInicioJogada=gameState.encaixadas;gameState.cameraAcompanhar=true;gameState.acertouBola=false;gameState.tabelasSemContato=0;gameState.aguardandoReset=false;gameState.brancaCaiu=false;gameState.posicionandoBranca=false;cameraAutoLiftTarget=9;somTacada(linear);document.getElementById('status-text').innerText='';
@@ -1380,6 +1435,28 @@
         alvos.forEach(b=>{b.userData.ativa=false;b.userData.caindo=false;b.userData.encaçapada=true;b.userData.vx=0;b.userData.vz=0;zerarRotacaoBola(b);if(b.parent)scene.remove(b);gameState.encaixadas++;});
         atualizarListaBolasEncaixadas();
         return alvos.length;
+    }
+    function restamBolasDoGrupoParImpar(jogador){
+        const grupo=parImpar.grupos[jogador];
+        if(!grupo)return true;
+        return bolas.some(b=>b.userData.ativa&&!b.userData.isBranca&&b.userData.numero!==1&&b.userData.numero%2===(grupo==='par'?0:1));
+    }
+    function derrotarPorCastigoAntecipado(jogador=parImpar.turno){
+        // A bola 1 encerra a partida no instante em que entra na caçapa.
+        // Esta verificação tem prioridade sobre qualquer outra falta da tacada.
+        if(!parImpar.ativo||parImpar.modo!=='parimpar'||parImpar.vencedor||parImpar.tacadaFinalizada)return false;
+        if(!restamBolasDoGrupoParImpar(jogador))return false;
+        parImpar.vencedor=jogador===1?2:1;
+        parImpar.falta='CASTIGO antes da hora: J'+jogador+' derrubou a bola 1 antes de limpar seu grupo e perdeu instantaneamente.';
+        parImpar.tacadaFinalizada=true;
+        gameState.jogadaAtiva=false;
+        gameState.aguardandoReset=false;
+        quebraProxima=parImpar.vencedor;salvarQuebra();
+        pararRelogioTurnoParImpar();
+        atualizarHUD(false);aplicarPlacarParImpar();
+        if(parImpar.host&&parImpar.local)enviarParImpar({type:'state',state:estadoParImpar()});
+        setTimeout(mostrarFimParImpar,250);
+        return true;
     }
     function concluirTacadaParImpar(arranhou=false){
         if(!parImpar.ativo||parImpar.tacadaFinalizada)return;
@@ -2253,6 +2330,55 @@
         else msg+=', controle de posição.';
         return {angulo:Math.atan2(-melhor.dx,-melhor.dz)+(Math.random()-0.5)*0.0025,forca:d.forca,spinX:0,spinY:d.spinY,mensagem:msg};
     }
+    function cpuAjusteFinoAngulo(angulo){
+        // Refina a mira pela mesma geometria da bola fantasma: pequenos desvios
+        // são comparados pelo alinhamento real entre contato, bola e caçapa.
+        const cx=branca.position.x,cz=branca.position.z,grupo=parImpar.grupos[2];
+        const restantes=grupo?bolas.filter(b=>b.userData.ativa&&!b.userData.isBranca&&b.userData.numero!==1&&(b.userData.numero%2===0?'par':'impar')===grupo):[];
+        const alvos=bolas.filter(b=>b.userData.ativa&&!b.userData.caindo&&!b.userData.isBranca&&(parImpar.modo==='bolinho'?b.userData.numero!==1:(grupo?(restantes.length?(b.userData.numero!==1&&(b.userData.numero%2===0?'par':'impar')===grupo):b.userData.numero===1):b.userData.numero!==1)));
+        if(!alvos.length)return angulo;
+        function avaliar(a){
+            const dx=-Math.sin(a),dz=-Math.cos(a);
+            let dist=1e9,alvo=null;
+            alvos.forEach(b=>{
+                const rx=b.position.x-cx,rz=b.position.z-cz,proj=rx*dx+rz*dz;
+                if(proj<=0)return;
+                const perpendicular2=rx*rx+rz*rz-proj*proj,raio2=(RAIO*2)*(RAIO*2);
+                if(perpendicular2>=raio2)return;
+                const contato=proj-Math.sqrt(Math.max(0,raio2-perpendicular2));
+                if(contato>=-0.001&&contato<dist){dist=Math.max(0,contato);alvo=b;}
+            });
+            if(!alvo)return {nota:1e6,erro:1e6};
+            const gx=cx+dx*dist,gz=cz+dz*dist;
+            const ox=alvo.position.x-gx,oz=alvo.position.z-gz,do_=Math.hypot(ox,oz)||1;
+            const nx=ox/do_,nz=oz/do_;
+            let nota=1e6,erroMelhor=1e6;
+            cacapas.forEach(c=>{
+                const px=c.x-alvo.position.x,pz=c.z-alvo.position.z,dp=Math.hypot(px,pz);
+                if(dp<0.05)return;
+                const alinhamento=Math.max(-1,Math.min(1,(nx*px+nz*pz)/dp));
+                const erro=Math.acos(alinhamento);
+                if(erro>0.55)return;
+                const livreBranca=cpuCaminhoLivre(cx,cz,gx,gz,[branca,alvo]);
+                const livreObjeto=cpuCaminhoLivre(alvo.position.x,alvo.position.z,c.x,c.z,[alvo]);
+                const folga=cpuFolgaContraBicos(alvo.position.x,alvo.position.z,c.x,c.z);
+                const n=erro+(livreBranca?0:0.5)+(livreObjeto?0:0.35)+Math.max(0,RAIO*0.85-folga)*2+dist*0.00001;
+                if(n<nota){nota=n;erroMelhor=erro;}
+            });
+            return {nota,erro:erroMelhor};
+        }
+        const inicial=avaliar(angulo),notaInicial=inicial.nota;
+        if(inicial.erro>0.5)return angulo; // não transforma defesa/tabela em tacada direta
+        let melhorAngulo=angulo,melhorNota=notaInicial;
+        const passo=0.000125,limite=0.035;
+        for(let i=1;i<=Math.round(limite/passo);i++){
+            for(const s of [-1,1]){
+                const a=angulo+s*i*passo,n=avaliar(a).nota;
+                if(n<melhorNota-1e-9){melhorNota=n;melhorAngulo=a;}
+            }
+        }
+        return melhorAngulo;
+    }
     setInterval(()=>{
         if(!parImpar.ativo||parImpar.oponente!=='cpu'||parImpar.turno!==2||parImpar.vencedor||parImpar.cpuPensando||!parImpar.tacadaFinalizada||mesaMovendo)return;
         if(document.getElementById('phase-menu').style.display!=='none')return;
@@ -2261,7 +2387,13 @@
         setTimeout(()=>{
             if(id!==gameState.idFase||!parImpar.ativo||parImpar.turno!==2){parImpar.cpuPensando=false;return;}
             const shot=parImpar.cpuNivel==='pro'?cpuEscolherTacadaPro():cpuEscolherTacada();if(!shot){parImpar.cpuPensando=false;return;}
-            angH=shot.angulo;
+            const anguloBruto=shot.angulo;
+            shot.angulo=cpuAjusteFinoAngulo(anguloBruto);
+            angH=anguloBruto;
+            if(Math.abs(shot.angulo-anguloBruto)>0.000001){
+                shot.mensagem=(shot.mensagem||'CPU: tacada calculada')+' · MIRA FINA calibrada.';
+                setTimeout(()=>{if(id===gameState.idFase&&parImpar.ativo&&parImpar.turno===2&&!parImpar.vencedor)angH=shot.angulo;},420);
+            }
             setTimeout(()=>{
                 if(id!==gameState.idFase||!parImpar.ativo||parImpar.turno!==2||mesaMovendo){parImpar.cpuPensando=false;return;}
                 gameState.posicionandoBranca=false;gameState.aguardandoReset=false;
@@ -3562,6 +3694,30 @@ function criarTexturaBolaMarmorizada(cor,num) {
         if(fase.spinMinimo) regrasFase.push('Perfect Run exige um efeito ≥'+fase.spinMinimo.toFixed(2));
         document.getElementById('status-text').innerText='Encaçape '+fase.bolas+' bolas. '+regrasFase.join(' · ');
     }
+    function avisarBonusVida(){
+        let aviso=document.getElementById('life-bonus-toast');
+        if(!aviso){aviso=document.createElement('div');aviso.id='life-bonus-toast';aviso.setAttribute('role','status');aviso.setAttribute('aria-live','polite');document.body.appendChild(aviso);}
+        aviso.innerHTML='<strong>♥ +1 VIDA</strong><span>3 bolas seguidas · '+gameState.ghosts+'/'+VIDAS_MAXIMAS+'</span>';
+        aviso.classList.remove('visivel');void aviso.offsetWidth;aviso.classList.add('visivel');
+        clearTimeout(avisarBonusVida.timer);avisarBonusVida.timer=setTimeout(()=>aviso.classList.remove('visivel'),2400);
+        const coracao=document.querySelector('#life-hud .life-heart[data-life-index="'+(gameState.ghosts-1)+'"]');
+        if(coracao)coracao.classList.add('ganhou');
+    }
+    function processarBonusTresSeguidas(encaçapou){
+        if(encaçapou&&!gameState.brancaCaiu){
+            gameState.sequenciaEncaçapadas++;
+            if(gameState.sequenciaEncaçapadas>=3){
+                gameState.sequenciaEncaçapadas=0;
+                if(gameState.ghosts<VIDAS_MAXIMAS){
+                    gameState.ghosts++;atualizarHUD();
+                    document.getElementById('status-text').innerText='TRÊS SEGUIDAS! +1 vida ('+gameState.ghosts+'/'+VIDAS_MAXIMAS+').';
+                    avisarBonusVida();return true;
+                }
+                document.getElementById('status-text').innerText='Três seguidas! Vidas já no máximo ('+VIDAS_MAXIMAS+'/'+VIDAS_MAXIMAS+').';
+            }
+        }else gameState.sequenciaEncaçapadas=0;
+        return false;
+    }
     function atualizarHUD(salvar=true) {
         atualizarListaBolasEncaixadas();
         const stage=document.getElementById('stage-hud');
@@ -3573,12 +3729,15 @@ function criarTexturaBolaMarmorizada(cor,num) {
         else if(gameState.modo==='parimpar') stage.innerText=parImpar.modo==='bolinho'?'JOGO DE BOLINHO · '+gameState.encaixadas+'/3':'PAR OU ÍMPAR · '+gameState.encaixadas+'/15';
         else stage.innerText='';
         const lifeHud=document.getElementById('life-hud');
+        // Corações são só do modo fases (niveis) e da tela de vidas esgotadas.
         const mostraVidas=gameState.modo==='niveis'||gameState.modo==='gameOver';
         lifeHud.style.display=mostraVidas?'flex':'none';
         // FASE MONTINHO: só UM coração no visor — é a vida da tentativa do
         // montinho. Fases normais continuam mostrando a fileira completa.
-        if(mostraVidas){const qtdVidas=(typeof isBossSolo==='function'&&isBossSolo())?1:VIDAS_MAXIMAS;
-            lifeHud.innerHTML=Array.from({length:qtdVidas},(_,i)=>'<span class="life-heart '+(i<gameState.ghosts?'':'empty')+'" data-life-index="'+i+'">'+(i<gameState.ghosts?'♥':'♡')+'</span>').join('');}
+        if(mostraVidas){const qtdVidas=(typeof isBossSolo==='function'&&isBossSolo())?1:Math.max(VIDAS_INICIAIS,Math.min(VIDAS_MAXIMAS,gameState.ghosts));
+            lifeHud.innerHTML=Array.from({length:qtdVidas},(_,i)=>'<span class="life-heart '+(i<gameState.ghosts?'':'empty')+'" data-life-index="'+i+'">'+(i<gameState.ghosts?'♥':'♡')+'</span>').join('');
+            lifeHud.setAttribute('aria-label','Vidas: '+Math.min(gameState.ghosts,qtdVidas)+' de '+qtdVidas+'. Três bolas seguidas dão um coração extra, até o máximo de 6.');
+            lifeHud.dataset.sequencia=String(gameState.sequenciaEncaçapadas);}
         const carteiraHud=document.getElementById('wallet-hud-val');
         if(carteiraHud) carteiraHud.innerText=gameState.moedas; const menuCoins=document.getElementById('menu-coins');if(menuCoins)menuCoins.innerText=gameState.moedas;
         else document.getElementById('wallet-hud').innerText='🪙 '+gameState.moedas;
@@ -3753,7 +3912,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
             if(gameState.modo==='gameOver' && gameState.ghosts===0) gameState.ghosts=VIDAS_INICIAIS;
             if(timerInterval) { clearInterval(timerInterval); timerInterval=null; }
             gameState.timerAtivo=false; gameState.modo='niveis'; tacoAnimacao=null;
-            gameState.nivel=n; gameState.ghosts=gameState.ghosts>0?Math.min(gameState.ghosts,VIDAS_MAXIMAS):VIDAS_INICIAIS; gameState.sequenciaEncaçapadas=0; gameState.posicionandoBranca=false; gameState.bolasPagas=[]; gameState.moedasFase=0;
+            gameState.nivel=n; gameState.ghosts=VIDAS_INICIAIS; gameState.sequenciaEncaçapadas=0; gameState.posicionandoBranca=false; gameState.bolasPagas=[]; gameState.moedasFase=0;
             gameState.moedasInicioJogada=gameState.moedas; gameState.moedasFaseInicioJogada=0; gameState.bolasPagasInicioJogada=[];
             gameState.tacadasNivel=0; gameState.inicioNivelMs=Date.now(); gameState.nivelPerfeito=true; gameState.usouEfeitoComplexo=false;
             gameState.ghostPerdidosNivel=0; gameState.ghostsNivelInicio=gameState.ghosts;
@@ -3918,7 +4077,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
     document.getElementById('phase-menu-close-bottom').addEventListener('click',fecharMenuFases);
     document.getElementById('shop-back-btn').addEventListener('click',fecharMenuFases);
     document.getElementById('phase-menu').addEventListener('click',e=>{ if(e.target.id==='phase-menu'&&!e.currentTarget.classList.contains('initial-menu')) fecharMenuFases(); });
-    document.getElementById('solo-tabs').addEventListener('click',e=>{ const b=e.target.closest('button[data-tab]'); if(b) selecionarAbaMenu(b.dataset.tab,true); });
+    document.getElementById('solo-tabs').addEventListener('click',e=>{ const b=e.target.closest('button[data-tab]'); if(b)selecionarAbaMenu(b.dataset.tab,true); });
     document.querySelector('.menu-shop-shortcut').addEventListener('click',()=>selecionarAbaMenu('shop',true));
     document.getElementById('phase-list').addEventListener('click',e=>{
         // Se o dedo arrastou para rolar a lista, o clique não vale.
@@ -3931,10 +4090,41 @@ function criarTexturaBolaMarmorizada(cor,num) {
         const menu=document.getElementById('phase-menu');menu.classList.add('initial-menu');menu.classList.remove('menu-full');menu.style.display='flex';menu.setAttribute('aria-hidden','false');
         selecionarAbaMenu('levels');document.getElementById('start-campaign-label').innerText='CONTINUAR CAMPANHA · FASE '+gameState.nivel+' · 1 FICHA';
     }
-    // ===== ANÚNCIO PREMIADO (AdMob) — botão de +100 moedas no fim da fase =====
-    const ADMOB_ID_ANUNCIO_PREMIADO='ca-app-pub-4472793118406300/5087802928'; // ID gerado no AdMob
-    const rotuloBotaoMoeda=()=>((window.cordova&&window.AdMob)?'🪙 +100 MOEDAS · ASSISTIR AO VÍDEO':'🪙 +100 MOEDAS (MODO TESTE)');
-    const rotuloBotaoVidaExtra=()=>((window.cordova&&window.AdMob)?'❤️ CONTINUAR · +1 VIDA (VÍDEO)':'❤️ CONTINUAR · +1 VIDA (MODO TESTE)');
+    // ===== ANÚNCIO PREMIADO (AdMob) — recompensa somente após confirmação do vídeo =====
+    const ADMOB_ID_ANUNCIO_PREMIADO='ca-app-pub-4472793118406300/5087802928';
+    const rotuloBotaoMoeda=()=>'🪙 +100 MOEDAS · ASSISTIR AO VÍDEO';
+    const rotuloBotaoVidaExtra=()=>'❤️ CONTINUAR · +1 VIDA (VÍDEO)';
+    let resolverRecompensaMobAds=null,mobAdsOuvinteRegistrado=false;
+    function exibirAnuncioPremiado(adId){
+        return new Promise((resolve,reject)=>{
+            let terminou=false,timeout=null;
+            const encerrar=(erro)=>{if(terminou)return;terminou=true;if(timeout)clearTimeout(timeout);if(resolverRecompensaMobAds===resolverMob)resolverRecompensaMobAds=null;document.removeEventListener('onAdPresent',onReward);document.removeEventListener('onAdFailLoad',onFail);document.removeEventListener('onAdDismiss',onDismiss);if(erro)reject(erro);else resolve(true);};
+            const dados=e=>e&&(e.detail||e);
+            const resolverMob=()=>encerrar();
+            const onReward=e=>{const d=dados(e);if(d&&d.adType==='rewardvideo'&&d.rewardAmount!==undefined)encerrar();};
+            const onFail=e=>{const d=dados(e);if(!d||!d.adType||d.adType==='rewardvideo')encerrar(new Error('Anúncio premiado indisponível.'));};
+            const onDismiss=e=>{const d=dados(e);if(d&&d.adType==='rewardvideo')encerrar(new Error('O vídeo foi fechado antes da recompensa.'));};
+            document.addEventListener('onAdPresent',onReward);document.addEventListener('onAdFailLoad',onFail);document.addEventListener('onAdDismiss',onDismiss);
+            timeout=setTimeout(()=>encerrar(new Error('O anúncio demorou demais para responder.')),90000);
+            try{
+                if(window.MobAds&&typeof window.MobAds.prepareRewardVideoAd==='function'&&typeof window.MobAds.onAdRewarded==='function'){
+                    resolverRecompensaMobAds=resolverMob;
+                    if(!mobAdsOuvinteRegistrado){window.MobAds.onAdRewarded(()=>{if(resolverRecompensaMobAds)resolverRecompensaMobAds();});mobAdsOuvinteRegistrado=true;}
+                    Promise.resolve(window.MobAds.prepareRewardVideoAd({adId,autoShow:true})).catch(encerrar);
+                    return;
+                }
+                if(window.cordova&&window.AdMob&&typeof window.AdMob.prepareRewardVideoAd==='function'){
+                    window.AdMob.prepareRewardVideoAd({adId,autoShow:true,success:()=>{},error:encerrar});
+                    return;
+                }
+                if(window.cordova&&window.AdMob&&typeof window.AdMob.showRewardedAd==='function'){
+                    Promise.resolve(window.AdMob.showRewardedAd({adId})).then(()=>encerrar(new Error('O plugin não confirmou o evento de recompensa.')),encerrar);
+                    return;
+                }
+                encerrar(new Error('Anúncio disponível somente no aplicativo com o plugin AdMob configurado.'));
+            }catch(e){encerrar(e);}
+        });
+    }
     function prepararBotaoMoedaFimDeFase(visivel){
         const btn=document.getElementById('victory-coins'); if(!btn) return;
         btn.style.display=visivel?'block':'none';
@@ -3976,18 +4166,15 @@ function criarTexturaBolaMarmorizada(cor,num) {
     }
     function onVidaExtraFimDeJogoClick(){
         const btn=document.getElementById('victory-extra-life');
-        if(window.cordova && window.AdMob){
-            // App Android: anúncio premiado em troca de +1 vida para continuar a fase.
-            window.AdMob.showRewardedAd({adId:ADMOB_ID_ANUNCIO_PREMIADO})
-                .then(()=>{ reviverComVidaExtra(); })
-                .catch(err=>{
-                    console.log('Anúncio indisponível: ',err);
-                    if(btn) btn.innerText='VÍDEO INDISPONÍVEL AGORA';
-                    document.getElementById('status-text').innerText='Vídeo indisponível de momento.';
-                });
-        } else {
-            reviverComVidaExtra(); // modo navegador/teste
-        }
+        if(btn){btn.disabled=true;btn.innerText='CARREGANDO VÍDEO...';}
+        exibirAnuncioPremiado(ADMOB_ID_ANUNCIO_PREMIADO).then(()=>{
+            if(btn)btn.disabled=false;
+            reviverComVidaExtra();
+        }).catch(err=>{
+            console.log('Anúncio indisponível: ',err);
+            if(btn){btn.disabled=false;btn.innerText=rotuloBotaoVidaExtra();}
+            document.getElementById('status-text').innerText='Vídeo indisponível de momento. Tente novamente mais tarde.';
+        });
     }
     document.getElementById('victory-extra-life').addEventListener('click',onVidaExtraFimDeJogoClick);
     function adicionarMoedasFimDeFase(){
@@ -3998,20 +4185,15 @@ function criarTexturaBolaMarmorizada(cor,num) {
         document.getElementById('status-text').innerText='+100 moedas adicionadas!';
     }
     function onMoedaFimDeFaseClick(){
-        if(window.cordova && window.AdMob){
-            // App Android oficial: mostra o anúncio premiado do AdMob.
-            window.AdMob.showRewardedAd({adId:ADMOB_ID_ANUNCIO_PREMIADO})
-                .then(()=>{ adicionarMoedasFimDeFase(); }) // assistiu até o fim: libera as moedas
-                .catch(err=>{
-                    console.log('Anúncio indisponível: ',err);
-                    const btn=document.getElementById('victory-coins');
-                    if(btn && !btn.disabled) btn.innerText='VÍDEO INDISPONÍVEL AGORA';
-                    document.getElementById('status-text').innerText='Vídeo indisponível de momento. Tente de novo no próximo fim de fase.';
-                });
-        } else {
-            // Modo navegador/teste: dá a moeda direto, sem quebrar o jogo no link.
+        const btn=document.getElementById('victory-coins');
+        if(btn){btn.disabled=true;btn.innerText='CARREGANDO VÍDEO...';}
+        exibirAnuncioPremiado(ADMOB_ID_ANUNCIO_PREMIADO).then(()=>{
             adicionarMoedasFimDeFase();
-        }
+        }).catch(err=>{
+            console.log('Anúncio indisponível: ',err);
+            if(btn){btn.disabled=false;btn.innerText=rotuloBotaoMoeda();}
+            document.getElementById('status-text').innerText='Vídeo indisponível de momento. Tente novamente mais tarde.';
+        });
     }
     document.getElementById('victory-coins').addEventListener('click',onMoedaFimDeFaseClick);
 
@@ -4022,8 +4204,8 @@ function criarTexturaBolaMarmorizada(cor,num) {
     let videoEmCurso=false;          // trava: uma recompensa por vídeo
     let premioVideoPendente=MOEDAS_POR_VIDEO;  // valor do vídeo em curso (loja: 200; blocos: dobro)
     let acaoAposVideo=null;          // callback após creditar (ex.: marcar bloco recolhido)
-    let ouvinteMobAds=false;         // onAdRewarded registrado uma única vez
     let tempoBotaoVideo=null;
+    let fichasVideoPendente=0;      // >0 = este vídeo credita fichas de bônus, não moedas
 
     // Soma moedas ao saldo do jogador em qualquer tela do jogo.
     function adicionarMoedas(qtd){
@@ -4055,72 +4237,33 @@ function criarTexturaBolaMarmorizada(cor,num) {
         if(st && texto) st.innerText=texto.replace(/<[^>]+>/g,'');
     }
 
-    // Credita uma única vez, venha a recompensa pelo callback (MobAds) ou pela promessa (AdMob).
-    function creditarMoedasDoVideo(){
-        if(!videoEmCurso) return;      // ignora aviso repetido/atrasado do plugin
-        videoEmCurso=false;
-        const premio=premioVideoPendente||MOEDAS_POR_VIDEO;
-        adicionarMoedas(premio);
-        recadoVideo('✓ +'+premio+' MOEDAS ADICIONADAS','ok');
-        if(window.MobAds && typeof window.MobAds.hide==='function'){ try{ window.MobAds.hide(); }catch(e){} }
-        premioVideoPendente=MOEDAS_POR_VIDEO;
-        if(acaoAposVideo){ const cb=acaoAposVideo; acaoAposVideo=null; try{ cb(premio); }catch(e){} }
-    }
-
-    function registrarOuvinteMobAds(){
-        if(ouvinteMobAds) return;
-        if(window.MobAds && typeof window.MobAds.onAdRewarded==='function'){
-            ouvinteMobAds=true;
-            window.MobAds.onAdRewarded(function(reward){
-                creditarMoedasDoVideo();
-            });
-        }
-    }
-
-    // Função do botão: carrega e mostra o vídeo premiado do AdMob.
+    // Recompensa apenas no callback oficial de vídeo premiado.
     async function assistirAnuncioPorMoedas(premio,aoFinalizar){
-        if(videoEmCurso) return;
+        if(videoEmCurso)return;
         premioVideoPendente=(Number(premio)>0)?Number(premio):MOEDAS_POR_VIDEO;
         acaoAposVideo=(typeof aoFinalizar==='function')?aoFinalizar:null;
+        videoEmCurso=true;recadoVideo('CARREGANDO VÍDEO...','carregando');
         try{
-            if(window.MobAds && typeof window.MobAds.prepareRewardVideoAd==='function'){
-                // App empacotado com o plugin MobAds (prepareRewardVideoAd + onAdRewarded)
-                videoEmCurso=true;
-                registrarOuvinteMobAds();
-                recadoVideo('CARREGANDO VÍDEO...','carregando');
-                await window.MobAds.prepareRewardVideoAd({adId:ADMOB_ID_VIDEO_MOEDAS,autoShow:true});
-                recadoVideo('VÍDEO EM REPRODUÇÃO...','carregando');
-                // Algumas versões do plugin não disparam onAdRewarded: se ninguém
-                // registrou, creditamos ao terminar a promessa.
-                if(!ouvinteMobAds) creditarMoedasDoVideo();
-                return;
-            }
-            if(window.cordova && window.AdMob && typeof window.AdMob.showRewardedAd==='function'){
-                // App Android com o plugin AdMob que o jogo já usa
-                videoEmCurso=true;
-                recadoVideo('CARREGANDO VÍDEO...','carregando');
-                await window.AdMob.showRewardedAd({adId:ADMOB_ID_VIDEO_MOEDAS});
-                creditarMoedasDoVideo();
-                return;
-            }
-            // Navegador/teste: simula a recompensa sem plugin
-            console.warn('Modo de teste web: Simulando recompensa.');
-            videoEmCurso=true;
-            creditarMoedasDoVideo();
+            await exibirAnuncioPremiado(ADMOB_ID_VIDEO_MOEDAS);
+            const valor=premioVideoPendente||MOEDAS_POR_VIDEO;
+            if(fichasVideoPendente>0){const q=fichasVideoPendente;fichasVideoPendente=0;if(typeof gravarFichas==='function'&&typeof lerFichas==='function')gravarFichas(lerFichas()+q);recadoVideo('✓ +'+q+' DE BÔNUS','ok');}
+            else{adicionarMoedas(valor);recadoVideo('✓ +'+valor+' MOEDAS ADICIONADAS','ok');}
+            videoEmCurso=false;premioVideoPendente=MOEDAS_POR_VIDEO;
+            if(acaoAposVideo){const cb=acaoAposVideo;acaoAposVideo=null;try{cb(valor);}catch(e){}}
         }catch(erro){
             console.error('Erro ao carregar o anúncio:',erro);
-            videoEmCurso=false;
-            premioVideoPendente=MOEDAS_POR_VIDEO;
-            acaoAposVideo=null;
+            videoEmCurso=false;premioVideoPendente=MOEDAS_POR_VIDEO;fichasVideoPendente=0;acaoAposVideo=null;
             recadoVideo('VÍDEO INDISPONÍVEL AGORA','erro');
         }
     }
     window.assistirAnuncioPorMoedas=assistirAnuncioPorMoedas;
+    function assistirAnuncioPorFichas(qtd){
+        fichasVideoPendente=Math.max(0,Math.round(Number(qtd)||0));
+        assistirAnuncioPorMoedas(null,null);
+    }
+    window.assistirAnuncioPorFichas=assistirAnuncioPorFichas;
 
     document.getElementById('shop-video-coins').addEventListener('click',assistirAnuncioPorMoedas);
-    // Se o plugin já estiver carregado no app, registra o ouvinte desde o início.
-    try{ registrarOuvinteMobAds(); }catch(e){}
-
     document.getElementById('victory-next').addEventListener('click',()=>{
         if(gameState.modo==='gameOver'){const faseAtual=gameState.nivel;gameState.ghosts=VIDAS_INICIAIS;gameState.sequenciaEncaçapadas=0;gameState.modo='niveis';gameState.aguardandoReset=false;carregarFase(faseAtual);return;}
         const prox=gameState.nivel<48?gameState.nivel+1:1;gameState.sequenciaEncaçapadas=0;gameState.ghosts=Math.max(VIDAS_INICIAIS,gameState.ghosts);gameState.aguardandoReset=false;carregarFase(prox);
@@ -5083,7 +5226,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
                             if(isBossSolo())gameState.bossArranhou=true;
                             if(gameState.modo!=='niveis' && gameState.modo!=='gameOver') document.getElementById('status-text').innerText='A branca caiu. Escolha onde reposicioná-la.';
                         } else if(gameState.modo!=='gameOver') {
-                            if(parImpar.ativo) { if(b.userData.numero===1)parImpar.oitoEncaçapada=true;else parImpar.encaçapadasNestaTacada.push(b.userData.numero); }
+                            if(parImpar.ativo) { if(b.userData.numero===1){parImpar.oitoEncaçapada=true;derrotarPorCastigoAntecipado(parImpar.turno);}else parImpar.encaçapadasNestaTacada.push(b.userData.numero); }
                             if(gameState.modo==='timer' && gameState.timerAtivo) {
                                 gameState.timerScore++; timerEncaçapadas++; gameState.encaixadas=gameState.timerScore;
                                 timerTempoUltimaBola=Math.max(0,Date.now()-timerInicioMs);
@@ -5234,10 +5377,19 @@ function criarTexturaBolaMarmorizada(cor,num) {
         if(gameState.jogadaAtiva && !mesaMovendo && !gameState.aguardandoReset) {
             if(parImpar.ativo){concluirTacadaParImpar(false);}
             gameState.jogadaAtiva=false;
-            // Quando todas as bolas param, alinhar automaticamente a mira à bola ativa mais próxima.
+            // Quando todas as bolas param, no Par ou Ímpar alinhar à bola mais próxima do grupo de quem joga.
             let bolaMaisProxima=null, menorDistancia=Infinity;
-            for(const b of bolas) {
-                if(!b.userData.ativa || b===branca || b.userData.caindo) continue;
+            const grupoMiraAuto=parImpar.ativo&&parImpar.modo==='parimpar'?parImpar.grupos[parImpar.turno]:null;
+            const bolasParaMiraAuto=bolas.filter(b=>{
+                if(!b.userData.ativa||b===branca||b.userData.caindo)return false;
+                if(parImpar.ativo&&parImpar.modo==='parimpar'){
+                    if(grupoMiraAuto)return b.userData.numero!==1&&(b.userData.numero%2===0?'par':'impar')===grupoMiraAuto;
+                    return b.userData.numero!==1;
+                }
+                return true;
+            });
+            const alvosMiraAuto=bolasParaMiraAuto.length?bolasParaMiraAuto:(grupoMiraAuto?bolas.filter(b=>b.userData.ativa&&b!==branca&&!b.userData.caindo&&b.userData.numero===1):[]);
+            for(const b of alvosMiraAuto) {
                 const distancia=Math.hypot(b.position.x-branca.position.x,b.position.z-branca.position.z);
                 if(distancia<menorDistancia) { menorDistancia=distancia; bolaMaisProxima=b; }
             }
@@ -5253,17 +5405,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
                 // TRÊS SEGUIDAS = +1 VIDA: cada tacada limpa que encaçapa conta 1
                 // na sequência (falta ou não encaçapar zera). Na terceira, ganha
                 // vida até acumular o máximo de 6.
-                if(encaçapou && !gameState.brancaCaiu) {
-                    gameState.sequenciaEncaçapadas++;
-                    if(gameState.sequenciaEncaçapadas>=3) {
-                        gameState.sequenciaEncaçapadas=0;
-                        if(gameState.ghosts<VIDAS_MAXIMAS) {
-                            gameState.ghosts++;
-                            atualizarHUD();
-                            document.getElementById('status-text').innerText='TRÊS SEGUIDAS! +1 vida ('+gameState.ghosts+'/'+VIDAS_MAXIMAS+').';
-                        } else document.getElementById('status-text').innerText='Três seguidas! Vidas já no máximo ('+VIDAS_MAXIMAS+'/'+VIDAS_MAXIMAS+').';
-                    }
-                } else if(!encaçapou || gameState.brancaCaiu) gameState.sequenciaEncaçapadas=0;
+                processarBonusTresSeguidas(encaçapou);
                 if(!encaçapou) {
                     gameState.nivelPerfeito=false;
                     const motivoErro=gameState.acertouBola?'Você acertou uma bola, mas não encaçapou nenhuma.':'Tacada no vazio.';
@@ -5281,6 +5423,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         let distColisao = 1000, alvoMira = null;
         bolas.forEach(b => { if(!b.userData.ativa || b===branca || b.userData.caindo) return; const bx=b.position.x-branca.position.x, bz=b.position.z-branca.position.z, proj = bx*dMovX + bz*dMovZ; if(proj>0) { const dR = Math.hypot(bx-dMovX*proj, bz-dMovZ*proj); if(dR < RAIO*2) { const dC = proj - Math.sqrt(Math.pow(RAIO*2,2)-Math.pow(dR,2)); if(dC < distColisao) { distColisao = dC; alvoMira = b; } } } });
         if(distColisao === 1000) { let tX = dMovX > 0 ? (LIMITE_X-CORTE_NARIZ - branca.position.x)/dMovX : (-(LIMITE_X-CORTE_NARIZ) - branca.position.x)/dMovX; let tZ = dMovZ > 0 ? (LIMITE_Z-CORTE_NARIZ - branca.position.z)/dMovZ : (-(LIMITE_Z-CORTE_NARIZ) - branca.position.z)/dMovZ; distColisao = Math.min(tX, tZ); }
+        if(parImpar.ativo){const n=!mesaMovendo&&alvoMira?alvoMira.userData.numero:null;if(n!==numeroBolaNaMira){numeroBolaNaMira=n;exibirPlacarParImpar();}}
 
         const podeVerMira=gameState.aimLength>0 && !mesaMovendo && !gameState.aguardandoReset && !gameState.faseConcluida;
         guiaMira.visible=false;
@@ -5288,6 +5431,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
         // QUANDO PUXA O TACO: sai uma BRANCA fantasma parada mostrando ONDE A
         // BRANCA VAI PARAR — sem animação, o resto é como tava, normal.
         ghostStopBall.visible=podeVerMira && rawForca>0.05;
+        if(!ghostStopBall.visible) ghostStopBall.userData.ativo=false;
         if(podeVerMira) {
             ghostBall.position.set(branca.position.x + dMovX * distColisao, Y_BOLAS,branca.position.z + dMovZ * distColisao);
             if(alvoMira) {
@@ -5311,12 +5455,20 @@ function criarTexturaBolaMarmorizada(cor,num) {
                 ghostStopBall.material.color.setHex(0xffffff); ghostStopBall.material.opacity=0.42;
             }
             const limiteForca=gameState.modo==='niveis' && gameState.nivel>=13 ? (gameState.nivel>=19?0.88:0.93) : 1;
-            let forcaPrevista=Math.pow(rawForca,1.6)*1.9*statsTaco().forca*tacoForcaMultiplicador*limiteForca*(parImpar.ativo?2:1);if(parImpar.ativo)forcaPrevista=Math.max(0.15,Math.min(4.5,forcaPrevista));
+            let forcaPrevista=Math.pow(rawForca,1.6)*1.9*statsTaco().forca*tacoForcaMultiplicador*limiteForca*(parImpar.ativo?2:1);if(parImpar.ativo)forcaPrevista=Math.max(0.02,Math.min(4.5,forcaPrevista));
             const distMax=calcularDistanciaParadaEstimada(forcaPrevista,gameState.spinY,gameState.spinX);
-            ghostStopBall.position.set(branca.position.x+dMovX*Math.min(distColisao,distMax),Y_BOLAS+0.01,branca.position.z+dMovZ*Math.min(distColisao,distMax));
+            // A branca fantasma SAI de dentro da branca e desliza até a bola
+            // fantasma de contato (ou até onde a força alcança) conforme a
+            // puxada do taco cresce — movimento suave, nunca um salto seco.
+            const distParada=Math.min(distColisao,distMax);
+            const alvoX=branca.position.x+dMovX*distParada, alvoZ=branca.position.z+dMovZ*distParada;
+            if(!ghostStopBall.userData.ativo){ghostStopBall.userData.px=branca.position.x;ghostStopBall.userData.pz=branca.position.z;ghostStopBall.userData.ativo=true;}
+            ghostStopBall.userData.px+=(alvoX-ghostStopBall.userData.px)*0.16;
+            ghostStopBall.userData.pz+=(alvoZ-ghostStopBall.userData.pz)*0.16;
+            ghostStopBall.position.set(ghostStopBall.userData.px,Y_BOLAS+0.01,ghostStopBall.userData.pz);
             // Marca onde a puxada faz a branca CHEGAR no ponto de contato.
             if(rawForca>0.005){
-                const distDe=r=>{let fp=Math.pow(r,1.6)*1.9*statsTaco().forca*tacoForcaMultiplicador*limiteForca*(parImpar.ativo?2:1);if(parImpar.ativo)fp=Math.max(0.15,Math.min(4.5,fp));return calcularDistanciaParadaEstimada(fp,gameState.spinY,gameState.spinX);};
+                const distDe=r=>{let fp=Math.pow(r,1.6)*1.9*statsTaco().forca*tacoForcaMultiplicador*limiteForca*(parImpar.ativo?2:1);if(parImpar.ativo)fp=Math.max(0.02,Math.min(4.5,fp));return calcularDistanciaParadaEstimada(fp,gameState.spinY,gameState.spinX);};
                 if(distDe(1)<distColisao)rawForcaContatoAtual=null;
                 else if(distDe(0.02)>=distColisao)rawForcaContatoAtual=0.02;
                 else{let lo=0.02,hi=1;for(let k=0;k<8;k++){const mid=(lo+hi)/2;if(distDe(mid)>=distColisao)hi=mid;else lo=mid;}rawForcaContatoAtual=(lo+hi)/2;}
@@ -5865,15 +6017,15 @@ function criarTexturaBolaMarmorizada(cor,num) {
 
   const MESAS = [
     { id:'classic', tema:'ouro', titulo:'MESA OURO: DUELO DE CAMPEÃO', tipo:'online', modo:'parimpar',
-      premio:6000, inscricao:3000, arte:true, modoLabel:'Duelo online', rotulo:'JOGAR' },
+      premio:1000, aposta:500, fichasBonus:5, arte:true, modoLabel:'Duelo online', rotulo:'JOGAR' },
     { id:'prata', tema:'prata', titulo:'MESA PRATA: DUELO RÁPIDO', tipo:'online', modo:'parimpar',
-      premio:600, inscricao:0, modoLabel:'Duelo online', rotulo:'JOGAR' },
+      premio:200, aposta:100, fichasBonus:2, modoLabel:'Duelo online', rotulo:'JOGAR' },
     { id:'bronze', tema:'bronze', titulo:'BRONZE: JOGO DE BOLINHO', tipo:'online', modo:'bolinho',
-      premio:0, inscricao:0, modoLabel:'Jogo de bolinho', rotulo:'JOGAR' },
+      premio:0, modoLabel:'Jogo de bolinho', rotulo:'JOGAR' },
     { id:'treino', tema:'verde', titulo:'TREINO: ADVERSÁRIO CPU PRO', tipo:'cpu', modo:'parimpar',
-      premio:0, inscricao:0, nivelCpu:'pro', modoLabel:'Treino sozinho', rotulo:'TREINAR' },
+      premio:0, nivelCpu:'pro', modoLabel:'Treino sozinho', rotulo:'TREINAR' },
     { id:'campanha', tema:'azul', titulo:'CAMPANHA: AS 48 FASES', tipo:'campanha', modo:'parimpar',
-      premio:0, inscricao:0, modoLabel:'Fases do jogo', rotulo:'ABRIR FASES' },
+      premio:0, modoLabel:'Fases do jogo', rotulo:'ABRIR FASES' },
 
   ];
   let idx = 0;
@@ -5945,6 +6097,29 @@ function criarTexturaBolaMarmorizada(cor,num) {
   #ml .ml-pontos{position:absolute;left:50%;transform:translateX(-50%);bottom:-4px;display:flex;gap:6px;z-index:25;pointer-events:none}
   #ml .ml-ponto{width:6px;height:6px;border-radius:50%;background:rgba(200,220,240,.35);transition:background .2s,transform .2s}
   #ml .ml-ponto[data-on="1"]{background:#ffd76a;transform:scale(1.25);box-shadow:0 0 8px rgba(255,215,106,.7)}
+  /* CELULAR DEITADO: menu compacto para tudo caber, inclusive o botão JOGAR */
+  @media (max-height:480px) and (orientation:landscape){
+    #ml .ml-top{padding:3px 10px 1px;padding-top:calc(3px + env(safe-area-inset-top))}
+    #ml .ml-pill{padding:3px 4px 3px 8px}
+    #ml .ml-banner{display:none}
+    #ml .ml-card{width:min(78vw,330px)}
+    #ml .ml-moldura{padding:4px;border-radius:18px}
+    #ml .ml-miolo{border-radius:15px;padding:18px 7px 8px}
+    #ml .ml-brasao{top:-24px;transform:translateX(-50%) scale(.68)}
+    #ml .ml-titulo{font-size:12px;margin:0 0 4px}
+    #ml .ml-arte{aspect-ratio:21/9}
+    #ml .ml-info{margin-top:6px;padding:0 2px 1px}
+    #ml .ml-premio{font-size:11px}
+    #ml .ml-premio b{font-size:16px}
+    #ml .ml-linha{margin-top:4px;padding-top:4px}
+    #ml .ml-linha b{font-size:10.5px}
+    #ml .ml-seta svg{width:14px;height:24px}
+    #ml .ml-rodape{padding:5px 12px calc(5px + env(safe-area-inset-bottom));gap:10px}
+    #ml .ml-voltar,#ml .ml-sair{width:40px;height:40px;border-radius:10px}
+    #ml .ml-voltar-txt{display:none}
+    #ml .ml-jogar{height:44px;font-size:16px;border-radius:12px}
+    #ml .ml-links{bottom:calc(56px + env(safe-area-inset-bottom));gap:10px}
+  }
 
   /* ===== MENU ANTIGO (loja, treino, cronômetro) com o visual novo ===== */
   #phase-menu{background:rgba(4,10,18,.9) !important;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
@@ -6027,7 +6202,8 @@ function criarTexturaBolaMarmorizada(cor,num) {
   el.innerHTML = `
     <div class="ml-linhas"></div>
     <div class="ml-top">
-      <div class="ml-pill">${SVG.moeda}<span id="ml-moedas">0</span><button class="ml-plus" data-loja="moedas" type="button">+</button></div>
+      <div class="ml-pill">${SVG.moeda}<span id="ml-moedas">0</span><button class="ml-plus" data-loja="fichas" type="button" aria-label="Comprar fichas">+</button></div>
+      <div class="ml-pill ml-fichas-pill" id="ml-fichas-display" aria-label="Saldo de fichas"><span aria-hidden="true"><img src="https://base44.app/api/apps/6ae0ff061d8d4e2a739347c7/files/mp/public/6ae0ff061d8d4e2a739347c7/fc743f4e8_ficha-sinuca.png" class="ficha-ico" alt="Ficha"></span><span id="ml-fichas">0</span><span class="ml-fichas-label">FICHAS</span></div>
     </div>
     <div class="ml-banner">${SVG.mesa}<span>Desafie jogadores do mundo todo nas mesas de sinuca!</span></div>
     <div class="ml-carrossel" id="ml-carrossel">
@@ -6052,6 +6228,10 @@ function criarTexturaBolaMarmorizada(cor,num) {
   const style=document.createElement('style'); style.textContent=CSS;
   document.head.appendChild(style);
   document.body.appendChild(el);
+  document.getElementById('shop-back-btn').addEventListener('click',()=>{
+    if(!window.__voltarLobbyAposLoja)return;
+    window.__voltarLobbyAposLoja=false;abrir();
+  });
 
   const carrossel = el.querySelector('#ml-carrossel');
   const ARTE = 'data:image/jpeg;base64,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';
@@ -6075,6 +6255,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
            <span class="ml-bola" style="left:70%;top:62%;background:radial-gradient(circle at 32% 28%,#9ad0ff,#3f7fd6 55%,#1d4a8d)"></span>
          </div>`;
     const linha1 = `<span>Modo:</span><b>${mesa.modoLabel||'Duelo'}</b>`;
+    const linhaAposta = mesa.aposta ? `<div class="ml-linha"><span>Aposta:</span><b><span style="color:#ffd76a">${fmt(mesa.aposta)}</span>${SVG.moeda} de cada</b></div>` : '';
     card.innerHTML = `
       <div class="ml-moldura tema-${mesa.tema}">
         <div class="ml-miolo">
@@ -6082,9 +6263,8 @@ function criarTexturaBolaMarmorizada(cor,num) {
           <h2 class="ml-titulo">${mesa.titulo}</h2>
           <div class="ml-arte">${arteHtml}</div>
           <div class="ml-info">
-            <div class="ml-premio"><span>Prêmio:</span><b>${mesa.premio?fmt(mesa.premio):'—'}</b>${mesa.premio?SVG.moeda:''}</div>
             <div class="ml-linha">${linha1}</div>
-            <div class="ml-linha"><span>Inscrição:</span><b>${mesa.inscricao?('<span style="color:#ffd76a">'+fmt(mesa.inscricao)+'</span>'+SVG.moeda):'<span style="color:#9be08a">GRÁTIS</span>'}</b></div>
+            ${linhaAposta}
           </div>
         </div>
       </div>`;
@@ -6212,9 +6392,10 @@ function criarTexturaBolaMarmorizada(cor,num) {
     const moedas=(typeof gameState!=='undefined'&&gameState)?(gameState.moedas||0):0;
     let gemas=0;
     try{ gemas=lerGemas(); }catch(e){ gemas=0; }
-    const gEl=el.querySelector('#ml-gemas'), mEl=el.querySelector('#ml-moedas');
+    const gEl=el.querySelector('#ml-gemas'), mEl=el.querySelector('#ml-moedas'), fEl=el.querySelector('#ml-fichas');
     if(mEl)mEl.textContent=fmt(moedas);
     if(gEl)gEl.textContent=fmt(gemas);
+    if(fEl)fEl.textContent=fmt(typeof lerFichas==='function'?lerFichas():0);
     // linha de saldo no meio do menu (fica visível mesmo com o topo cortado)
   }
   window.sinucaAtualizarSaldo=pintarSaldos;
@@ -6275,8 +6456,8 @@ function criarTexturaBolaMarmorizada(cor,num) {
     const mesa=MESAS[idx];
     if(mesa.tipo==='cpu'||mesa.tipo==='campanha'){ jogarOffline(mesa); return; }
     if(mesa.tipo==='amigo'||mesa.tipo==='servidor'){ jogarConexao(mesa); return; }
-    if(mesa.inscricao>(gameState.moedas||0)){
-      aviso('Faltam '+fmt(mesa.inscricao-(gameState.moedas||0))+' moedas para esta mesa. A bronze e o treino são grátis!');
+    if(mesa.aposta>0&&(gameState.moedas||0)<mesa.aposta){
+      aviso('Aposta desta mesa: '+fmt(mesa.aposta)+' moedas. Faltam '+fmt(mesa.aposta-(gameState.moedas||0))+' para jogar!');
       return;
     }
     if(typeof window.sinucaEncontrarAdversario!=='function'){
@@ -6284,6 +6465,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
     }
     if(typeof selecionarModoRede==='function') selecionarModoRede(mesa.modo);
     duelo={mesa, cobrado:false, pago:false};
+    window.__apostaMesaAtiva=(mesa.aposta>0);
     mostrarBusca(true,'Procurando adversário…','entrando na fila do mundo');
     try{ window.sinucaEncontrarAdversario(); }catch(e){ mostrarBusca(false); aviso('Não deu para entrar na fila.'); return; }
     let t=0;
@@ -6293,18 +6475,43 @@ function criarTexturaBolaMarmorizada(cor,num) {
       const ativo=(typeof parImpar!=='undefined')&&parImpar&&parImpar.ativo&&parImpar.local;
       if(ativo){ encerrarVigia(); mostrarBusca(false); fechar(); return; }
       if(t===8)mostrarBusca(true,'Procurando adversário…','aguardando outro jogador entrar na fila');
-      if(t>50){encerrarVigia();mostrarBusca(false);aviso('Ninguém apareceu agora. Tente de novo em instantes.');}
+      if(t>50){encerrarVigia();mostrarBusca(false);window.__apostaMesaAtiva=false;duelo=null;aviso('Ninguém apareceu agora. Tente de novo em instantes.');}
     },1000);
   }
 
   function cobrarEntrada(){
+    // Aposta: cada jogador paga quando a partida realmente comeca.
     if(!duelo||duelo.cobrado)return;
     duelo.cobrado=true;
-    if(duelo.mesa.inscricao>0&&(gameState.moedas||0)>=duelo.mesa.inscricao){
-      gameState.moedas=gameState.moedas-duelo.mesa.inscricao;
+    if(duelo.mesa.aposta>0&&(gameState.moedas||0)>=duelo.mesa.aposta){
+      gameState.moedas=gameState.moedas-duelo.mesa.aposta;
       if(typeof atualizarHUD==='function')atualizarHUD(true);
       pintarSaldos();
     }
+  }
+  const FICHA_URL='https://base44.app/api/apps/6ae0ff061d8d4e2a739347c7/files/mp/public/6ae0ff061d8d4e2a739347c7/fc743f4e8_ficha-sinuca.png';
+  let dialogoBonus=null;
+  function oferecerBonusFichas(qtd){
+    if(!dialogoBonus){
+      dialogoBonus=document.createElement('div');
+      dialogoBonus.id='bonus-fichas-dialog';
+      dialogoBonus.innerHTML='<div class="cpc-card">'+
+        '<h3><img src="'+FICHA_URL+'" class="ficha-ico" alt="Bônus"> BÔNUS</h3>'+
+        '<p>Assista e leve <b class="bf-valor">0</b> de bônus pela vitória!</p>'+
+        '<button type="button" class="cpc-video bf-assistir">▶ ASSISTIR</button>'+
+        '<button type="button" class="cpc-nao bf-pular">NÃO OBRIGADO</button>'+
+        '</div>';
+      dialogoBonus.querySelector('.bf-assistir').addEventListener('click',function(){
+        dialogoBonus.dataset.aberto='0';
+        if(window.assistirAnuncioPorFichas) window.assistirAnuncioPorFichas(dialogoBonus.__qtd||0);
+      });
+      dialogoBonus.querySelector('.bf-pular').addEventListener('click',function(){ dialogoBonus.dataset.aberto='0'; });
+      dialogoBonus.addEventListener('click',function(e){ if(!e.target.closest('.cpc-card')) dialogoBonus.dataset.aberto='0'; });
+      document.body.appendChild(dialogoBonus);
+    }
+    dialogoBonus.__qtd=qtd;
+    dialogoBonus.querySelector('.bf-valor').textContent=qtd;
+    dialogoBonus.dataset.aberto='1';
   }
   function vigiarPremio(){
     encerrarPartidaVigia();
@@ -6313,11 +6520,18 @@ function criarTexturaBolaMarmorizada(cor,num) {
       if(typeof parImpar==='undefined'||!parImpar){encerrarPartidaVigia();return;}
       if(parImpar.vencedor){
         duelo.pago=true;
+        window.__apostaMesaAtiva=false;
+        const st=document.getElementById('online-status');
         if(parImpar.vencedor===parImpar.jogador&&duelo.mesa.premio>0){
           gameState.moedas=(gameState.moedas||0)+duelo.mesa.premio;
           if(typeof atualizarHUD==='function')atualizarHUD(true);
-          pintarSaldos();
+          if(st)st.textContent='🏆 Você venceu! Levou o pote de '+fmt(duelo.mesa.premio)+' moedas!';
+          const bonus=duelo.mesa.fichasBonus||0;
+          if(bonus>0) oferecerBonusFichas(bonus);
+        }else if(parImpar.vencedor!==parImpar.jogador&&duelo.mesa.aposta>0){
+          if(st)st.textContent='Você perdeu o duelo e a aposta de '+fmt(duelo.mesa.aposta)+' moedas. Revanche a qualquer hora!';
         }
+        pintarSaldos();
         encerrarPartidaVigia();
       }else if(!parImpar.ativo){encerrarPartidaVigia();}
     },800);
@@ -6333,6 +6547,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
 
   el.querySelector('#ml-jogar').addEventListener('click',jogar);
   el.querySelector('#ml-cancelar').addEventListener('click',()=>{
+    window.__apostaMesaAtiva=false; duelo=null;
     encerrarVigia(); mostrarBusca(false);
     if(typeof window.sinucaSairDaFila==='function') try{window.sinucaSairDaFila();}catch(e){}
   });
@@ -6358,7 +6573,7 @@ function criarTexturaBolaMarmorizada(cor,num) {
     <div class="mf-topo">
       <button class="mf-voltar" id="mf-voltar" type="button" aria-label="Voltar"><svg viewBox='0 0 24 24' width='22' height='22'><path d='M14 5l-7 7 7 7' fill='none' stroke='#fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/></svg></button>
       <h2 class="mf-titulo">CAMPANHA</h2>
-      <div class="mf-pill"><svg viewBox='0 0 24 24' width='18' height='18'><defs><linearGradient id='gm1' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#ffe9a6'/><stop offset='1' stop-color='#c8992a'/></linearGradient></defs><circle cx='12' cy='12' r='9.5' fill='url(#gm1)' stroke='#8a6410' stroke-width='1.2'/><circle cx='12' cy='12' r='6' fill='none' stroke='#a5781c' stroke-width='1'/></svg><span id="mf-moedas">0</span><button id="mf-plus-btn" type="button" aria-label="Ganhar moedas assistindo anúncio">＋</button></div>
+      <div class="mf-pill"><svg viewBox='0 0 24 24' width='18' height='18'><defs><linearGradient id='gm1' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#ffe9a6'/><stop offset='1' stop-color='#c8992a'/></linearGradient></defs><circle cx='12' cy='12' r='9.5' fill='url(#gm1)' stroke='#8a6410' stroke-width='1.2'/><circle cx='12' cy='12' r='6' fill='none' stroke='#a5781c' stroke-width='1'/></svg><span id="mf-moedas">0</span><button id="mf-plus-btn" type="button" aria-label="Comprar fichas">＋</button></div>
     </div>
     <div class="mf-resumo">
       <div class="mf-resumo-txt"><span id="mf-progresso">FASE 1 DE 48</span><span id="mf-estrelas">0 ★</span></div>
@@ -6769,14 +6984,36 @@ function criarTexturaBolaMarmorizada(cor,num) {
   background:linear-gradient(155deg,#20313e,#0b161f); box-shadow:0 18px 50px rgba(0,0,0,.6); }
 #coin-plus-dialog h3 { margin:0 0 6px; font:900 15px Arial,sans-serif; letter-spacing:.04em; }
 #coin-plus-dialog p { margin:0 0 14px; font:12.5px Arial,sans-serif; color:#cfe0ec; }
-#coin-plus-dialog .cpc-botoes { display:flex; gap:10px; }
-#coin-plus-dialog .cpc-botoes button { flex:1; border:0; border-radius:10px; padding:12px 8px;
-  font:800 12px Arial,sans-serif; cursor:pointer; }
-#coin-plus-dialog .cpc-sim { color:#241503;
+#coin-plus-dialog .cpc-fichas { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0 0 10px; }
+#coin-plus-dialog .cpc-fichas button { border:0; border-radius:10px; padding:10px 4px 8px;
+  font:900 13px/1.15 Arial,sans-serif; cursor:pointer; color:#241503;
   background:linear-gradient(160deg,#ffe6a1,#f0c579 45%,#d9a54d); box-shadow:0 4px 0 #80551b; }
-#coin-plus-dialog .cpc-nao { color:#e8f4ff; border:1px solid rgba(153,222,248,.4);
-  background:linear-gradient(160deg,#1b526f,#0d2740); box-shadow:0 4px 0 rgba(7,25,42,.9); }
-#coin-plus-dialog .cpc-botoes button:active { transform:translateY(1px); }
+#coin-plus-dialog .cpc-fichas button small { display:block; margin-top:2px;
+  font:800 10px Arial,sans-serif; color:#5a3c10; }
+#coin-plus-dialog .cpc-fichas button:active { transform:translateY(1px); }
+#coin-plus-dialog .cpc-video { display:block; width:100%; border:0; border-radius:10px; padding:12px 8px;
+  font:800 12.5px Arial,sans-serif; cursor:pointer; color:#052312;
+  background:linear-gradient(160deg,#a9e8b4,#5fc47a 45%,#38a15a); box-shadow:0 4px 0 #1d5334; }
+#coin-plus-dialog .cpc-video:active { transform:translateY(1px); }
+#coin-plus-dialog .cpc-nao { display:block; width:100%; margin-top:12px; padding:6px;
+  background:none; border:0; box-shadow:none; color:#9fb4c4;
+  font:700 11px Arial,sans-serif; cursor:pointer; text-decoration:underline; }
+#coin-plus-dialog .cpc-saldo { margin:0 0 13px; }
+#bonus-fichas-dialog { position:fixed; inset:0; z-index:525; display:none; align-items:center; justify-content:center;
+  padding:18px; background:rgba(0,0,0,.78); }
+#bonus-fichas-dialog[data-aberto="1"] { display:flex; }
+#bonus-fichas-dialog .cpc-card { width:min(340px,92vw); padding:18px 16px 16px; text-align:center;
+  border:1px solid rgba(225,180,99,.55); border-radius:16px; color:#f8e9c8;
+  background:linear-gradient(155deg,#20313e,#0b161f); box-shadow:0 18px 50px rgba(0,0,0,.6); }
+#bonus-fichas-dialog h3 { margin:0 0 6px; font:900 15px Arial,sans-serif; letter-spacing:.04em; }
+#bonus-fichas-dialog p { margin:0 0 14px; font:12.5px Arial,sans-serif; color:#cfe0ec; }
+#bonus-fichas-dialog .cpc-video { display:block; width:100%; border:0; border-radius:10px; padding:12px 8px;
+  font:800 12.5px Arial,sans-serif; cursor:pointer; color:#052312;
+  background:linear-gradient(160deg,#a9e8b4,#5fc47a 45%,#38a15a); box-shadow:0 4px 0 #1d5334; }
+#bonus-fichas-dialog .cpc-nao { display:block; width:100%; margin-top:12px; padding:6px;
+  background:none; border:0; box-shadow:none; color:#9fb4c4;
+  font:700 11px Arial,sans-serif; cursor:pointer; text-decoration:underline; }
+#coin-plus-dialog .cpc-saldo b { color:#ffe09a; }
 /* ===== ROLAGEM DAS TELAS DE FASES E HISTÓRICO =====
    A regra global * { touch-action:none } (linha de cima, do jogo 3D)
    travava o toque nos botões filhos, e o dedo não rolava a lista.
@@ -6842,24 +7079,48 @@ function criarTexturaBolaMarmorizada(cor,num) {
 }
 </style>
 <script id="moedas-mais-anuncio">
-/* ===== BOTÃO + DAS MOEDAS: pergunta se quer assistir anúncio ===== */
+/* ===== BOTAO + DAS MOEDAS: comprar fichas direto ou assistir anuncio. Nunca abre a loja nem fecha a tela atual. ===== */
 (function(){
   var dialogo=null;
   function premioVideo(){ try{ if(typeof MOEDAS_POR_VIDEO==='number') return MOEDAS_POR_VIDEO; }catch(e){} return 200; }
+  function precoFicha(){ try{ if(typeof PRECO_FICHA==='number') return PRECO_FICHA; }catch(e){} return 10; }
+  function fichasAtuais(){ try{ if(typeof lerFichas==='function') return lerFichas(); }catch(e){} return 0; }
+  function moedasAtuais(){ try{ if(typeof gameState!=='undefined'&&gameState&&typeof gameState.moedas==='number') return gameState.moedas; }catch(e){} return 0; }
+  function atualizarSaldo(){
+    if(!dialogo)return;
+    dialogo.querySelector('.cpc-moedas').textContent=moedasAtuais();
+    dialogo.querySelector('.cpc-fichas').textContent=fichasAtuais();
+  }
   function garantirDialogo(){
     if(dialogo) return dialogo;
     dialogo=document.createElement('div');
     dialogo.id='coin-plus-dialog';
+    var pf=precoFicha();
+    var ops=[1,5,10,20];
+    var fichasHtml=ops.map(function(q){
+      return '<button type="button" data-q="'+q+'"><img src="https://base44.app/api/apps/6ae0ff061d8d4e2a739347c7/files/mp/public/6ae0ff061d8d4e2a739347c7/fc743f4e8_ficha-sinuca.png" class="ficha-ico" alt="Ficha"> '+q+' ficha'+(q>1?'s':'')+'<small>'+(q*pf)+' 🪙</small></button>';
+    }).join('');
     dialogo.innerHTML='<div class="cpc-card">'+
-      '<h3>🪙 GANHAR MOEDAS</h3>'+
-      '<p>Quer assistir um anúncio e receber <b class="cpc-valor">200</b> moedas?</p>'+
-      '<div class="cpc-botoes">'+
-      '<button type="button" class="cpc-sim">▶ ASSISTIR</button>'+
+      '<h3>🪙 MOEDAS</h3>'+
+      '<p class="cpc-saldo">Você tem <b><span class="cpc-moedas">0</span> 🪙</b> e <b><span class="cpc-fichas">0</span> <img src="https://base44.app/api/apps/6ae0ff061d8d4e2a739347c7/files/mp/public/6ae0ff061d8d4e2a739347c7/fc743f4e8_ficha-sinuca.png" class="ficha-ico" alt="Ficha"></b></p>'+
+      '<div class="cpc-fichas">'+fichasHtml+'</div>'+
+      '<button type="button" class="cpc-video">▶ ASSISTIR ANÚNCIO · +<span class="cpc-valor">200</span> 🪙</button>'+
       '<button type="button" class="cpc-nao">AGORA NÃO</button>'+
-      '</div></div>';
-    dialogo.querySelector('.cpc-sim').addEventListener('click',function(){
+      '</div>';
+    dialogo.querySelectorAll('.cpc-fichas button').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var q=parseInt(btn.dataset.q,10)||1;
+        if(typeof comprarFichas==='function'){
+          comprarFichas(q);
+        }
+        atualizarSaldo();
+      });
+    });
+    dialogo.querySelector('.cpc-video').addEventListener('click',function(){
       dialogo.dataset.aberto='0';
-      if(window.assistirAnuncioPorMoedas) window.assistirAnuncioPorMoedas();
+      if(window.assistirAnuncioPorMoedas){
+        window.assistirAnuncioPorMoedas(null,function(){ atualizarSaldo(); });
+      }
     });
     dialogo.querySelector('.cpc-nao').addEventListener('click',function(){ dialogo.dataset.aberto='0'; });
     dialogo.addEventListener('click',function(e){ if(!e.target.closest('.cpc-card')) dialogo.dataset.aberto='0'; });
@@ -6869,12 +7130,187 @@ function criarTexturaBolaMarmorizada(cor,num) {
   function abrir(){
     var d=garantirDialogo();
     d.querySelector('.cpc-valor').textContent=premioVideo();
+    atualizarSaldo();
     d.dataset.aberto='1';
   }
   document.addEventListener('click',function(e){
-    if(e.target && e.target.closest && e.target.closest('#wallet-plus-btn, #mf-plus-btn, .ml-plus')) abrir();
-  });
+    var plus=e.target&&e.target.closest?e.target.closest('#wallet-plus-btn, #mf-plus-btn, .ml-plus'):null;
+    if(!plus)return;
+    e.preventDefault();e.stopPropagation();
+    abrir();
+  },true);
 })();
 </script>
+<style id="controles-mira-fina-efeito">
+/* ===== MIRA FINA: barra vertical independente da câmera ===== */
+#precision-aim-control{position:fixed;left:max(8px,env(safe-area-inset-left));top:max(8px,env(safe-area-inset-top));transform:none;z-index:106;width:56px;height:min(340px,50vh);padding:30px 8px 25px;border:1px solid rgba(210,220,226,.48);border-radius:15px;color:#eaf0f3;background:linear-gradient(145deg,rgba(35,45,53,.94),rgba(8,14,19,.94));box-shadow:0 8px 24px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.08);pointer-events:auto;touch-action:none;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#precision-aim-title{position:absolute;top:9px;left:0;right:0;text-align:center;color:#d8e0e5;font:800 8px/1 Arial,sans-serif;letter-spacing:.12em;pointer-events:none}
+#precision-aim-track{position:relative;width:100%;height:100%;overflow:visible;border:1px solid rgba(255,255,255,.26);border-radius:11px;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.16) 0 1px,transparent 1px 18px),linear-gradient(90deg,rgba(0,0,0,.28),rgba(255,255,255,.09) 48%,rgba(0,0,0,.3));box-shadow:inset 0 2px 9px rgba(0,0,0,.5);cursor:ns-resize}
+#precision-aim-track:before{content:'';position:absolute;left:5px;right:5px;top:50%;border-top:1px solid rgba(255,215,122,.55);pointer-events:none}
+#precision-aim-thumb{position:absolute;z-index:2;left:50%;top:50%;width:30px;height:21px;transform:translate(-50%,-50%);border:1px solid #ffe09a;border-radius:5px;background:linear-gradient(180deg,#ffe28b,#e9aa37);box-shadow:0 2px 7px rgba(0,0,0,.55),inset 0 1px rgba(255,255,255,.55);pointer-events:none}
+#precision-aim-thumb:before{content:'';position:absolute;left:-8px;top:3px;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:9px solid #f4bd50}
+#precision-aim-value{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:#f3cb79;font:700 9px/1 Arial,sans-serif;pointer-events:none}
+#precision-aim-control{transition:transform .18s ease,opacity .18s ease,border-color .18s ease,box-shadow .18s ease}
+body:has(#spin-widget.spin-expandido) #precision-aim-control{top:max(8px,env(safe-area-inset-top));transform:none;height:min(300px,50vh)}
+#precision-aim-control.ativa{border-color:rgba(255,215,122,.85);box-shadow:0 8px 24px rgba(0,0,0,.42),0 0 15px rgba(240,197,121,.2)}
+#precision-aim-control.indisponivel{opacity:.45;cursor:default}
+body.sem-jogo #precision-aim-control,body:has(#phase-menu[aria-hidden="false"]) #precision-aim-control,body:has(#lan-modal[aria-hidden="false"]) #precision-aim-control{visibility:hidden!important}
+
+/* ===== EFEITO: miniatura que abre e recolhe após 5 s ===== */
+#spin-widget{width:42px!important;min-width:0!important;padding:4px!important;overflow:hidden;transform:none!important;cursor:pointer!important;transition:width .18s ease,padding .18s ease,box-shadow .18s ease}
+#spin-widget:not(.spin-expandido) #spin-ball{width:30px!important;height:30px!important;margin:0 auto!important;cursor:pointer!important}
+#spin-widget:not(.spin-expandido) #spin-dot{width:6px!important;height:6px!important;border-width:1px!important}
+#spin-widget:not(.spin-expandido) #spin-reset,#spin-widget:not(.spin-expandido) #spin-value,#spin-widget:not(.spin-expandido) .spin-clock-mark{display:none!important}
+#spin-widget.spin-expandido{width:128px!important;padding:9px 8px 8px!important;overflow:visible;cursor:default!important;box-shadow:0 10px 28px rgba(0,0,0,.5),0 0 0 1px rgba(240,197,121,.12)}
+#spin-widget.spin-expandido #spin-ball{width:100px!important;height:100px!important;margin:2px auto 6px!important;cursor:crosshair!important}
+#spin-widget.spin-expandido #spin-dot{width:12px!important;height:12px!important;border-width:2px!important}
+#spin-widget.spin-expandido .spin-clock-mark{display:block!important;font-size:9px!important}
+#spin-widget.spin-expandido #spin-reset{display:inline-block!important;margin:2px 0 3px!important;padding:5px 13px!important}
+#spin-widget.spin-expandido #spin-value{display:block!important;min-height:12px!important;color:#ffd28a!important;font:700 9px/1.25 Arial,sans-serif!important}
+@media(max-height:520px){body:has(#spin-widget.spin-expandido) #precision-aim-control{visibility:hidden!important}#precision-aim-control{top:max(8px,env(safe-area-inset-top));width:48px;height:44vh;padding:26px 7px 22px}#precision-aim-title{font-size:7px}#precision-aim-value{font-size:8px}#spin-widget.spin-expandido{width:110px!important;padding:7px!important}#spin-widget.spin-expandido #spin-ball{width:82px!important;height:82px!important}}
+@media(max-width:380px){#precision-aim-control{left:max(8px,env(safe-area-inset-left));width:46px;height:38vh}#spin-widget.spin-expandido{width:110px!important}#spin-widget.spin-expandido #spin-ball{width:84px!important;height:84px!important}}
+</style>
+<script id="controles-mira-fina-efeito-script">
+(function(){
+  'use strict';
+  var widget=document.getElementById('spin-widget');
+  if(!widget)return;
+
+  /* O primeiro toque só abre. O efeito só muda quando o painel já está grande. */
+  var spinAberto=false,spinTimer=0;
+  function recolherSpin(){
+    if(!spinAberto)return;
+    if(typeof arrastandoSpin!=='undefined'&&arrastandoSpin){agendarRecolhimentoSpin();return;}
+    spinAberto=false;widget.classList.remove('spin-expandido');
+    widget.setAttribute('aria-expanded','false');
+    widget.setAttribute('aria-label','Efeito da branca. Toque para abrir o relógio de efeito');
+    clearTimeout(spinTimer);spinTimer=0;
+  }
+  function agendarRecolhimentoSpin(){
+    clearTimeout(spinTimer);
+    if(!spinAberto)return;
+    spinTimer=setTimeout(recolherSpin,5000);
+  }
+  function abrirSpin(){
+    spinAberto=true;widget.classList.add('spin-expandido');
+    widget.setAttribute('aria-expanded','true');
+    widget.setAttribute('aria-label','Relógio de efeito aberto. Arraste o ponto vermelho; recolhe após 5 segundos sem interação');
+    agendarRecolhimentoSpin();
+  }
+  widget.setAttribute('aria-expanded','false');
+  widget.setAttribute('aria-label','Efeito da branca. Toque para abrir o relógio de efeito');
+  widget.addEventListener('pointerdown',function(e){
+    if(!spinAberto){e.preventDefault();e.stopPropagation();abrirSpin();}
+    else agendarRecolhimentoSpin();
+  },true);
+  widget.addEventListener('click',function(){if(spinAberto)agendarRecolhimentoSpin();});
+  widget.addEventListener('pointermove',function(){if(spinAberto&&typeof arrastandoSpin!=='undefined'&&arrastandoSpin)agendarRecolhimentoSpin();},{passive:true});
+  widget.addEventListener('pointerup',function(){if(spinAberto)agendarRecolhimentoSpin();});
+  widget.addEventListener('pointercancel',function(){if(spinAberto)agendarRecolhimentoSpin();});
+
+  /* Barra esquerda: 12° no curso inteiro; não altera altura nem posição da câmera. */
+  var controle=document.createElement('div');
+  controle.id='precision-aim-control';
+  controle.setAttribute('role','slider');
+  controle.setAttribute('aria-label','Mira de precisão da bola fantasma');
+  controle.setAttribute('aria-valuemin','-6');controle.setAttribute('aria-valuemax','6');controle.setAttribute('aria-valuenow','0');
+  controle.setAttribute('tabindex','0');
+  controle.title='Arraste para ajustar a mira fina. Setas: 0,05°. Duplo clique: centralizar.';
+  controle.innerHTML='<span id="precision-aim-title">MIRA FINA</span><div id="precision-aim-track"><div id="precision-aim-thumb"></div></div><span id="precision-aim-value">0,00°</span>';
+  document.body.appendChild(controle);
+  var trilha=controle.querySelector('#precision-aim-track');
+  var polegar=controle.querySelector('#precision-aim-thumb');
+  var valor=controle.querySelector('#precision-aim-value');
+  var cursoMax=12*Math.PI/180,base=0,offset=0,inicioOffset=0,inicioY=0;
+  var arrastando=false,ponteiroId=null,ultimoAnguloAplicado=null;
+  function diferencaAngular(a,b){return Math.atan2(Math.sin(a-b),Math.cos(a-b));}
+  function limitar(v){return Math.max(-cursoMax/2,Math.min(cursoMax/2,v));}
+  function desenhar(){
+    var frac=offset/(cursoMax/2),graus=offset*180/Math.PI;
+    polegar.style.top=(50-frac*50)+'%';
+    valor.textContent=(graus>0?'+':'')+graus.toFixed(2).replace('.',',')+'°';
+    controle.setAttribute('aria-valuenow',graus.toFixed(2));
+    controle.setAttribute('aria-valuetext',(graus>0?'+':'')+graus.toFixed(2)+' graus');
+  }
+  function sincronizarComMiraAtual(){
+    if(ultimoAnguloAplicado===null||Math.abs(diferencaAngular(angH,ultimoAnguloAplicado))>0.00001){base=angH;offset=0;ultimoAnguloAplicado=null;desenhar();}
+  }
+  function podeMirar(){
+    if(mesaMovendo||gameState.aguardandoReset||gameState.faseConcluida||gameState.modo==='gameOver'||gameState.modo==='timerFim')return false;
+    if(parImpar.ativo&&(parImpar.vencedor||(parImpar.oponente!=='local'&&parImpar.turno!==parImpar.jogador)))return false;
+    return true;
+  }
+  function aplicarOffset(novo){
+    offset=limitar(novo);angH=base+offset;ultimoAnguloAplicado=angH;
+    desenhar();enviarAimRede();
+  }
+  controle.addEventListener('pointerdown',function(e){
+    if(!podeMirar())return;
+    e.preventDefault();e.stopPropagation();sincronizarComMiraAtual();
+    arrastando=true;ponteiroId=e.pointerId;inicioY=e.clientY;inicioOffset=offset;
+    controle.classList.add('ativa');
+    if(controle.setPointerCapture)try{controle.setPointerCapture(e.pointerId);}catch(err){}
+  });
+  controle.addEventListener('pointermove',function(e){
+    if(!arrastando||e.pointerId!==ponteiroId)return;
+    e.preventDefault();e.stopPropagation();
+    var altura=Math.max(1,trilha.getBoundingClientRect().height);
+    aplicarOffset(inicioOffset+(inicioY-e.clientY)/altura*cursoMax);
+  });
+  function soltar(e){
+    if(!arrastando||(e.pointerId!==undefined&&e.pointerId!==ponteiroId))return;
+    e.preventDefault();e.stopPropagation();arrastando=false;ponteiroId=null;controle.classList.remove('ativa');enviarAimRede();
+  }
+  controle.addEventListener('pointerup',soltar);controle.addEventListener('pointercancel',soltar);
+  controle.addEventListener('dblclick',function(e){e.preventDefault();e.stopPropagation();if(podeMirar()){sincronizarComMiraAtual();aplicarOffset(0);}});
+  controle.addEventListener('keydown',function(e){
+    if(!['ArrowUp','ArrowDown','Home'].includes(e.key)||!podeMirar())return;
+    e.preventDefault();e.stopPropagation();sincronizarComMiraAtual();
+    if(e.key==='Home')aplicarOffset(0);
+    else aplicarOffset(offset+(e.key==='ArrowUp'?1:-1)*(e.shiftKey?0.25:0.05)*Math.PI/180);
+  });
+  setInterval(function(){
+    controle.classList.toggle('indisponivel',!podeMirar());
+    controle.setAttribute('aria-disabled',podeMirar()?'false':'true');
+    if(!arrastando)sincronizarComMiraAtual();
+  },120);
+  desenhar();
+})();
+</script>
+<style id="ajustes-vidas-fichas-paisagem">
+/* HUD de vidas: sempre 3 corações preenchidos + 3 vagos no início. */
+#life-hud{align-items:center;width:max-content;max-width:calc(100vw - 58px)}
+.life-heart{display:inline-block;width:18px;text-align:center;transform-origin:center}
+.life-heart.ganhou{color:#fff17a;text-shadow:0 0 8px rgba(255,225,104,.8)}
+@keyframes life-heart-ganhou{0%{transform:scale(.4);filter:brightness(2.4)}55%{transform:scale(1.65);color:#fff17a}100%{transform:scale(1)}}
+#life-bonus-toast{position:fixed;left:50%;top:max(52px,calc(env(safe-area-inset-top) + 46px));z-index:260;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:190px;padding:10px 16px;border:1px solid rgba(255,220,126,.8);border-radius:13px;color:#fff5d6;background:linear-gradient(150deg,rgba(108,24,35,.97),rgba(37,10,19,.97));box-shadow:0 8px 28px rgba(0,0,0,.5),0 0 20px rgba(238,81,81,.22);font-family:Arial,sans-serif;text-align:center;pointer-events:none;opacity:0;transform:translate(-50%,-12px) scale(.9);transition:opacity .2s ease,transform .2s ease}
+#life-bonus-toast strong{font-size:17px;letter-spacing:.06em}#life-bonus-toast span{font-size:11px;color:#ffd9a0}
+#life-bonus-toast.visivel{opacity:1!important;transform:translate(-50%,0) scale(1)!important;transition:none}
+#spin-widget{transition:none}
+body.sem-jogo #life-bonus-toast,body:has(#phase-menu[aria-hidden="false"]) #life-bonus-toast,body:has(#mlp[data-aberto="1"]) #life-bonus-toast{visibility:hidden}
+/* Fichas diretamente no lobby e no menu de pausa. */
+#phase-menu .shop-cat.active{opacity:1;transform:none;animation:none}
+#ml .ml-top{align-items:center}
+#ml .ml-fichas-pill{border:0;cursor:default;pointer-events:none;font-family:inherit;white-space:nowrap}
+#ml .ml-fichas-label{font-size:9px;letter-spacing:.05em}
+#mlp .mp-fichas-icone{font-size:29px;line-height:30px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}
+/* Abas de seleção bem pequenas, mantendo texto e toque funcionais. */
+#phase-menu .solo-tabs{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:3px!important;margin:0 0 6px!important;padding:3px!important;border-radius:7px!important}
+#phase-menu .solo-tab{min-height:18px!important;padding:2px 1px!important;border-radius:4px!important;font-size:6.5px!important;line-height:1.1!important;box-shadow:0 1px 0 #082941,0 2px 4px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.25)!important}
+#phase-menu .solo-tab.active{box-shadow:0 1px 0 #80551b,0 2px 4px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.65)!important}
+#mlp .mp-item{min-height:88px;padding:10px 8px;gap:5px;border-radius:14px}
+#mlp .mp-item strong{font-size:11px}#mlp .mp-item small{font-size:9px}
+@media(max-width:380px){#phase-menu .solo-tab{min-height:17px!important;font-size:6px!important}.life-heart{width:16px}}
+/* De lado, a branca de efeito sobe para o topo e sai da área da mesa. */
+@media (orientation:landscape) and (max-height:600px){
+  #spin-widget{top:max(12px,env(safe-area-inset-top))!important;bottom:auto!important;left:auto!important;right:max(48px,calc(env(safe-area-inset-right) + 44px))!important}
+  #life-hud{top:max(10px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));padding:5px 7px}
+  #wallet-hud{top:max(52px,calc(env(safe-area-inset-top) + 44px))}
+  #life-bonus-toast{top:max(48px,calc(env(safe-area-inset-top) + 42px));padding:7px 12px}
+  #life-bonus-toast strong{font-size:14px}
+  #mlp .mp-grade{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;align-content:center}
+  #mlp .mp-item{min-height:96px;padding:8px 5px}
+}
+</style>
 </body> 
 </html>
