@@ -1400,7 +1400,7 @@
         const oponenteDefinido=oponente||(redeLocal?'rede':'local');
         const placarRodadas=continuarBolinho?{...parImpar.bolinhoVitorias}: {1:0,2:0};
         const rodadaAtual=continuarBolinho?parImpar.bolinhoRodadaAtual+1:1;
-        if(!continuarBolinho){parImpar.bolinhoResultadoToken=0;parImpar.bolinhoUltimoVencedorRodada=0;parImpar.bolinhoFichaProcessadoToken=0;parImpar.bolinhoFichasDebitada=0;parImpar.fichaPartidaLiquidada=false;
+        if(!continuarBolinho){parImpar.bolinhoResultadoToken=0;parImpar.bolinhoUltimoVencedorRodada=0;parImpar.bolinhoFichaProcessadoToken=0;parImpar.bolinhoFichasDebitada=0;parImpar.fichaPartidaLiquidada=false;}
         const cfgBolinho=modo==='bolinho'&&(oponenteDefinido==='rede'||oponenteDefinido==='cpu')&&window.__bolinhoOnlineOptions?window.__bolinhoOnlineOptions:null;
         parImpar.bolinhoAlvo=3;
         parImpar.bolinhoRodadasAlvo=cfgBolinho?Math.max(3,Math.min(10,Number(cfgBolinho.rounds)||3)):0;
